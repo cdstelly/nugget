@@ -1,0 +1,28 @@
+test = "test.dd" extract files  
+test
+f = "file:target.dd" extract files
+f
+pdfs = f
+pdfs = f | select "*.pdf"
+pdfs = f | select "*.pdf", ctime > "01/01/2014"
+pdfs = f | select "*.pdf", ctime <= "02/01/2014"
+pdfs = f | select "*.pdf", ctime <= "01/01/2014", mtime > "01/02/2015"
+
+pdfhashes = pdfs | hash
+pdfhashes = pdfs | hash rd
+pdfhashes = pdfs | hash rd5
+hashed 	  = pdfhashes
+known 	  = hashed | join "file:known"
+
+pdfs = "file:target.dd" extract files | select "*.pdf", ctime > "01/01/2015"
+
+known = pdfs.content | hash md5 | join "file:known"
+
+
+pdfs = "file:target.dd" extract files | select "*.pdf", ctime > "01/01/2015" | hash md5 
+
+save pdfs to pdfs.json
+
+// test test comment
+// fnames = f as (name, size)
+// fnames = f as ($2, %5)
