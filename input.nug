@@ -1,7 +1,5 @@
 test = "test.dd" extract files  
-test
 f = "file:target.dd" extract files
-f
 pdfs = f
 pdfs = f | select "*.pdf"
 pdfs = f | select "*.pdf", ctime > "01/01/2014"

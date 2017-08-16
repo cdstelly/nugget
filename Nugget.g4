@@ -7,7 +7,7 @@ tokens {
 
 nugget:   sin 		EOF
 	| execute 	EOF
-	| initextract 	EOF
+	| initextract
 	| printId	EOF
 	| assign	EOF
 	| save		EOF 
