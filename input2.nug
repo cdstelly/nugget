@@ -2,6 +2,9 @@ myimage ntfs
 myfiles file[]
 myhashes sha1[]
 
+myhashes
+myimage
+
 myimage = "file.dd" as ntfs
 
 //myfiles = "asdf"
