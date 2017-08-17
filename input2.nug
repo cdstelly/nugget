@@ -1,0 +1,17 @@
+myimage ntfs
+myfiles file[]
+myhashes sha1[]
+
+myimage = "file.dd" as ntfs
+
+//myfiles = "asdf"
+
+myfiles = myimage
+
+myfiles = myimage | extract files
+myfiles = "file.dd" as ntfs | extract files
+
+myhashes = myfiles | sha1
+
+myhashes = "file.dd" as ntfs | extract files | sha1
+
