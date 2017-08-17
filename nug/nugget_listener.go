@@ -1,4 +1,4 @@
-// Generated from Nugget.g4 by ANTLR 4.7.
+// Generated from C:/Users/drew/GoglandProjects/nugget\Nugget.g4 by ANTLR 4.7.
 
 package parser // Nugget
 

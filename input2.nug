@@ -15,3 +15,7 @@ myhashes = myfiles | sha1
 
 myhashes = "file.dd" as ntfs | extract files | sha1
 
+//load in the ntfs image i guess first woohoo
+//some kind of reference to UCO
+//some pcap
+//some example of array of multiple types or collection
