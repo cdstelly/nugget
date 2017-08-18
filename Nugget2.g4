@@ -7,14 +7,17 @@ prog: (define_assign | NL
 
 
 define_assign:   define |
-        assign
+                 assign |
+                 singleton_var
 ;
 
 define: ID nugget_type LISTOP?;
 
-assign: ID '=' STRING asType ('|' nuggetaction)* |
-        ID '=' ID ('|' nuggetaction)*
+assign: ID '=' STRING asType ('|' nugget_action)* |
+        ID '=' ID ('|' nugget_action)*
 ;
+
+singleton_var: ID;
 
 asType: 'as' nugget_type;
 
@@ -24,13 +27,16 @@ nugget_type: 'string'  |
       'ntfs'     |
       'file'     |
       'packet'   |
-      'exifinfo' |
+      'exifinfo'
 ;
 
-nuggetaction: 'extract' ID |
-        'sha1' |
-        'md5'  |
+nugget_action: action_word (ID)?
 ;
+
+action_word: 'extract' |
+             'sha1'    |
+             'md5'
+             ;
 
 LISTOP: '[]';
 

@@ -45,6 +45,12 @@ func (s *BaseNugget2Listener) EnterAssign(ctx *AssignContext) {}
 // ExitAssign is called when production assign is exited.
 func (s *BaseNugget2Listener) ExitAssign(ctx *AssignContext) {}
 
+// EnterSingleton_var is called when production singleton_var is entered.
+func (s *BaseNugget2Listener) EnterSingleton_var(ctx *Singleton_varContext) {}
+
+// ExitSingleton_var is called when production singleton_var is exited.
+func (s *BaseNugget2Listener) ExitSingleton_var(ctx *Singleton_varContext) {}
+
 // EnterAsType is called when production asType is entered.
 func (s *BaseNugget2Listener) EnterAsType(ctx *AsTypeContext) {}
 
@@ -57,8 +63,14 @@ func (s *BaseNugget2Listener) EnterNugget_type(ctx *Nugget_typeContext) {}
 // ExitNugget_type is called when production nugget_type is exited.
 func (s *BaseNugget2Listener) ExitNugget_type(ctx *Nugget_typeContext) {}
 
-// EnterNuggetaction is called when production nuggetaction is entered.
-func (s *BaseNugget2Listener) EnterNuggetaction(ctx *NuggetactionContext) {}
+// EnterNugget_action is called when production nugget_action is entered.
+func (s *BaseNugget2Listener) EnterNugget_action(ctx *Nugget_actionContext) {}
 
-// ExitNuggetaction is called when production nuggetaction is exited.
-func (s *BaseNugget2Listener) ExitNuggetaction(ctx *NuggetactionContext) {}
+// ExitNugget_action is called when production nugget_action is exited.
+func (s *BaseNugget2Listener) ExitNugget_action(ctx *Nugget_actionContext) {}
+
+// EnterAction_word is called when production action_word is entered.
+func (s *BaseNugget2Listener) EnterAction_word(ctx *Action_wordContext) {}
+
+// ExitAction_word is called when production action_word is exited.
+func (s *BaseNugget2Listener) ExitAction_word(ctx *Action_wordContext) {}
