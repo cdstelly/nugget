@@ -12,14 +12,11 @@ import (
 
 var (
 	pathToInput string
-	parrotInput bool
-
 	registers map[string]interface{}
 )
 
 func init() {
 	flag.StringVar(&pathToInput, "input", "input2.nug", "Path to input")
-	flag.BoolVar(&parrotInput, "parrotInput", false, "Repeat parser input")
 	flag.Parse()
 	registers = make(map[string]interface{})
 }
@@ -33,9 +30,7 @@ func NewTreeShapeListener() *TreeShapeListener {
 }
 
 func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-	if parrotInput {
-		fmt.Println("Entered a rule, result: " + ctx.GetText())
-	}
+//		fmt.Println("Entered a rule, result: " + ctx.GetText())
 }
 
 func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
@@ -50,13 +45,41 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	} else {
 		switch nugget_type {
 		case "ntfs":
-			registers[identifier] = NTypes.TNTFS{}
+			if isList {
+				registers[identifier] = []NTypes.TNTFS{}
+			} else {
+				registers[identifier] = NTypes.TNTFS{}
+			}
 		case "file":
-			registers[identifier] = NTypes.FileInfo{}
+			if isList {
+				registers[identifier] = []NTypes.FileInfo{}
+			} else {
+				registers[identifier] = NTypes.FileInfo{}
+			}
 		case "sha1":
-			registers[identifier] = NTypes.SHA1{}
-		case "md5":
-			registers[identifier] = NTypes.MD5{}
+			if isList {
+				registers[identifier] = []NTypes.SHA1{}
+			} else {
+				registers[identifier] = NTypes.SHA1{}
+			}
+		case "md5"://TODO: investigate impact of 'natural types' such as string - see if we should wrap in an NType
+			if isList {
+				registers[identifier] = []string{}
+			} else {
+				registers[identifier] = ""
+			}
+		case "string":
+			if isList {
+				registers[identifier] = []NTypes.NString{}
+			} else {
+				registers[identifier] = NTypes.NString{}
+			}
+		case "packet":
+			if isList {
+				registers[identifier] = []NTypes.NPacket{}
+			} else {
+				registers[identifier] = NTypes.NPacket{}
+			}
 		default:
 			fmt.Println("Was not able to build type: ", nugget_type)
 		}
