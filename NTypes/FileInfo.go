@@ -40,3 +40,4 @@ func (cbo ByOffset) Swap(i, j int) {
 func (cbo ByOffset) Less(i, j int) bool {
 	return cbo[i].Clusteroffset < cbo[j].Clusteroffset
 }
+
