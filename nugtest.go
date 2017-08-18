@@ -117,7 +117,7 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 				fmt.Println("the extract info: ", extractTarget, " ", extractType)
 			}
 			fmt.Println("warning: using hardcoded target info for testing")
-			extractTarget := "jo.extract"
+			extractTarget := "C:\\Users\\drew\\School\\backups_before_upgrade\\jo.extract"
 			theAction = &NActions.ExtractNTFS{NTFSImageLocation:extractTarget}
 		case "sha1":
 			theAction = &NActions.SHA1Action{}
@@ -149,10 +149,12 @@ func (s *TreeShapeListener) EnterNugget_action(ctx *parser.Nugget_actionContext)
 func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
 	identifier := ctx.ID().GetText()
 	if v, ok := registers[identifier]; ok {
-		fmt.Println(v)
-		if a, ok := registers[identifier].(NActions.ExtractNTFS); ok {
+//		fmt.Println("ident", ctx.ID().GetText(), " is: ", v)
+		fmt.Printf("Variable %s has type: %T\n", identifier, v)
+		if a, ok := registers[identifier].(*NActions.ExtractNTFS); ok {
 			//we have a datatype ExztractNTFS
-			fmt.Println("have extract ntfs actoin: ", a)
+			fmt.Println("have extract ntfs action: ", a)
+			a.Exeucte()
 		}
 	}
 }
