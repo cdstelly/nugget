@@ -54,8 +54,9 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 		case "file":
 			registers[identifier] = NTypes.FileInfo{}
 		case "sha1":
-			//leaveoffhere
+			registers[identifier] = NTypes.SHA1{}
 		case "md5":
+			registers[identifier] = NTypes.MD5{}
 		default:
 			fmt.Println("Was not able to build type: ", nugget_type)
 		}
