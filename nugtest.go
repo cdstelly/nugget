@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"./NTypes"
+	"./NActions"
 	"./nug2"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
@@ -83,6 +84,71 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 		default:
 			fmt.Println("Was not able to build type: ", nugget_type)
 		}
+	}
+}
+
+func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
+	//does the last execution on the right match the type on the left? do i even bother checking or let runtime go handle it?
+	//1. look at all actions
+	//2. does the rightmost action return what we want? if so, let's queue everything up
+	//		a. from left to right, does the
+	actions := ctx.AllNugget_action()
+	//reverse the order of the actions
+	for i := len(actions)/2-1; i >= 0; i-- {
+		opp := len(actions)-1-i
+		actions[i], actions[opp] = actions[opp], actions[i]
+	}
+
+	var builtActions []NActions.BaseAction
+	for _,action := range actions {
+		action_verb := action.GetStart().GetText()
+		var theAction NActions.BaseAction
+		switch action_verb {
+		case "extract":
+			//if it's an extract, it's coming from a variable or a raw load.
+			//if it's a variable, get the info from it. otherwise, get it from the input.
+			if len(ctx.AllID()) > 1 {
+				// it's a variable
+				fmt.Println("error: haven't implemented loading from a variable yet")
+			} else {
+				extractTarget := ctx.STRING().GetText()
+				extractType := ctx.AsType().GetStop().GetText()
+				fmt.Println("the extract info: ", extractTarget, " ", extractType)
+			}
+			fmt.Println("warning: using hardcoded target info for testing")
+			extractTarget := "jo.extract"
+			theAction = &NActions.ExtractNTFS{NTFSImageLocation:extractTarget}
+		case "sha1":
+			theAction = &NActions.SHA1Action{}
+		case "md5":
+			theAction = &NActions.MD5Action{}
+		default:
+			fmt.Println("action was not found: ", action_verb)  //parser should prevent us from getting here..
+		}
+		builtActions = append(builtActions, theAction)
+	}
+
+	for index, builtAction := range builtActions {
+		if index+1 < len(builtActions) {
+			//fmt.Println("action at index: ", index, "is ", builtAction, " and depends on: ", builtActions[index+1])
+			var depAction NActions.BaseAction
+			depAction = builtActions[index+1]
+			builtAction.(NActions.BaseAction).SetDependency(depAction)
+		} else {
+			//fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency")
+		}
+	}
+
+}
+
+func (s *TreeShapeListener) EnterNugget_action(ctx *parser.Nugget_actionContext) {
+
+}
+
+func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
+	identifier := ctx.ID().GetText()
+	if v, ok := registers[identifier]; ok {
+		fmt.Println(v)
 	}
 }
 
