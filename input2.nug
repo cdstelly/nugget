@@ -18,6 +18,11 @@ myhashes = myfiles | sha1
 
 myhashes = "file.dd" as ntfs | extract files | sha1
 
+
+//leaving off here, want to implement the actual execution of extracvtion next
+myhashes
+myimage
+
 //filters..
 //myhashes = "file.dd" as ntfs | extract files with filename == "*.pdf",ctime>"01/01/01" | sha1
 //myhashes = "file.dd" as ntfs | extract files with ctime>"01/01/01" | sha1

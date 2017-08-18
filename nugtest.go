@@ -93,6 +93,7 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 	//2. does the rightmost action return what we want? if so, let's queue everything up
 	//		a. from left to right, does the
 	actions := ctx.AllNugget_action()
+	varIdentifier := ctx.ID(0).GetText()
 	//reverse the order of the actions
 	for i := len(actions)/2-1; i >= 0; i-- {
 		opp := len(actions)-1-i
@@ -137,8 +138,8 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 		} else {
 			//fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency")
 		}
+		registers[varIdentifier] = builtActions[0]
 	}
-
 }
 
 func (s *TreeShapeListener) EnterNugget_action(ctx *parser.Nugget_actionContext) {
@@ -149,6 +150,10 @@ func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varConte
 	identifier := ctx.ID().GetText()
 	if v, ok := registers[identifier]; ok {
 		fmt.Println(v)
+		if a, ok := registers[identifier].(NActions.ExtractNTFS); ok {
+			//we have a datatype ExztractNTFS
+			fmt.Println("have extract ntfs actoin: ", a)
+		}
 	}
 }
 
