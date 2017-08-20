@@ -37,6 +37,12 @@ func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
 //		fmt.Println("Entered a rule, result: " + ctx.GetText())
 }
 
+func (s *TreeShapeListener) EnterNugget_action(ctx *parser.Nugget_actionContext) {
+	if ctx.Filter() != nil {
+		fmt.Println(">>>", ctx.Filter().)
+	}
+}
+
 func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	isList := ctx.LISTOP() != nil
 	identifier := ctx.ID().GetText()
@@ -106,6 +112,10 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 		}
 	} else {
 		actions := ctx.AllNugget_action()
+
+
+
+
 		//reverse the order of the actions
 		for i := len(actions)/2 - 1; i >= 0; i-- {
 			opp := len(actions) - 1 - i
@@ -115,6 +125,7 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 		var builtActions []NActions.BaseAction
 		for _, action := range actions {
 			action_verb := action.GetStart().GetText()
+
 			var theAction NActions.BaseAction
 			switch action_verb {
 			case "extract":
@@ -139,6 +150,8 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 			default:
 				fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 			}
+
+
 			builtActions = append(builtActions, theAction)
 		}
 
@@ -174,6 +187,17 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 	}
 }
 
+//resume here
+// ok - problems arise. first, we need to figure out how to percolate up results from listeners. ie, filter was triggered, but how do i get the results of that up to teh nugget action?
+//  online people have multiple listeners.. weird. why?? 
+func getFilterForContext(ctx *parser.AssignContext) {
+	if true {
+		fmt.Println("no filter found")
+	} else {
+		fmt.Println("filter found")
+	}
+}
+
 func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
 	identifier := ctx.ID().GetText()
 	if v, ok := registers[identifier]; ok {
@@ -191,7 +215,7 @@ func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varConte
 		}
 		if a, ok := registers[identifier].(*NActions.MD5Action); ok {
 			//we have a datatype SHA1Extraction
-			fmt.Println("have sha1 action: ", a)
+			fmt.Println("have md5 action: ", a)
 			a.Execute()
 		}
 	} else {

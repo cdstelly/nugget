@@ -28,16 +28,18 @@ nugget_type: 'string'  |
       'file'     |
       'packet'   |
       'exifinfo'
+      ;
+
+nugget_action: action_word (ID)? (filter)?
 ;
 
-nugget_action: action_word (ID)?
-;
+action_word: ('extract' | 'sha1' | 'md5');
 
-action_word: 'extract' |
-             'sha1'    |
-             'md5'
-             ;
+filter: 'filter' filter_term (',' filter_term)* ;
 
+filter_term: ID COMPOP STRING;
+
+COMPOP: ('>' | '<' | '>=' | '<=' | '==');
 LISTOP: '[]';
 
 INT : [0-9]+;
