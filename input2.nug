@@ -14,21 +14,26 @@ myfiles = myimage
 myfilesA = myimage | extract files
 myfilesB = "file.dd" as ntfs | extract files
 
-//myhashes = myfiles | sha1
-//myhashes = "file.dd" as ntfs | extract files | sha1
+myhashes = myfiles | sha1
+myhashes = "file.dd" as ntfs | extract files | sha1
 
+//myhashes
+
+asdf
 
 //leaving off here, want to implement the actual execution of extracvtion next
 myfilesA
 myfilesB
 
 
+myhashes = "file.dd" as ntfs | extract files filter filename == "*.pdf",ctime>"01/01/01" | sha1
+myhashes = "file.dd" as ntfs | extract files filter ctime > "01/01/01" | sha1
+
+
 //filters..
 //myhashes = "file.dd" as ntfs | extract files with filename == "*.pdf",ctime>"01/01/01" | sha1
 //myhashes = "file.dd" as ntfs | extract files with ctime>"01/01/01" | sha1
 //or
-//myhashes = "file.dd" as ntfs | extract files | filter filename == "*.pdf",ctime>"01/01/01" | sha1
-//myhashes = "file.dd" as ntfs | extract files | filter ctime > "01/01/01" | sha1
 
 
 //load in the ntfs image i guess first woohoo

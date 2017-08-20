@@ -9,11 +9,11 @@ import (
 type SHA1Action struct {
 	executed  bool
 	dependsOn BaseAction
+	filters []NTypes.Filter
 
 
 	target []NTypes.FileInfo
 	results []NTypes.SHA1
-
 }
 
 func NewSHA1Action(dep BaseAction) SHA1Action {
@@ -63,4 +63,8 @@ func (na *SHA1Action) Execute() {
 
 func (na *SHA1Action) GetResults() interface{}{
 	return na.results
+}
+
+func (na *SHA1Action) SetFilters(filters []NTypes.Filter) {
+	na.filters = filters
 }

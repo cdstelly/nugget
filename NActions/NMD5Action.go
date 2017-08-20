@@ -9,9 +9,9 @@ import (
 type MD5Action struct {
 	executed  bool
 	dependsOn BaseAction
+	filters []NTypes.Filter
 
 	results []NTypes.MD5
-
 }
 
 func NewMD5Action(dep BaseAction) MD5Action {
@@ -59,4 +59,8 @@ func (na *MD5Action) Execute() {
 
 func (na *MD5Action) GetResults() interface{}{
 	return na.results
+}
+
+func (na *MD5Action) SetFilters(filters []NTypes.Filter) {
+	na.filters = filters
 }

@@ -14,6 +14,7 @@ import (
 type ExtractNTFS struct {
 	executed  bool
 	dependsOn BaseAction
+	filters []NTypes.Filter
 
 	NTFSImageMetadataLocation string
 	NTFSImageDataLocation string
@@ -246,4 +247,8 @@ func checkError(err error) {
 	if err != nil {
 		fmt.Println("[!] Nonfatal error: ", err.Error())
 	}
+}
+
+func (na *ExtractNTFS) SetFilters(filters []NTypes.Filter) {
+	na.filters = filters
 }

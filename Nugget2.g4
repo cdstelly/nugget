@@ -30,7 +30,7 @@ nugget_type: 'string'  |
       'exifinfo'
 ;
 
-nugget_action: action_word (ID)?
+nugget_action: action_word (ID)? (filter)?
 ;
 
 action_word: 'extract' |
@@ -38,6 +38,11 @@ action_word: 'extract' |
              'md5'
              ;
 
+filter: 'filter' filter_term (',' filter_term)* ;
+
+filter_term: ID COMPOP STRING;
+
+COMPOP: ('>' | '<' | '>=' | '<=' | '==');
 LISTOP: '[]';
 
 INT : [0-9]+;
