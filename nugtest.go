@@ -9,6 +9,8 @@ import (
 	"./NActions"
 	"./nug2"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+
+	//log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -20,6 +22,7 @@ func init() {
 	flag.StringVar(&pathToInput, "input", "input2.nug", "Path to input")
 	flag.Parse()
 	registers = make(map[string]interface{})
+
 }
 
 type TreeShapeListener struct {
@@ -87,97 +90,114 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	}
 }
 
+//todo: see if i can break this up
 func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
-	//does the last execution on the right match the type on the left? do i even bother checking or let runtime go handle it?
-	//1. look at all actions
-	//2. does the rightmost action return what we want? if so, let's queue everything up
-	//		a. from left to right, does the
-	actions := ctx.AllNugget_action()
 	varIdentifier := ctx.ID(0).GetText()
-	//reverse the order of the actions
-	for i := len(actions)/2-1; i >= 0; i-- {
-		opp := len(actions)-1-i
-		actions[i], actions[opp] = actions[opp], actions[i]
-	}
 
-	var builtActions []NActions.BaseAction
-	for _,action := range actions {
-		action_verb := action.GetStart().GetText()
-		var theAction NActions.BaseAction
-		switch action_verb {
-		case "extract":
-			//if it's an extract, it's coming from a variable or a raw load.
-			//if it's a variable, get the info from it. otherwise, get it from the input.
-			if len(ctx.AllID()) > 1 {
-				// it's a variable
-				fmt.Println("error: haven't implemented loading from a variable yet")
-			} else {
-				extractTarget := ctx.STRING().GetText()
-				extractType := ctx.AsType().GetStop().GetText()
-				fmt.Println("the extract info: ", extractTarget, " ", extractType)
+	//if no actions, then we do a simple calculation and assign it to a register
+	if len(ctx.AllNugget_action()) == 0 {
+		//if it's an extract string
+
+		if ctx.AsType() != nil {
+			extractTarget := ctx.STRING().GetText()
+			extractType := ctx.AsType().GetStop().GetText()
+			fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
+			registers[varIdentifier] = NTypes.TNTFS{PathToExtract: extractTarget,AsType:extractType}
+		}
+	} else {
+		actions := ctx.AllNugget_action()
+		//reverse the order of the actions
+		for i := len(actions)/2 - 1; i >= 0; i-- {
+			opp := len(actions) - 1 - i
+			actions[i], actions[opp] = actions[opp], actions[i]
+		}
+
+		var builtActions []NActions.BaseAction
+		for _, action := range actions {
+			action_verb := action.GetStart().GetText()
+			var theAction NActions.BaseAction
+			switch action_verb {
+			case "extract":
+				//if it's an extract, it's coming from a variable or a raw load.
+				//if it's a variable, get the info from it. otherwise, get it from the input.
+				if len(ctx.AllID()) > 1 {
+					// it's a variable
+					fmt.Println("error: haven't implemented loading from a variable yet")
+				} else {
+					extractTarget := ctx.STRING().GetText()
+					extractType := ctx.AsType().GetStop().GetText()
+					fmt.Println("the extract info: ", extractTarget, " ", extractType)
+				}
+				fmt.Println("warning: using hardcoded target info for testing")
+				extractTarget := "C:\\Users\\drew\\School\\backups_before_upgrade\\jo.extract"
+				extractData := "G:\\school\\image\\jo.ntfs"
+				theAction = &NActions.ExtractNTFS{NTFSImageMetadataLocation:extractTarget, NTFSImageDataLocation:extractData}
+			case "sha1":
+				theAction = &NActions.SHA1Action{}
+			case "md5":
+				theAction = &NActions.MD5Action{}
+			default:
+				fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 			}
-			fmt.Println("warning: using hardcoded target info for testing")
-			extractTarget := "jo.extract"
-			theAction = &NActions.ExtractNTFS{NTFSImageLocation:extractTarget}
-		case "sha1":
-			theAction = &NActions.SHA1Action{}
-		case "md5":
-			theAction = &NActions.MD5Action{}
-		default:
-			fmt.Println("action was not found: ", action_verb)  //parser should prevent us from getting here..
+			builtActions = append(builtActions, theAction)
 		}
-		builtActions = append(builtActions, theAction)
-	}
 
-	for index, builtAction := range builtActions {
-		if index+1 < len(builtActions) {
-			//fmt.Println("action at index: ", index, "is ", builtAction, " and depends on: ", builtActions[index+1])
-			var depAction NActions.BaseAction
-			depAction = builtActions[index+1]
-			builtAction.(NActions.BaseAction).SetDependency(depAction)
-		} else {
-			//fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency")
+		for index, builtAction := range builtActions {
+			if index+1 < len(builtActions) {
+				//fmt.Println("action at index: ", index, "is ", builtAction, " and depends on: ", builtActions[index+1])
+				var depAction NActions.BaseAction
+				depAction = builtActions[index+1]
+				builtAction.(NActions.BaseAction).SetDependency(depAction)
+			} else {
+				fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency. Setting dep to the var")
+				if len(ctx.AllID()) > 1 {
+					depVar := ctx.ID(1).GetText()
+					// is it an existing var?
+					if nVar, ok := registers[depVar]; ok {
+						//if it's an action..
+						if dep, ok := registers[depVar].(NActions.BaseAction); ok {
+							//we have a datatype baseAction
+							fmt.Println("the dependency for this action will be variable: ", nVar)
+							builtAction.(NActions.BaseAction).SetDependency(dep)
+						}
+					} else {
+						fmt.Println("Error: Var '", depVar, "' not recognized.")
+					}
+				} else if ctx.AsType() != nil { //is it an asType?
+
+				} else { //was not recognized
+					fmt.Println("Error: pattern not recognized.")
+				}
+			}
+			registers[varIdentifier] = builtActions[0]
 		}
-		registers[varIdentifier] = builtActions[0]
 	}
-}
-
-func (s *TreeShapeListener) EnterNugget_action(ctx *parser.Nugget_actionContext) {
-
 }
 
 func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
 	identifier := ctx.ID().GetText()
 	if v, ok := registers[identifier]; ok {
-		fmt.Println(v)
-		if a, ok := registers[identifier].(NActions.ExtractNTFS); ok {
+//		fmt.Println("ident", ctx.ID().GetText(), " is: ", v)
+		fmt.Printf("Variable %s has type: %T\n", identifier, v)
+		if a, ok := registers[identifier].(*NActions.ExtractNTFS); ok {
 			//we have a datatype ExztractNTFS
-			fmt.Println("have extract ntfs actoin: ", a)
+			fmt.Println("have extract ntfs action: ", a)
+			a.Execute()
 		}
+		if a, ok := registers[identifier].(*NActions.SHA1Action); ok {
+			//we have a datatype SHA1Extraction
+			fmt.Println("have sha1 action: ", a)
+			a.Execute()
+		}
+		if a, ok := registers[identifier].(*NActions.MD5Action); ok {
+			//we have a datatype SHA1Extraction
+			fmt.Println("have sha1 action: ", a)
+			a.Execute()
+		}
+	} else {
+		fmt.Println("Error: var'", identifier, "' not found")
 	}
 }
-
-/*
-func (this *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
-	if v, ok := registers[ctx.StrLit().GetText()]; ok {
-		fmt.Println(v)
-	}
-	if v, ok := sources[ctx.StrLit().GetText()]; ok {
-		fmt.Println(v.Name)
-	}
-}
-
-func (this *TreeShapeListener) EnterInitextract(ctx *parser.InitextractContext) {
-	fmt.Println("extrating filesystem..")
-	newsource := source{Name: ctx.Target().GetText()}
-	sources[ctx.StrLit().GetText()] = newsource
-}
-
-func (this *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
-	//fmt.Println("assigning to variable: ", ctx.StrLit(0).GetText(), " the value : ", ctx.StrLit(1).GetText())
-	registers[ctx.StrLit(0).GetText()] = ctx.StrLit(1).GetText()
-}
-*/
 
 func main() {
 	file, err := os.Open(pathToInput)
@@ -196,12 +216,4 @@ func main() {
 		tree := p.Prog()
 		antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
 	}
-}
-
-func readline(fi *bufio.Reader) (string, bool) {
-	s, err := fi.ReadString('\n')
-	if err != nil {
-		return "", false
-	}
-	return s, true
 }

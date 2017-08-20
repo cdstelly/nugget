@@ -13,6 +13,7 @@ type FileInfo struct {
 	Flags       string
 	Filesize    uint64
 	Dataruns    []DataRun
+	ReconstructedData []byte
 }
 
 type DataRun struct {

@@ -11,17 +11,17 @@ myimage = "file.dd" as ntfs
 
 myfiles = myimage
 
-myfiles = myimage | extract files
-myfiles = "file.dd" as ntfs | extract files
+myfilesA = myimage | extract files
+myfilesB = "file.dd" as ntfs | extract files
 
-myhashes = myfiles | sha1
-
-myhashes = "file.dd" as ntfs | extract files | sha1
+//myhashes = myfiles | sha1
+//myhashes = "file.dd" as ntfs | extract files | sha1
 
 
 //leaving off here, want to implement the actual execution of extracvtion next
-myhashes
-myimage
+myfilesA
+myfilesB
+
 
 //filters..
 //myhashes = "file.dd" as ntfs | extract files with filename == "*.pdf",ctime>"01/01/01" | sha1
