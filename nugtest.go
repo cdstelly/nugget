@@ -191,7 +191,7 @@ func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varConte
 		}
 		if a, ok := registers[identifier].(*NActions.MD5Action); ok {
 			//we have a datatype SHA1Extraction
-			fmt.Println("have sha1 action: ", a)
+			fmt.Println("have md5 action: ", a)
 			a.Execute()
 		}
 	} else {
