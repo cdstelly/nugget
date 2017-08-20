@@ -189,7 +189,7 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 
 //resume here
 // ok - problems arise. first, we need to figure out how to percolate up results from listeners. ie, filter was triggered, but how do i get the results of that up to teh nugget action?
-//  online people have multiple listeners.. weird. why?? 
+//  online people have multiple listeners.. weird. why??
 func getFilterForContext(ctx *parser.AssignContext) {
 	if true {
 		fmt.Println("no filter found")
@@ -214,7 +214,7 @@ func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varConte
 			a.Execute()
 		}
 		if a, ok := registers[identifier].(*NActions.MD5Action); ok {
-			//we have a datatype SHA1Extraction
+			//we have a datatype md5
 			fmt.Println("have md5 action: ", a)
 			a.Execute()
 		}
