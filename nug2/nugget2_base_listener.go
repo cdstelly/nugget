@@ -74,3 +74,15 @@ func (s *BaseNugget2Listener) EnterAction_word(ctx *Action_wordContext) {}
 
 // ExitAction_word is called when production action_word is exited.
 func (s *BaseNugget2Listener) ExitAction_word(ctx *Action_wordContext) {}
+
+// EnterFilter is called when production filter is entered.
+func (s *BaseNugget2Listener) EnterFilter(ctx *FilterContext) {}
+
+// ExitFilter is called when production filter is exited.
+func (s *BaseNugget2Listener) ExitFilter(ctx *FilterContext) {}
+
+// EnterFilter_term is called when production filter_term is entered.
+func (s *BaseNugget2Listener) EnterFilter_term(ctx *Filter_termContext) {}
+
+// ExitFilter_term is called when production filter_term is exited.
+func (s *BaseNugget2Listener) ExitFilter_term(ctx *Filter_termContext) {}

@@ -35,6 +35,12 @@ type Nugget2Listener interface {
 	// EnterAction_word is called when entering the action_word production.
 	EnterAction_word(c *Action_wordContext)
 
+	// EnterFilter is called when entering the filter production.
+	EnterFilter(c *FilterContext)
+
+	// EnterFilter_term is called when entering the filter_term production.
+	EnterFilter_term(c *Filter_termContext)
+
 	// ExitProg is called when exiting the prog production.
 	ExitProg(c *ProgContext)
 
@@ -61,4 +67,10 @@ type Nugget2Listener interface {
 
 	// ExitAction_word is called when exiting the action_word production.
 	ExitAction_word(c *Action_wordContext)
+
+	// ExitFilter is called when exiting the filter production.
+	ExitFilter(c *FilterContext)
+
+	// ExitFilter_term is called when exiting the filter_term production.
+	ExitFilter_term(c *Filter_termContext)
 }
