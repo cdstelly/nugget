@@ -15,7 +15,10 @@ type ExtractNTFS struct {
 	executed  bool
 	dependsOn BaseAction
 
-	NTFSImageLocation string
+	NTFSImageMetadataLocation string
+	NTFSImageDataLocation string
+
+	NTFSFiles []NTypes.FileInfo
 	NTFSDataRuns []NTypes.RealOffsetRun
 }
 
@@ -38,13 +41,16 @@ func (na *ExtractNTFS) SetDependency(action BaseAction) {
 	na.dependsOn = nil
 }
 
-func (na *ExtractNTFS) Exeucte() {
-	na.ExtractFromNTFS()
+func (na *ExtractNTFS) Execute() {
+	na.NTFSFiles = na.ExtractMetadataFromNTFS()
 	na.executed = true
 }
 
-func (na *ExtractNTFS) ExtractFromNTFS () []NTypes.FileInfo {
-	file, _ := os.Open(na.NTFSImageLocation)
+func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
+	file, err := os.Open(na.NTFSImageMetadataLocation)
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+	}
 
 	defer file.Close()
 	errCount := 0
@@ -164,21 +170,80 @@ func (na *ExtractNTFS) ExtractFromNTFS () []NTypes.FileInfo {
 
 		fraglimit := 20
 		if len(fi.Dataruns) > fraglimit { // revisit -- registry files are causing crashes, extremely fragmented files with lots of data runs slow things down significantly
-			fmt.Println("Won't add file ", getAFilename(fi), "  id: ", fi.Id, " -- too fragmented (over ", fraglimit, " fragments)")
+			fmt.Println("Won't add file ", GetAFilename(fi), "  id: ", fi.Id, " -- too fragmented (over ", fraglimit, " fragments)")
 		} else {
 			//fileInfoMapping[fi.Id] = fi //TODO see if we can get rid of array and just keep mapping
 			allfiles = append(allfiles, fi)
 		}
 	}
 
-	fmt.Println("Nonfatal Error: ", errCount, " records were not parsed from NTFS MFT Record")
+//	fmt.Println("Nonfatal Error: ", errCount, " records were not parsed from NTFS MFT Record")
 	return allfiles
 }
 
 // In case a file has multiple names, return the last one. Usually, the 8.3 name is at the 0 index and a 'regular' filename is at index 1
-func getAFilename(f NTypes.FileInfo) string {
+func GetAFilename(f NTypes.FileInfo) string {
 	if len(f.Filenames) == 0 {
 		return "null"
 	}
 	return f.Filenames[len(f.Filenames)-1]
+}
+
+func (na *ExtractNTFS) GetResults() interface{}{
+	return na.NTFSFiles
+}
+
+func readFile(imageFD *os.File, info NTypes.FileInfo) (int) {
+	bytesRemaining := info.Filesize
+	totalBytesRead := 0
+	fileData := make([]byte, 0)
+
+	for _, dr := range info.Dataruns {
+		numBytesToRead := uint64(4096) * dr.Numclusters
+		if numBytesToRead > bytesRemaining {
+			numBytesToRead = bytesRemaining
+		}
+		chunkData := make([]byte, numBytesToRead)
+		numRead, err := imageFD.ReadAt(chunkData,int64(4096)*int64(dr.Clusteroffset))
+		checkError(err)
+		bytesRemaining -= uint64(numRead)
+		totalBytesRead += numRead
+
+		fileData = append(fileData, chunkData...)
+		checkError(err)
+	}
+	if int64(totalBytesRead) != int64(info.Filesize) {
+		fmt.Println("Did not read the expect number of bytes for file: ", GetAFilename(info), "\t ID: ", info.Id)
+		// maybe a sparse file if we get here?, maybe rewriting filelen instead of dealing with sparse will work for now
+	}
+	info.ReconstructedData = fileData
+	return totalBytesRead
+}
+
+func (na *ExtractNTFS) streamImage() {
+	myfiles := na.NTFSFiles
+	fmt.Println("Found ", len(myfiles), " files")
+
+	fmt.Println("Began streaming data from SSD..")
+
+	ntfsimage, err := os.Open(na.NTFSImageDataLocation)
+	checkError(err)
+	totalBytesRead := 0
+	beginTime := time.Now()
+
+	defer ntfsimage.Close()
+	// for every file in metadata,
+	for idx, file := range myfiles {
+		numRead := readFile(ntfsimage, file)
+		fmt.Println("file info index:\t", idx, "\tfilename: ", GetAFilename(file))
+		totalBytesRead += numRead
+	}
+	elapsed := time.Since(beginTime).Seconds()
+	fmt.Println("Finished streaming data from SSD. Read ", totalBytesRead, " bytes in ", elapsed, " seconds. ", (float64(totalBytesRead)/1048576)/(elapsed), " (MB/s)")
+}
+
+func checkError(err error) {
+	if err != nil {
+		fmt.Println("[!] Nonfatal error: ", err.Error())
+	}
 }

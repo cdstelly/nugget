@@ -1,5 +1,6 @@
 package NTypes
 
 type TNTFS struct {
-	id string
+	PathToExtract string
+	AsType string
 }
