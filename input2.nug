@@ -29,6 +29,17 @@ myhashesfilb = "file.dd" as ntfs | extract files filter ctime > "01/01/01" | sha
 myhashesfila
 myhashesfilb
 
+
+reset
+mypcap nettraffic
+mypackets []packet
+
+mypcap = "test.pcap" as pcap | extract traffic
+
+myhttp = mypcap | filter
+
+
+
 //load in the ntfs image i guess first woohoo
 //some kind of reference to UCO
 //some pcap
