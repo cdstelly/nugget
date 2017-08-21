@@ -128,7 +128,6 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	}
 }
 
-//todo: see if i can break this up
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
@@ -143,8 +142,6 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		}
 	} else {
 		actions := ctx.AllNugget_action()
-
-		fmt.Println("we have: ", len(actions), " actions here for: ", ctx.GetText())
 
 		//setup actions if necessary
 		var builtActions []NActions.BaseAction
