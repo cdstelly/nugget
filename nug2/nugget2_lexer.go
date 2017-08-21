@@ -9,6 +9,8 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
+// import "../NTypes"
+
 // Suppress unused import error
 var _ = fmt.Printf
 var _ = unicode.IsLetter
