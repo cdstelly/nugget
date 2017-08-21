@@ -10,6 +10,8 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
+// import "../NTypes"
+
 // Suppress unused import errors
 var _ = fmt.Printf
 var _ = reflect.Copy

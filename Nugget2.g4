@@ -1,5 +1,9 @@
 grammar Nugget2;
 
+@header {
+    // import "../NTypes"
+}
+
 prog: (define_assign | NL
         )*
         EOF
@@ -28,16 +32,19 @@ nugget_type: 'string'  |
       'file'     |
       'packet'   |
       'exifinfo'
-      ;
+;
 
 nugget_action: action_word (ID)? (filter)?
 ;
 
 action_word: ('extract' | 'sha1' | 'md5');
 
-filter: 'filter' filter_term (',' filter_term)* ;
+filter :
+    'filter' filter_term (',' filter_term)*
+;
 
-filter_term: ID COMPOP STRING;
+filter_term: ID COMPOP STRING   //# Filterm
+;
 
 COMPOP: ('>' | '<' | '>=' | '<=' | '==');
 LISTOP: '[]';
