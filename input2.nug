@@ -12,22 +12,22 @@ myfiles = myimage
 myfilesA = myimage | extract files
 myfilesA
 
-//myfilesB = "file.dd" as ntfs | extract files
+myfilesB = "file.dd" as ntfs | extract files
 
-//myhashesdir = myfiles | sha1
-//myhashespipe = "file.dd" as ntfs | extract files | sha1
+myhashesdir = myfiles | sha1
+myhashespipe = "file.dd" as ntfs | extract files | sha1
 //
-//myhashesdir
-//myhashespipe
-//asdf
-//myfilesA
-//myfilesB
+myhashesdir
+myhashespipe
+asdf
+myfilesA
+myfilesB
 
 
-//myhashesfila = "file.dd" as ntfs | extract files filter filename == "*.pdf",ctime>"01/01/01" | sha1
-//myhashesfilb = "file.dd" as ntfs | extract files filter ctime > "01/01/01" | sha1
-//myhashesfila
-//myhashesfilb
+myhashesfila = "file.dd" as ntfs | extract files filter filename == "*.pdf",ctime>"01/01/01" | sha1
+myhashesfilb = "file.dd" as ntfs | extract files filter ctime > "01/01/01" | sha1
+myhashesfila
+myhashesfilb
 
 //load in the ntfs image i guess first woohoo
 //some kind of reference to UCO

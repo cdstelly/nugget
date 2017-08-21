@@ -12,7 +12,6 @@ import (
 
 	//log "github.com/sirupsen/logrus"
 	//"github.com/golang-collections/collections/stack"
-	"reflect"
 )
 
 var (
@@ -53,29 +52,26 @@ func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
 
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
 	action_verb := ctx.Action_word().GetText()
-	var theAction NActions.BaseAction
 
 	listOfMyFilters := getValue(ctx.Filter())
 	var myFilters []NTypes.Filter
 	if f, ok := listOfMyFilters.([]NTypes.Filter); ok {
 		myFilters = f
 	}
-
+	var theAction NActions.BaseAction
 	switch action_verb {
 	case "extract":
 		//todo: keyword 'files' is expected here, but don't worry about it for now
-		extAction := NActions.ExtractNTFS{}
-		extAction.SetFilters(myFilters)
+		theAction = &NActions.ExtractNTFS{}
 	case "sha1":
 		theAction = &NActions.SHA1Action{}
 	case "md5":
 		theAction = &NActions.MD5Action{}
+
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
-
-	fmt.Println("OH MY GOD I THINK I MAY HAVE IT FIGURED OUT ")
-	fmt.Println(reflect.TypeOf(theAction))
+	theAction.SetFilters(myFilters)
 	setValue(ctx, theAction)
 }
 
@@ -133,7 +129,7 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 }
 
 //todo: see if i can break this up
-func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
+func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
 	//if no actions, then we do a simple calculation and assign it to a register, something like: myimage = "file.dd" as ntfs
@@ -154,28 +150,22 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 		var builtActions []NActions.BaseAction
 		for _,action := range actions {
 			rawAction := getValue(action)
-			fmt.Println(" raw action? : ", rawAction)
 			//if it's an extract action, we need to look behind and get some more info (like filepath and type)
 			if extractAction, ok := rawAction.(NActions.ExtractNTFS); ok {
-				fmt.Println("under assign we have an extract action: ", extractAction)
 				//todo: get real values not dummy ones
 				extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
 				extractAction.NTFSImageMetadataLocation = "C:\\Users\\drew\\School\\backups_before_upgrade\\jo.extract"
 			}
 			if act, ok := rawAction.(NActions.BaseAction); ok {
-				fmt.Println("udner assign we have a base action")
 				builtActions = append(builtActions, act)
 			}
-
 		}
 
 		//reverse the order of the actions
-		/*
-		for i := len(actions)/2 - 1; i >= 0; i-- {
-			opp := len(actions) - 1 - i
-			actions[i], actions[opp] = actions[opp], actions[i]
-		}*/
-
+		for i := len(builtActions)/2 - 1; i >= 0; i-- {
+			opp := len(builtActions) - 1 - i
+			builtActions[i], builtActions[opp] = builtActions[opp], builtActions[i]
+		}
 
 		//we have raw actions, now build the chain of dependencies for each
 		for index, builtAction := range builtActions {
@@ -224,8 +214,6 @@ func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
 }
-
-
 
 func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
 	identifier := ctx.ID().GetText()
