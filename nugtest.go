@@ -12,6 +12,7 @@ import (
 
 	//log "github.com/sirupsen/logrus"
 	//"github.com/golang-collections/collections/stack"
+	"reflect"
 )
 
 var (
@@ -51,15 +52,28 @@ func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
 }
 
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
-	action_verb := ctx.Action_word().GetText()
-
-	listOfMyFilters := getValue(ctx.Filter())
+	//grab filters if the node below us was a filter
 	var myFilters []NTypes.Filter
-	if f, ok := listOfMyFilters.([]NTypes.Filter); ok {
-		myFilters = f
+	var action_verb string
+	//test is a filter?
+	if listOFilters,ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
+		fmt.Println("ok - we have a list of filters")
+		myFilters = listOFilters
+		action_verb = "filter"
+	} else {
+		fmt.Println(reflect.TypeOf(ctx.Action_word()))
+		if av,ok := getValue(ctx.Action_word()).(string); ok {
+			action_verb = av
+			fmt.Println("action verb: ", av)
+		} else {
+			fmt.Println("uh oh - wasn't able to determine action type")
+		}
 	}
+
 	var theAction NActions.BaseAction
 	switch action_verb {
+	case "filter":
+		//don't need to do anything here - will assign filters to actions in just a second
 	case "extract":
 		//todo: keyword 'files' is expected here, but don't worry about it for now
 		theAction = &NActions.ExtractNTFS{}
@@ -71,8 +85,12 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
-	theAction.SetFilters(myFilters)
-	setValue(ctx, theAction)
+
+	if action_verb != "filter" {
+		theAction.SetFilters(myFilters)
+		setValue(ctx, theAction)
+	}
+	fmt.Println("set filters and value")
 }
 
 func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
@@ -205,7 +223,16 @@ func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 			allFiltersForAction = append(allFiltersForAction , dep)
 		}
 	}
+	fmt.Println(allFiltersForAction)
 	setValue(ctx, allFiltersForAction)
+}
+
+func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
+	if ctx.Filter() != nil {
+		setValue(ctx, getValue(ctx.Filter()))
+	} else {
+		setValue(ctx, ctx.GetText())
+	}
 }
 
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
