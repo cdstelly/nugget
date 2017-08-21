@@ -26,24 +26,31 @@ singleton_var: ID;
 asType: 'as' nugget_type;
 
 nugget_type: 'string'  |
-      'sha1'     |
-      'md5'      |
-      'ntfs'     |
-      'file'     |
-      'packet'   |
+      'sha1'       |
+      'md5'        |
+      'ntfs'       |
+      'file'       |
+      'packet'     |
+      'nettraffic' |
+      'pcap'       |
       'exifinfo'
 ;
 
-nugget_action: action_word (ID)? (filter)?
+nugget_action: action_word (ID)?
 ;
 
-action_word: ('extract' | 'sha1' | 'md5');
+action_word:
+        filter    |
+        'extract' |
+        'sha1'    |
+        'md5'
+;
 
 filter :
     'filter' filter_term (',' filter_term)*
 ;
 
-filter_term: ID COMPOP STRING   //# Filterm
+filter_term: ID COMPOP STRING
 ;
 
 COMPOP: ('>' | '<' | '>=' | '<=' | '==');

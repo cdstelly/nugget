@@ -69,7 +69,6 @@ func (na *SHA1Action) Execute() {
 	na.executed = true
 }
 
-
 func (na *SHA1Action) GetResults() interface{}{
 	return na.results
 }
