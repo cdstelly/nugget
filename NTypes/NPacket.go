@@ -1,7 +1,7 @@
 package NTypes
 
 import (
-	"github.com/google/gopacket/src/github.com/google/gopacket"
+	"github.com/google/gopacket"
 )
 
 type NPacket struct {
