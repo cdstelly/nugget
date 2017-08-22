@@ -34,7 +34,7 @@ reset
 mypcap nettraffic
 mypackets packet[]
 
-mypcap = "test.pcap" as pcap | extract traffic
+mypcap = "G:\school\sample.pcap" as pcap | extract traffic
 myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
 
 

@@ -48,7 +48,7 @@ func NewTreeShapeListener() *TreeShapeListener {
 }
 
 func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-//		fmt.Println("Entered a rule, result: " + ctx.GetText())
+
 }
 
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
@@ -81,7 +81,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.SHA1Action{}
 	case "md5":
 		theAction = &NActions.MD5Action{}
-
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
@@ -99,16 +98,15 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	nugget_type := ctx.Nugget_type().GetText()
 
 	//fmt.Println("found a define: ", ctx.ID(), " ", ctx.Nugget_type().GetText(), " is a list?: ", isList)
-
 	if _, exists := registers[identifier]; exists {
 		fmt.Println("the variable ", identifier, " already exists!")
 	} else {
 		switch nugget_type {
 		case "ntfs":
 			if isList {
-				registers[identifier] = []NTypes.TNTFS{}
+				registers[identifier] = []NTypes.Extract{}
 			} else {
-				registers[identifier] = NTypes.TNTFS{}
+				registers[identifier] = NTypes.Extract{}
 			}
 		case "file":
 			if isList {
@@ -150,14 +148,14 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
 	//if no actions, then we do a simple calculation and assign it to a register, something like: myimage = "file.dd" as ntfs
-	if len(ctx.AllNugget_action()) == 0 {
+	//if len(ctx.AllNugget_action()) == 0 {
 		//if it's an astype string
 		if ctx.AsType() != nil {
 			extractTarget := ctx.STRING().GetText()
 			extractType := ctx.AsType().GetStop().GetText()
 			fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
-			registers[varIdentifier] = NTypes.TNTFS{PathToExtract: extractTarget,AsType:extractType}
-		}
+			registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
+
 	} else {
 		actions := ctx.AllNugget_action()
 
@@ -193,6 +191,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 				fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency. Setting dep to the var")
 				if len(ctx.AllID()) > 1 {
 					depVar := ctx.ID(1).GetText()
+					fmt.Println("the dep var is: ", depVar)
 					// is it an existing var?
 					if nVar, ok := registers[depVar]; ok {
 						//if it's an action..
@@ -205,7 +204,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 						fmt.Println("Error: Var '", depVar, "' not recognized.")
 					}
 				} else { //was not recognized, shouldn't reach here
-					fmt.Println("Error: pattern not recognized.")
+					fmt.Println("Error: pattern not recognized.", ctx.GetText())
 				}
 			}
 			fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])

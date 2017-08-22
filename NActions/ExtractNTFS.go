@@ -23,13 +23,6 @@ type ExtractNTFS struct {
 	NTFSDataRuns []NTypes.RealOffsetRun
 }
 
-func NewNExtractNTFS() ExtractNTFS {
-	n := ExtractNTFS{}
-	n.dependsOn = nil
-	n.executed = false
-	return n
-}
-
 func (na *ExtractNTFS) BeenExecuted() bool {
 	return na.executed
 }
@@ -39,7 +32,7 @@ func (na *ExtractNTFS) DependencySatisfied() bool {
 }
 
 func (na *ExtractNTFS) SetDependency(action BaseAction) {
-	na.dependsOn = nil
+	na.dependsOn = action
 }
 
 func (na *ExtractNTFS) Execute() {
