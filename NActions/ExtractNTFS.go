@@ -245,3 +245,4 @@ func checkError(err error) {
 func (na *ExtractNTFS) SetFilters(filters []NTypes.Filter) {
 	na.filters = filters
 }
+

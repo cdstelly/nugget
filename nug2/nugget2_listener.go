@@ -20,6 +20,12 @@ type Nugget2Listener interface {
 	// EnterAssign is called when entering the assign production.
 	EnterAssign(c *AssignContext)
 
+	// EnterOperation_on_singleton is called when entering the operation_on_singleton production.
+	EnterOperation_on_singleton(c *Operation_on_singletonContext)
+
+	// EnterSingleton_op is called when entering the singleton_op production.
+	EnterSingleton_op(c *Singleton_opContext)
+
 	// EnterSingleton_var is called when entering the singleton_var production.
 	EnterSingleton_var(c *Singleton_varContext)
 
@@ -52,6 +58,12 @@ type Nugget2Listener interface {
 
 	// ExitAssign is called when exiting the assign production.
 	ExitAssign(c *AssignContext)
+
+	// ExitOperation_on_singleton is called when exiting the operation_on_singleton production.
+	ExitOperation_on_singleton(c *Operation_on_singletonContext)
+
+	// ExitSingleton_op is called when exiting the singleton_op production.
+	ExitSingleton_op(c *Singleton_opContext)
 
 	// ExitSingleton_var is called when exiting the singleton_var production.
 	ExitSingleton_var(c *Singleton_varContext)

@@ -167,7 +167,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			if extractAction, ok := rawAction.(NActions.ExtractNTFS); ok {
 				//todo: get real values not dummy ones
 				extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
-				extractAction.NTFSImageMetadataLocation = "C:\\Users\\drew\\School\\backups_before_upgrade\\jo.extract"
+				extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
 			}
 			if act, ok := rawAction.(NActions.BaseAction); ok {
 				builtActions = append(builtActions, act)
@@ -240,28 +240,55 @@ func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 
 func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
 	identifier := ctx.ID().GetText()
-	if v, ok := registers[identifier]; ok {
+	if _, ok := registers[identifier]; ok {
 //		fmt.Println("ident", ctx.ID().GetText(), " is: ", v)
-		fmt.Printf("Variable %s has type: %T\n", identifier, v)
+//		fmt.Printf("Variable %s has type: %T\n", identifier, v)
 		if a, ok := registers[identifier].(*NActions.ExtractNTFS); ok {
 			//we have a datatype ExztractNTFS
-			fmt.Println("have extract ntfs action: ", a)
+//			fmt.Println("have extract ntfs action: ", a)
 			a.Execute()
 		}
 		if a, ok := registers[identifier].(*NActions.SHA1Action); ok {
 			//we have a datatype SHA1Extraction
-			fmt.Println("have sha1 action: ", a)
+//			fmt.Println("have sha1 action: ", a)
 			a.Execute()
 		}
 		if a, ok := registers[identifier].(*NActions.MD5Action); ok {
 			//we have a datatype md5
-			fmt.Println("have md5 action: ", a)
+//			fmt.Println("have md5 action: ", a)
 			a.Execute()
 		}
 	} else {
 		fmt.Println("Error: var '", identifier, "' not found")
 	}
 }
+
+func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
+	var operation string
+	if op, ok := getValue(ctx.Singleton_op()).(string);ok {
+		operation = op
+	}
+
+	theVar := ctx.ID().GetText()
+	if _, ok := registers[theVar]; ok {
+		switch operation {
+		case "type":
+			fmt.Println(reflect.TypeOf(registers[theVar]))
+		case "print":
+			fmt.Println(registers[theVar])
+		case "size":
+			fmt.Println("len not implemented yet")
+		default:
+			fmt.Println("operation not recognized..")
+		}
+	} else {
+		fmt.Println("var not recognized:", theVar)
+	}
+}
+func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
+	setValue(ctx, ctx.GetText())
+}
+
 
 func main() {
 	file, err := os.Open(pathToInput)
