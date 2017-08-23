@@ -45,6 +45,18 @@ func (s *BaseNugget2Listener) EnterAssign(ctx *AssignContext) {}
 // ExitAssign is called when production assign is exited.
 func (s *BaseNugget2Listener) ExitAssign(ctx *AssignContext) {}
 
+// EnterOperation_on_singleton is called when production operation_on_singleton is entered.
+func (s *BaseNugget2Listener) EnterOperation_on_singleton(ctx *Operation_on_singletonContext) {}
+
+// ExitOperation_on_singleton is called when production operation_on_singleton is exited.
+func (s *BaseNugget2Listener) ExitOperation_on_singleton(ctx *Operation_on_singletonContext) {}
+
+// EnterSingleton_op is called when production singleton_op is entered.
+func (s *BaseNugget2Listener) EnterSingleton_op(ctx *Singleton_opContext) {}
+
+// ExitSingleton_op is called when production singleton_op is exited.
+func (s *BaseNugget2Listener) ExitSingleton_op(ctx *Singleton_opContext) {}
+
 // EnterSingleton_var is called when production singleton_var is entered.
 func (s *BaseNugget2Listener) EnterSingleton_var(ctx *Singleton_varContext) {}
 
