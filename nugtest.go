@@ -57,14 +57,14 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	var action_verb string
 	//test is a filter?
 	if listOFilters,ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
-		fmt.Println("ok - we have a list of filters")
+		//fmt.Println("ok - we have a list of filters")
 		myFilters = listOFilters
 		action_verb = "filter"
 	} else {
-		fmt.Println(reflect.TypeOf(ctx.Action_word()))
+		//fmt.Println(reflect.TypeOf(ctx.Action_word()))
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
-			fmt.Println("action verb: ", av)
+			//fmt.Println("action verb: ", av)
 		} else {
 			fmt.Println("uh oh - wasn't able to determine action type")
 		}
@@ -89,7 +89,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction.SetFilters(myFilters)
 		setValue(ctx, theAction)
 	}
-	fmt.Println("set filters and value")
 }
 
 func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
@@ -132,6 +131,12 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 			} else {
 				registers[identifier] = NTypes.NString{}
 			}
+		case "pcap":
+			if isList {
+				registers[identifier] = []NTypes.Extract{}
+			} else {
+				registers[identifier] = NTypes.Extract{}
+			}
 		case "packet":
 			if isList {
 				registers[identifier] = []NTypes.NPacket{}
@@ -153,7 +158,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		if ctx.AsType() != nil {
 			extractTarget := ctx.STRING().GetText()
 			extractType := ctx.AsType().GetStop().GetText()
-			fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
+			//fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
 			registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
 
 	} else {
@@ -238,6 +243,7 @@ func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
 }
 
+/*
 func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
 	identifier := ctx.ID().GetText()
 	if _, ok := registers[identifier]; ok {
@@ -262,6 +268,7 @@ func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varConte
 		fmt.Println("Error: var '", identifier, "' not found")
 	}
 }
+*/
 
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var operation string

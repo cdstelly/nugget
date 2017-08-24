@@ -26,9 +26,6 @@ type Nugget2Listener interface {
 	// EnterSingleton_op is called when entering the singleton_op production.
 	EnterSingleton_op(c *Singleton_opContext)
 
-	// EnterSingleton_var is called when entering the singleton_var production.
-	EnterSingleton_var(c *Singleton_varContext)
-
 	// EnterAsType is called when entering the asType production.
 	EnterAsType(c *AsTypeContext)
 
@@ -64,9 +61,6 @@ type Nugget2Listener interface {
 
 	// ExitSingleton_op is called when exiting the singleton_op production.
 	ExitSingleton_op(c *Singleton_opContext)
-
-	// ExitSingleton_var is called when exiting the singleton_var production.
-	ExitSingleton_var(c *Singleton_varContext)
 
 	// ExitAsType is called when exiting the asType production.
 	ExitAsType(c *AsTypeContext)

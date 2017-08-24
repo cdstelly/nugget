@@ -57,12 +57,6 @@ func (s *BaseNugget2Listener) EnterSingleton_op(ctx *Singleton_opContext) {}
 // ExitSingleton_op is called when production singleton_op is exited.
 func (s *BaseNugget2Listener) ExitSingleton_op(ctx *Singleton_opContext) {}
 
-// EnterSingleton_var is called when production singleton_var is entered.
-func (s *BaseNugget2Listener) EnterSingleton_var(ctx *Singleton_varContext) {}
-
-// ExitSingleton_var is called when production singleton_var is exited.
-func (s *BaseNugget2Listener) ExitSingleton_var(ctx *Singleton_varContext) {}
-
 // EnterAsType is called when production asType is entered.
 func (s *BaseNugget2Listener) EnterAsType(ctx *AsTypeContext) {}
 

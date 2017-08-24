@@ -4,13 +4,13 @@ grammar Nugget2;
     // import "../NTypes"
 }
 
-prog: (define_assign | operation_on_singleton | NL )*
+prog: (         define_assign |
+       operation_on_singleton | ID  )*
         EOF
 ;
 
 define_assign:   define |
-                 assign |
-                 singleton_var
+                 assign
 ;
 
 define: ID nugget_type LISTOP?;
@@ -24,8 +24,6 @@ operation_on_singleton: singleton_op '(' ID ')'
 
 singleton_op: ('type' | 'print' | 'size');
 
-singleton_var: ID;
-
 asType: 'as' nugget_type;
 
 nugget_type: 'string'  |
@@ -34,7 +32,6 @@ nugget_type: 'string'  |
       'ntfs'       |
       'file'       |
       'packet'     |
-      'nettraffic' |
       'pcap'       |
       'exifinfo'
 ;
