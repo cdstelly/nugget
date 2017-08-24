@@ -17,6 +17,9 @@ type Nugget2Listener interface {
 	// EnterDefine is called when entering the define production.
 	EnterDefine(c *DefineContext)
 
+	// EnterDefine_tuple is called when entering the define_tuple production.
+	EnterDefine_tuple(c *Define_tupleContext)
+
 	// EnterAssign is called when entering the assign production.
 	EnterAssign(c *AssignContext)
 
@@ -55,6 +58,9 @@ type Nugget2Listener interface {
 
 	// ExitDefine is called when exiting the define production.
 	ExitDefine(c *DefineContext)
+
+	// ExitDefine_tuple is called when exiting the define_tuple production.
+	ExitDefine_tuple(c *Define_tupleContext)
 
 	// ExitAssign is called when exiting the assign production.
 	ExitAssign(c *AssignContext)

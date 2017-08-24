@@ -2,39 +2,35 @@ myimage ntfs
 myfiles file[]
 myhashes sha1[]
 
-myhashes
-myimage
-
 myimage = "file.dd" as ntfs
 
 myfiles = myimage
 
-myfilesA = myimage | extract files
+myfilesA = myimage | extract
 myfilesA
 
-myfilesB = "file.dd" as ntfs | extract files
+myfilesB = "file.dd" as ntfs | extract
 
 myhashesdir = myfiles | sha1
-myhashespipe = "file.dd" as ntfs | extract files | sha1
-//
+myhashespipe = "file.dd" as ntfs | extract  | sha1
+
 myhashesdir
 myhashespipe
 asdf
 myfilesA
 myfilesB
 
-
-myhashesfila = "file.dd" as ntfs | extract files | filter filename == "*.pdf",ctime>"01/01/01" | sha1
-myhashesfilb = "file.dd" as ntfs | extract files | filter ctime > "01/01/01" | sha1
+myhashesfila = "file.dd" as ntfs | extract  | filter filename == "*.pdf",ctime>"01/01/01" | sha1
+myhashesfilb = "file.dd" as ntfs | extract  | filter ctime > "01/01/01" | sha1
 myhashesfila
 myhashesfilb
 
 
 reset
-mypcap nettraffic
+mypcap pcap
 mypackets packet[]
 
-mypcap = "G:\school\sample.pcap" as pcap | extract traffic
+mypcap = "G:\school\sample.pcap" as pcap | extract
 myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
 
 type(myhttp)
@@ -42,7 +38,11 @@ type(mypcap)
 type(myfilesA)
 type(myimage)
 
+myEvent tuple[datetime,file,sha1]
 
+//myEvent.datetime = "02/01/2015"
+//myEvent.file = myFiles[2]
+//myEvent.sha1 = 51..21
 
 
 //load in the ntfs image i guess first woohoo
