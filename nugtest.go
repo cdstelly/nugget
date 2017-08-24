@@ -20,7 +20,6 @@ var (
 	nodeMap map[antlr.ParseTree]interface{}
 
 	typeRegistry map[string]reflect.Type
-
 )
 
 func init() {
@@ -161,7 +160,6 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	}
 }
 
-
 func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 	// isList := ctx.LISTOP() != nil  //todo: implement lists of tuples... shudder....
 	identifier := ctx.ID().GetText()
@@ -197,10 +195,11 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		for _,action := range actions {
 			rawAction := getValue(action)
 			//if it's an extract action, we need to look behind and get some more info (like filepath and type)
-			if extractAction, ok := rawAction.(NActions.ExtractNTFS); ok {
+			if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
 				//todo: get real values not dummy ones
 				extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
 				extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
+				//builtActions = append(builtActions, extractAction)
 			}
 			if act, ok := rawAction.(NActions.BaseAction); ok {
 				builtActions = append(builtActions, act)
@@ -274,38 +273,15 @@ func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
 	if v, ok := registers[theVar]; ok {
-		fmt.Println(theVar, ":", v)
+		fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
+		if ba,ok := v.(NActions.BaseAction); ok {
+
+			fmt.Println(ba.GetResults())
+		}
 	} else {
 		fmt.Println("var not recognized: ", theVar)
 	}
 }
-
-/*
-func (this *TreeShapeListener) EnterSingleton_var(ctx *parser.Singleton_varContext) {
-	identifier := ctx.ID().GetText()
-	if _, ok := registers[identifier]; ok {
-//		fmt.Println("ident", ctx.ID().GetText(), " is: ", v)
-//		fmt.Printf("Variable %s has type: %T\n", identifier, v)
-		if a, ok := registers[identifier].(*NActions.ExtractNTFS); ok {
-			//we have a datatype ExztractNTFS
-//			fmt.Println("have extract ntfs action: ", a)
-			a.Execute()
-		}
-		if a, ok := registers[identifier].(*NActions.SHA1Action); ok {
-			//we have a datatype SHA1Extraction
-//			fmt.Println("have sha1 action: ", a)
-			a.Execute()
-		}
-		if a, ok := registers[identifier].(*NActions.MD5Action); ok {
-			//we have a datatype md5
-//			fmt.Println("have md5 action: ", a)
-			a.Execute()
-		}
-	} else {
-		fmt.Println("Error: var '", identifier, "' not found")
-	}
-}
-*/
 
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var operation string
@@ -329,6 +305,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		fmt.Println("var not recognized:", theVar)
 	}
 }
+
 func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }

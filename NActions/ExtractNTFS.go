@@ -36,6 +36,7 @@ func (na *ExtractNTFS) SetDependency(action BaseAction) {
 }
 
 func (na *ExtractNTFS) Execute() {
+	fmt.Println("Executing an NTFS extraction: ", na.NTFSImageMetadataLocation)
 	na.NTFSFiles = na.ExtractMetadataFromNTFS()
 	na.executed = true
 }
@@ -184,6 +185,9 @@ func GetAFilename(f NTypes.FileInfo) string {
 }
 
 func (na *ExtractNTFS) GetResults() interface{}{
+	if na.executed == false {
+		na.Execute()
+	}
 	return na.NTFSFiles
 }
 
