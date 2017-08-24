@@ -10,8 +10,6 @@ import (
 	"./nug2"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 
-	//log "github.com/sirupsen/logrus"
-	//"github.com/golang-collections/collections/stack"
 	"reflect"
 )
 
@@ -20,6 +18,9 @@ var (
 	registers map[string]interface{}
 
 	nodeMap map[antlr.ParseTree]interface{}
+
+	typeRegistry map[string]reflect.Type
+
 )
 
 func init() {
@@ -29,6 +30,17 @@ func init() {
 
 	//nodemap can be used to share data across constructs, just store it here whenever and retrieve based on ctx
 	nodeMap = make(map[antlr.ParseTree]interface{})
+
+	//hold a string->nugType values
+	typeRegistry = make(map[string]reflect.Type)
+	setupTypeRegstry()
+}
+
+func setupTypeRegstry() {
+	typeRegistry["md5"] = reflect.TypeOf(NTypes.MD5{})
+	typeRegistry["sha1"] = reflect.TypeOf(NTypes.SHA1{})
+	typeRegistry["datetime"] = reflect.TypeOf(NTypes.Datetime{})
+	typeRegistry["file"] = reflect.TypeOf(NTypes.FileInfo{})
 }
 
 func setValue(ctx antlr.ParseTree, value interface{}) {
@@ -149,6 +161,22 @@ func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
 	}
 }
 
+
+func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
+	// isList := ctx.LISTOP() != nil  //todo: implement lists of tuples... shudder....
+	identifier := ctx.ID().GetText()
+
+	var theTuples []interface{}
+
+	for _, t := range ctx.AllNugget_type() {
+		//fmt.Println(t.GetText())
+		v := reflect.New(typeRegistry[t.GetText()])
+		theTuples = append(theTuples, v)
+	}
+
+	registers[identifier] = theTuples
+}
+
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
@@ -193,16 +221,16 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 				depAction = builtActions[index+1]
 				builtAction.(NActions.BaseAction).SetDependency(depAction)
 			} else {
-				fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency. Setting dep to the var")
+				//fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency. Setting dep to the var")
 				if len(ctx.AllID()) > 1 {
 					depVar := ctx.ID(1).GetText()
-					fmt.Println("the dep var is: ", depVar)
+
 					// is it an existing var?
-					if nVar, ok := registers[depVar]; ok {
+					if _, ok := registers[depVar]; ok {
 						//if it's an action..
 						if dep, ok := registers[depVar].(NActions.BaseAction); ok {
 							//we have a datatype baseAction
-							fmt.Println("the dependency for this action will be variable: ", nVar)
+							//fmt.Println("the dependency for this action will be variable: ", nVar)
 							builtAction.(NActions.BaseAction).SetDependency(dep)
 						}
 					} else {
@@ -212,7 +240,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 					fmt.Println("Error: pattern not recognized.", ctx.GetText())
 				}
 			}
-			fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
+			//fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
 			registers[varIdentifier] = builtActions[0]
 		}
 	}
@@ -227,7 +255,7 @@ func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 			allFiltersForAction = append(allFiltersForAction , dep)
 		}
 	}
-	fmt.Println(allFiltersForAction)
+	//fmt.Println(allFiltersForAction)
 	setValue(ctx, allFiltersForAction)
 }
 
@@ -241,6 +269,15 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
+}
+
+func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
+	theVar := ctx.ID().GetText()
+	if v, ok := registers[theVar]; ok {
+		fmt.Println(theVar, ":", v)
+	} else {
+		fmt.Println("var not recognized: ", theVar)
+	}
 }
 
 /*
@@ -295,7 +332,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
-
 
 func main() {
 	file, err := os.Open(pathToInput)

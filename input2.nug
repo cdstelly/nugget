@@ -20,7 +20,6 @@ asdf
 myfilesA
 myfilesB
 
-
 myhashesfila = "file.dd" as ntfs | extract  | filter filename == "*.pdf",ctime>"01/01/01" | sha1
 myhashesfilb = "file.dd" as ntfs | extract  | filter ctime > "01/01/01" | sha1
 myhashesfila
@@ -39,7 +38,11 @@ type(mypcap)
 type(myfilesA)
 type(myimage)
 
+myEvent tuple[datetime,file,sha1]
 
+//myEvent.datetime = "02/01/2015"
+//myEvent.file = myFiles[2]
+//myEvent.sha1 = 51..21
 
 
 //load in the ntfs image i guess first woohoo

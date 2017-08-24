@@ -39,6 +39,12 @@ func (s *BaseNugget2Listener) EnterDefine(ctx *DefineContext) {}
 // ExitDefine is called when production define is exited.
 func (s *BaseNugget2Listener) ExitDefine(ctx *DefineContext) {}
 
+// EnterDefine_tuple is called when production define_tuple is entered.
+func (s *BaseNugget2Listener) EnterDefine_tuple(ctx *Define_tupleContext) {}
+
+// ExitDefine_tuple is called when production define_tuple is exited.
+func (s *BaseNugget2Listener) ExitDefine_tuple(ctx *Define_tupleContext) {}
+
 // EnterAssign is called when production assign is entered.
 func (s *BaseNugget2Listener) EnterAssign(ctx *AssignContext) {}
 
@@ -56,6 +62,12 @@ func (s *BaseNugget2Listener) EnterSingleton_op(ctx *Singleton_opContext) {}
 
 // ExitSingleton_op is called when production singleton_op is exited.
 func (s *BaseNugget2Listener) ExitSingleton_op(ctx *Singleton_opContext) {}
+
+// EnterSingleton_var is called when production singleton_var is entered.
+func (s *BaseNugget2Listener) EnterSingleton_var(ctx *Singleton_varContext) {}
+
+// ExitSingleton_var is called when production singleton_var is exited.
+func (s *BaseNugget2Listener) ExitSingleton_var(ctx *Singleton_varContext) {}
 
 // EnterAsType is called when production asType is entered.
 func (s *BaseNugget2Listener) EnterAsType(ctx *AsTypeContext) {}

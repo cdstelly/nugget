@@ -5,24 +5,30 @@ grammar Nugget2;
 }
 
 prog: (         define_assign |
-       operation_on_singleton | ID  )*
+       operation_on_singleton |
+         singleton_var )*
         EOF
 ;
 
 define_assign:   define |
+                 define_tuple |
                  assign
 ;
 
-define: ID nugget_type LISTOP?;
+define: ID nugget_type LISTOP? ;
+
+define_tuple: ID 'tuple[' (','? nugget_type)+ ']' LISTOP?;
+
 
 assign: ID '=' STRING asType ('|' nugget_action)* |
         ID '=' ID ('|' nugget_action)*
 ;
 
-operation_on_singleton: singleton_op '(' ID ')'
-;
+operation_on_singleton: singleton_op '(' ID ')';
 
 singleton_op: ('type' | 'print' | 'size');
+
+singleton_var: ID;
 
 asType: 'as' nugget_type;
 
@@ -33,7 +39,8 @@ nugget_type: 'string'  |
       'file'       |
       'packet'     |
       'pcap'       |
-      'exifinfo'
+      'exifinfo'   |
+      'datetime'
 ;
 
 nugget_action: action_word (ID)?
