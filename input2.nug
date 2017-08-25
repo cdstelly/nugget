@@ -7,9 +7,11 @@ myimage = "file.dd" as ntfs
 myfilesA = myimage | extract
 myfilesA
 
-//myfilesB = "file.dd" as ntfs | extract
+myfilesB = "file.dd" as pcap | extract   //erroneous
+myfilesB
 
-//myhashesdir = myfiles | sha1
+myhashesdir = myfiles | sha1
+myhashesdir
 //myhashespipe = "file.dd" as ntfs | extract  | sha1
 
 //myhashesdir
@@ -36,7 +38,7 @@ myfilesA
 //type(myfilesA)
 //type(myimage)
 
-//myEvent tuple[datetime,file,sha1]
+myEvent tuple[datetime,file,sha1]
 
 //myEvent.datetime = "02/01/2015"
 //myEvent.file = myFiles[2]
