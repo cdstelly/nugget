@@ -8,6 +8,8 @@ import (
 	"time"
 	"../NTypes"
 	"fmt"
+
+	"regexp"
 )
 
 //don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
@@ -36,6 +38,7 @@ func (na *ExtractNTFS) SetDependency(action BaseAction) {
 }
 
 func (na *ExtractNTFS) Execute() {
+	fmt.Println("Executing an NTFS extraction: ", na.NTFSImageMetadataLocation)
 	na.NTFSFiles = na.ExtractMetadataFromNTFS()
 	na.executed = true
 }
@@ -167,12 +170,86 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 			fmt.Println("Won't add file ", GetAFilename(fi), "  id: ", fi.Id, " -- too fragmented (over ", fraglimit, " fragments)")
 		} else {
 			//fileInfoMapping[fi.Id] = fi //TODO see if we can get rid of array and just keep mapping
-			allfiles = append(allfiles, fi)
-		}
+			if na.doesFilePassFilters(fi) {
+				allfiles = append(allfiles, fi)
+			} else {
+				fmt.Println("the file: ", GetAFilename(fi), "did not match our filter")
+			}
+ 		}
 	}
 
 //	fmt.Println("Nonfatal Error: ", errCount, " records were not parsed from NTFS MFT Record")
 	return allfiles
+}
+
+func (na *ExtractNTFS) doesFilePassFilters(fi NTypes.FileInfo) bool {
+	passes := true
+	for _,filter := range na.filters {
+		switch (filter.Field){
+		case "filename":
+			if filter.Op != "==" {
+				fmt.Println("Error - Operation ", filter.Op, "not supported")
+			} else {
+				if strings.Contains(filter.Value, "*") {
+					match, _ := regexp.MatchString(filter.Value, GetAFilename(fi))
+					if !match {
+						return false
+					}
+				} else {
+					match := strings.Compare(filter.Value, GetAFilename(fi))
+					if match != 0 {
+						//did not match exactly
+						return false
+					}
+				}
+			}
+		case "ctime":
+			layout := "01/02/06"
+			t, err := time.Parse(layout, filter.Value)
+			checkError(err)
+			switch(filter.Op) {
+			case ">":
+				return t.After(fi.Createtime)
+			case ">=":
+				return t.Equal(fi.Createtime) || t.After(fi.Createtime)
+			case "<=":
+				return t.Equal(fi.Createtime) || t.Before(fi.Createtime)
+			case "<":
+				return t.Before(fi.Createtime)
+			case "==":
+				d := fi.Createtime.String()
+				dt, err := time.Parse(layout,d)
+				checkError(err)
+				return t.Equal(dt)
+			default:
+				fmt.Println("Error - operation", filter.Op, " not recognized")
+			}
+		case "mtime":
+			layout := "01/02/06"
+			t, err := time.Parse(layout, filter.Value)
+			checkError(err)
+			switch(filter.Op) {
+			case ">":
+				return t.After(fi.Modifytime)
+			case ">=":
+				return t.Equal(fi.Modifytime) || t.After(fi.Modifytime)
+			case "<=":
+				return t.Equal(fi.Modifytime) || t.Before(fi.Modifytime)
+			case "<":
+				return t.Before(fi.Modifytime)
+			case "==":
+				d := fi.Modifytime.String()
+				dt, err := time.Parse(layout,d)
+				checkError(err)
+				return t.Equal(dt)
+			default:
+				fmt.Println("Error - operation", filter.Op, " not recognized")
+			}
+		default:
+			fmt.Println("Error -- filter field not supported by FileInfo")
+		}
+	}
+	return passes
 }
 
 // In case a file has multiple names, return the last one. Usually, the 8.3 name is at the 0 index and a 'regular' filename is at index 1
@@ -184,6 +261,9 @@ func GetAFilename(f NTypes.FileInfo) string {
 }
 
 func (na *ExtractNTFS) GetResults() interface{}{
+	if na.executed == false {
+		na.Execute()
+	}
 	return na.NTFSFiles
 }
 
