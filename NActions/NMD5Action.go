@@ -62,6 +62,9 @@ func (na *MD5Action) Execute() {
 }
 
 func (na *MD5Action) GetResults() interface{}{
+	if !na.BeenExecuted() {
+		na.Execute()
+	}
 	return na.results
 }
 

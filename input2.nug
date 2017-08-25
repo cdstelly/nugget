@@ -10,7 +10,7 @@ myfilesA
 myfilesB = "file.dd" as pcap | extract   //erroneous
 myfilesB
 
-myhashesdir = myfiles | sha1
+myhashesdir = myfilesA | md5
 myhashesdir
 //myhashespipe = "file.dd" as ntfs | extract  | sha1
 

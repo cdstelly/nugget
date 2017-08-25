@@ -275,7 +275,7 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	if v, ok := registers[theVar]; ok {
 		fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
 		if ba,ok := v.(NActions.BaseAction); ok {
-			fmt.Println(ba.GetResults())
+			fmt.Println("Results for var:",theVar, ": ", ba.GetResults())
 		}
 	} else {
 		fmt.Println("var not recognized: ", theVar)
