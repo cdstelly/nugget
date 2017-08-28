@@ -186,10 +186,8 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			extractType := ctx.AsType().GetStop().GetText()
 			//fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
 			registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
-
 	} else {
 		actions := ctx.AllNugget_action()
-
 		//setup actions if necessary
 		var builtActions []NActions.BaseAction
 		for _,action := range actions {
@@ -198,7 +196,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
 				//todo: get real values not dummy ones
 				extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
-				extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
+				extractAction.NTFSImageMetadataLocation = "/Users/myla/School/nugget/jo2.extract"
 				//builtActions = append(builtActions, extractAction)
 			}
 			if act, ok := rawAction.(NActions.BaseAction); ok {

@@ -40,18 +40,15 @@ nugget_type: 'string'  |
       'packet'     |
       'pcap'       |
       'exifinfo'   |
-      'datetime'
-;
+      'datetime';
 
-nugget_action: action_word (ID)?
-;
+nugget_action: action_word (ID)?;
 
 action_word:
         filter    |
         'extract' |
         'sha1'    |
-        'md5'
-;
+        'md5';
 
 filter :
     'filter' filter_term (',' filter_term)*
