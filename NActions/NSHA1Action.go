@@ -70,6 +70,9 @@ func (na *SHA1Action) Execute() {
 }
 
 func (na *SHA1Action) GetResults() interface{}{
+	if !na.BeenExecuted() {
+		na.Execute()
+	}
 	return na.results
 }
 

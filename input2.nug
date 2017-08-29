@@ -7,12 +7,13 @@ myimage = "file.dd" as ntfs
 myfilesA = myimage | extract
 myfilesA
 
-myfilesB = "file.dd" as pcap | extract   //erroneous
+myfilesB = "file.dd" as pcap | extract      //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
 myfilesB
 
-myhashesdir = myfiles | sha1
+myhashesdir = myfilesA | sha1
 myhashesdir
-//myhashespipe = "file.dd" as ntfs | extract  | sha1
+
+//myhashespipe = "file.dd" as ntfs | extract | sha1
 
 //myhashesdir
 //myhashespipe
@@ -20,8 +21,8 @@ myhashesdir
 //myfilesA
 //myfilesB
 
-//myhashesfila = "file.dd" as ntfs | extract  | filter filename == "*.pdf",ctime>"01/01/01" | sha1
-//myhashesfilb = "file.dd" as ntfs | extract  | filter ctime > "01/01/01" | sha1
+//myhashesfila = "file.dd" as ntfs | extract | filter filename == "*.pdf",ctime>"01/01/01" | sha1
+//myhashesfilb = "file.dd" as ntfs | extract | filter ctime > "01/01/01" | sha1
 //myhashesfila
 //myhashesfilb
 
@@ -40,12 +41,11 @@ myhashesdir
 
 myEvent tuple[datetime,file,sha1]
 
+//should properties be assignable?
 //myEvent.datetime = "02/01/2015"
 //myEvent.file = myFiles[2]
 //myEvent.sha1 = 51..21
 
+//todo:
+// implement some kind of API-styled function loader - goal: easy addition of new functions into the language
 
-//load in the ntfs image i guess first woohoo
-//some kind of reference to UCO
-//some pcap
-//some example of array of multiple types or collection

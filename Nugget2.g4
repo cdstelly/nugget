@@ -40,25 +40,20 @@ nugget_type: 'string'  |
       'packet'     |
       'pcap'       |
       'exifinfo'   |
-      'datetime'
-;
+      'datetime';
 
-nugget_action: action_word (ID)?
-;
+nugget_action: action_word (ID)?;
 
 action_word:
         filter    |
         'extract' |
         'sha1'    |
-        'md5'
-;
+        'md5';
 
 filter :
-    'filter' filter_term (',' filter_term)*
-;
+    'filter' filter_term (',' filter_term)*;
 
-filter_term: ID COMPOP STRING
-;
+filter_term: ID COMPOP STRING;
 
 COMPOP: ('>' | '<' | '>=' | '<=' | '==');
 LISTOP: '[]';
@@ -71,5 +66,4 @@ WS : [ \t\r\n]+ -> skip;
 NL : '\r'? '\n';
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
-    ;
+    :   '//' ~[\r\n]* -> skip;
