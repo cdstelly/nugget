@@ -26,6 +26,10 @@ myhashesdir
 //myhashesfila
 //myhashesfilb
 
+mymemory = "win7dump" as memory using rekall
+memext = mymemory | extract | grep passwords
+
+
 
 //reset
 //mypcap pcap
