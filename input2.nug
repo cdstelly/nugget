@@ -31,6 +31,7 @@ memext = mymemory | extract | grep passwords
 
 
 
+
 //reset
 //mypcap pcap
 //mypackets packet[]
@@ -52,4 +53,9 @@ myEvent tuple[datetime,file,sha1]
 
 //todo:
 // implement some kind of API-styled function loader - goal: easy addition of new functions into the language
+
+
+
+mymemory = "win7dump" as memory using rekall
+memext = mymemory | extract | grep passwords
 
