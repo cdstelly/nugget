@@ -48,7 +48,9 @@ action_word:
         filter    |
         'extract' |
         'sha1'    |
-        'md5';
+        'md5'     |
+        'NUGGETGENERATORPLACEHOLDER'
+        ;
 
 filter :
     'filter' filter_term (',' filter_term)*;
