@@ -45,10 +45,12 @@ nugget_type: 'string'  |
 nugget_action: action_word (ID)?;
 
 action_word:
-        filter    |
-        'extract' |
-        'sha1'    |
-        'md5';
+    filter    |
+    'extract' |
+    'sha1'    |
+    'md5'     |
+	'NUGGETGENERATORPLACEHOLDER'
+;
 
 filter :
     'filter' filter_term (',' filter_term)*;

@@ -17,6 +17,11 @@ Forensic Domain Specific Language
         name
         inputType
         returnType
+        execution code???
+        
+    for example, sha1
+        "name": "sha1", 
+        
                 
 
 ```
