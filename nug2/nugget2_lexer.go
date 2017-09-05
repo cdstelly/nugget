@@ -1,4 +1,4 @@
-// Generated from C:/Users/drew/GoglandProjects/nugget\Nugget2.g4 by ANTLR 4.7.
+// Generated from Nugget2.g4 by ANTLR 4.7.
 
 package parser
 
