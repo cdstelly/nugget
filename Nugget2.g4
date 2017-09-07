@@ -42,7 +42,7 @@ nugget_type: 'string'  |
       'exifinfo'   |
       'datetime';
 
-nugget_action: action_word (ID)?;
+nugget_action: action_word ;
 
 action_word:
     filter    |

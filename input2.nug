@@ -3,15 +3,17 @@ myfiles file[]
 myhashes sha1[]
 
 myimage = "file.dd" as ntfs
+myimage
 
-myfilesA = myimage | extract
+
+myfilesA = "file.dd" as ntfs | extract
 myfilesA
 
 myfilesB = "file.dd" as pcap | extract      //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
 myfilesB
 
 myhashesdir = myfilesA | sha1
-myhashesdir
+// myhashesdir
 
 //myhashespipe = "file.dd" as ntfs | extract | sha1
 
@@ -32,8 +34,10 @@ myhashesdir
 //mypcap pcap
 //mypackets packet[]
 
-//mypcap = "G:\school\sample.pcap" as pcap | extract
-//myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+mypcap = "G:\school\sample.pcap" as pcap | extract
+mypcap
+myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+myhttp
 
 //type(myhttp)
 //type(mypcap)
@@ -52,6 +56,6 @@ myEvent tuple[datetime,file,sha1]
 
 
 
-mymemory = "win7dump" as memory using rekall
-memext = mymemory | extract | grep passwords
+//mymemory = "win7dump" as memory using rekall
+//memext = mymemory | extract | grep passwords
 

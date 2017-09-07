@@ -20,6 +20,8 @@ var (
 	nodeMap map[antlr.ParseTree]interface{}
 
 	typeRegistry map[string]reflect.Type
+
+	currentVariable string
 )
 
 func init() {
@@ -58,24 +60,21 @@ func NewTreeShapeListener() *TreeShapeListener {
 	return new(TreeShapeListener)
 }
 
-func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
+func (s *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
 
 }
 
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
-	//grab filters if the node below us was a filter
 	var myFilters []NTypes.Filter
 	var action_verb string
-	//test is a filter?
+
+	//we have some filters
 	if listOFilters,ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
-		//fmt.Println("ok - we have a list of filters")
 		myFilters = listOFilters
 		action_verb = "filter"
 	} else {
-		//fmt.Println(reflect.TypeOf(ctx.Action_word()))
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
-			//fmt.Println("action verb: ", av)
 		} else {
 			fmt.Println("uh oh - wasn't able to determine action type")
 		}
@@ -87,7 +86,10 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		//don't need to do anything here - will assign filters to actions in just a second
 	case "extract":
 		//todo: keyword 'files' is expected here, but don't worry about it for now
+		//todo: currently treating both pcap and ntfs as the same..
+
 		theAction = &NActions.ExtractNTFS{}
+
 	case "sha1":
 		theAction = &NActions.SHA1Action{}
 	case "md5":
@@ -102,7 +104,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	}
 }
 
-func (this *TreeShapeListener) EnterDefine(ctx *parser.DefineContext) {
+func (s *TreeShapeListener) ExitDefine(ctx *parser.DefineContext) {
 	isList := ctx.LISTOP() != nil
 	identifier := ctx.ID().GetText()
 	nugget_type := ctx.Nugget_type().GetText()
@@ -175,17 +177,20 @@ func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 	registers[identifier] = theTuples
 }
 
+func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
+	currentVariable = ctx.ID(0).GetText()
+	//fmt.Println("cv:",currentVariable)
+}
+
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
 	//if no actions, then we do a simple calculation and assign it to a register, something like: myimage = "file.dd" as ntfs
-	//if len(ctx.AllNugget_action()) == 0 {
-		//if it's an astype string
-		if ctx.AsType() != nil {
-			extractTarget := ctx.STRING().GetText()
-			extractType := ctx.AsType().GetStop().GetText()
-			//fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
-			registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
+	if ctx.AsType() != nil {
+		extractTarget := ctx.STRING().GetText()
+		extractType := ctx.AsType().GetStop().GetText()
+		//fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
+		registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
 	} else {
 		actions := ctx.AllNugget_action()
 		//setup actions if necessary
@@ -196,15 +201,20 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
 				//todo: get real values not dummy ones
 				extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
-				extractAction.NTFSImageMetadataLocation = "/Users/myla/School/nugget/jo2.extract"
+				extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
 				//builtActions = append(builtActions, extractAction)
+			}
+			if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
+				//todo: get real values not dummy ones
+				extractAction.PCAPLocation = "G:\\school\\sample.pcap"
+				fmt.Println("found pcap")
 			}
 			if act, ok := rawAction.(NActions.BaseAction); ok {
 				builtActions = append(builtActions, act)
 			}
 		}
 
-		//reverse the order of the actions
+		//reverse the order of the actions [so that item 1 depends on item 2, etc.]
 		for i := len(builtActions)/2 - 1; i >= 0; i-- {
 			opp := len(builtActions) - 1 - i
 			builtActions[i], builtActions[opp] = builtActions[opp], builtActions[i]
@@ -276,7 +286,8 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 			fmt.Println("Results for var:",theVar, ": ", ba.GetResults())
 		}
 	} else {
-		fmt.Println("var not recognized: ", theVar)
+		fmt.Println("Variable not recongized:" + theVar)
+		os.Exit(1)
 	}
 }
 
@@ -315,6 +326,8 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
+		if scanner.Text() == "" { continue }
+		fmt.Printf("nugget> %s\n", scanner.Text())
 		input := antlr.NewInputStream(scanner.Text())
 		lexer := parser.NewNugget2Lexer(input)
 		stream := antlr.NewCommonTokenStream(lexer, 0)
@@ -323,5 +336,6 @@ func main() {
 		p.BuildParseTrees = true
 		tree := p.Prog()
 		antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+		fmt.Println()
 	}
 }
