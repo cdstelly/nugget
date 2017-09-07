@@ -20,7 +20,7 @@ define: ID nugget_type LISTOP? ;
 define_tuple: ID 'tuple[' (','? nugget_type)+ ']' LISTOP?;
 
 
-assign: ID '=' STRING asType ('|' nugget_action)* |
+assign: ID '=' STRING ('|' nugget_action)* |
         ID '=' ID ('|' nugget_action)*
 ;
 
@@ -46,7 +46,7 @@ nugget_action: action_word ;
 
 action_word:
     filter    |
-    'extract' |
+    'extract' asType |
     'sha1'    |
     'md5'     |
 	'NUGGETGENERATORPLACEHOLDER'

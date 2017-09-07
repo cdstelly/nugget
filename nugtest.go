@@ -69,9 +69,12 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	var action_verb string
 
 	//we have some filters
-	if listOFilters,ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
+	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
 		action_verb = "filter"
+	} else if extractType, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
+		fmt.Println("tttt:", extractType)
+		action_verb = "extract"
 	} else {
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
@@ -87,7 +90,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	case "extract":
 		//todo: keyword 'files' is expected here, but don't worry about it for now
 		//todo: currently treating both pcap and ntfs as the same..
-
 		theAction = &NActions.ExtractNTFS{}
 
 	case "sha1":
@@ -186,71 +188,75 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
 	//if no actions, then we do a simple calculation and assign it to a register, something like: myimage = "file.dd" as ntfs
+	/* removed when moving 'astype' with 'extract' action
 	if ctx.AsType() != nil {
 		extractTarget := ctx.STRING().GetText()
 		extractType := ctx.AsType().GetStop().GetText()
 		//fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
 		registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
 	} else {
-		actions := ctx.AllNugget_action()
-		//setup actions if necessary
-		var builtActions []NActions.BaseAction
-		for _,action := range actions {
-			rawAction := getValue(action)
-			//if it's an extract action, we need to look behind and get some more info (like filepath and type)
-			if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
-				//todo: get real values not dummy ones
-				extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
-				extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
-				//builtActions = append(builtActions, extractAction)
-			}
-			if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
-				//todo: get real values not dummy ones
-				extractAction.PCAPLocation = "G:\\school\\sample.pcap"
-				fmt.Println("found pcap")
-			}
-			if act, ok := rawAction.(NActions.BaseAction); ok {
-				builtActions = append(builtActions, act)
-			}
+		*/
+
+
+	actions := ctx.AllNugget_action()
+	//setup actions if necessary
+	var builtActions []NActions.BaseAction
+	for _,action := range actions {
+		rawAction := getValue(action)
+		//if it's an extract action, we need to look behind and get some more info (like filepath and type)
+		if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
+			//todo: get real values not dummy ones
+			extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
+			extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
+			//builtActions = append(builtActions, extractAction)
 		}
-
-		//reverse the order of the actions [so that item 1 depends on item 2, etc.]
-		for i := len(builtActions)/2 - 1; i >= 0; i-- {
-			opp := len(builtActions) - 1 - i
-			builtActions[i], builtActions[opp] = builtActions[opp], builtActions[i]
+		if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
+			//todo: get real values not dummy ones
+			extractAction.PCAPLocation = "G:\\school\\sample.pcap"
+			fmt.Println("found pcap")
 		}
-
-		//we have raw actions, now build the chain of dependencies for each
-		for index, builtAction := range builtActions {
-			if index+1 < len(builtActions) {
-				//fmt.Println("action at index: ", index, "is ", builtAction, " and depends on: ", builtActions[index+1])
-				var depAction NActions.BaseAction
-				depAction = builtActions[index+1]
-				builtAction.(NActions.BaseAction).SetDependency(depAction)
-			} else {
-				//fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency. Setting dep to the var")
-				if len(ctx.AllID()) > 1 {
-					depVar := ctx.ID(1).GetText()
-
-					// is it an existing var?
-					if _, ok := registers[depVar]; ok {
-						//if it's an action..
-						if dep, ok := registers[depVar].(NActions.BaseAction); ok {
-							//we have a datatype baseAction
-							//fmt.Println("the dependency for this action will be variable: ", nVar)
-							builtAction.(NActions.BaseAction).SetDependency(dep)
-						}
-					} else {
-						fmt.Println("Error: Var '", depVar, "' not recognized.")
-					}
-				} else { //was not recognized, shouldn't reach here
-					fmt.Println("Error: pattern not recognized.", ctx.GetText())
-				}
-			}
-			//fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
-			registers[varIdentifier] = builtActions[0]
+		if act, ok := rawAction.(NActions.BaseAction); ok {
+			builtActions = append(builtActions, act)
 		}
 	}
+
+	//reverse the order of the actions [so that item 1 depends on item 2, etc.]
+	for i := len(builtActions)/2 - 1; i >= 0; i-- {
+		opp := len(builtActions) - 1 - i
+		builtActions[i], builtActions[opp] = builtActions[opp], builtActions[i]
+	}
+
+	//we have raw actions, now build the chain of dependencies for each
+	for index, builtAction := range builtActions {
+		if index+1 < len(builtActions) {
+			//fmt.Println("action at index: ", index, "is ", builtAction, " and depends on: ", builtActions[index+1])
+			var depAction NActions.BaseAction
+			depAction = builtActions[index+1]
+			builtAction.(NActions.BaseAction).SetDependency(depAction)
+		} else {
+			//fmt.Println("action at index: ", index, " is ", builtAction, " and has no dependency. Setting dep to the var")
+			if len(ctx.AllID()) > 1 {
+				depVar := ctx.ID(1).GetText()
+
+				// is it an existing var?
+				if _, ok := registers[depVar]; ok {
+					//if it's an action..
+					if dep, ok := registers[depVar].(NActions.BaseAction); ok {
+						//we have a datatype baseAction
+						//fmt.Println("the dependency for this action will be variable: ", nVar)
+						builtAction.(NActions.BaseAction).SetDependency(dep)
+					}
+				} else {
+					fmt.Println("Error: Var '", depVar, "' not recognized.")
+				}
+			} else { //was not recognized, shouldn't reach here
+				fmt.Println("Error: pattern not recognized.", ctx.GetText())
+			}
+		}
+		//fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
+		registers[varIdentifier] = builtActions[0]
+	}
+	//}
 }
 
 func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
@@ -266,12 +272,47 @@ func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 	setValue(ctx, allFiltersForAction)
 }
 
+func (s *TreeShapeListener) ExitNugget_type(ctx *parser.Nugget_typeContext) {
+	setValue(ctx, ctx.GetText())
+}
+
+func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
+	fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
+	setValue(ctx, getValue(ctx.Nugget_type()))
+}
+
+//investigate from here -
+// maybe we generate an extract type here and pass it up the chain, just like we do for filter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
-	if ctx.Filter() != nil {
+
+	if ctx.AsType() != nil {
+		myT := getValue(ctx.AsType())
+		//fmt.Println("got: ", myT)
+		if myT == "pcap" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"} )
+		} else if myT == "ntfs" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"} )
+		} else {
+			fmt.Println("error on type extraction")
+		}
+	}else if ctx.Filter() != nil {
+
 		setValue(ctx, getValue(ctx.Filter()))
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
+
+
+/*
+
+	if ctx.Nugget_type() != nil {
+		setValue(ctx, getValue(ctx.Nugget_type()))
+	} else if ctx.Filter() != nil {
+		setValue(ctx, getValue(ctx.Filter()))
+	} else {
+		setValue(ctx, ctx.GetText())
+	}
+	*/
 }
 
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
@@ -317,6 +358,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
+
 
 func main() {
 	file, err := os.Open(pathToInput)
