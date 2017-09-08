@@ -77,5 +77,7 @@ func (na *SHA1Action) GetResults() interface{}{
 }
 
 func (na *SHA1Action) SetFilters(filters []NTypes.Filter) {
+	//TODO: investigate if resetting executed status will be a problem:
+	na.executed = false
 	na.filters = filters
 }

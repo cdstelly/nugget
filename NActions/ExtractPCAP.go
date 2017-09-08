@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/gopacket/pcap"
 	"github.com/google/gopacket"
+	"fmt"
 )
 
 //don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
@@ -31,6 +32,7 @@ func (na *ExtractPCAP) SetDependency(action BaseAction) {
 }
 
 func (na *ExtractPCAP) Execute() {
+	fmt.Println("executing pcap extraction")
 	na.Packets = na.GetPackets()
 	na.executed = true
 }
@@ -52,9 +54,20 @@ func (na *ExtractPCAP) GetPackets() []gopacket.Packet{
 }
 
 func (na *ExtractPCAP) GetResults() interface{}{
+	fmt.Println("Getting results for extraect pcap!")
+	if na.executed == false {
+		na.Execute()
+	}
 	return na.Packets
 }
 
 func (na *ExtractPCAP) SetFilters(filters []NTypes.Filter) {
+	//TODO: investigate if resetting executed status will be a problem:
+	na.executed = false
 	na.filters = filters
 }
+
+// want to make filter an action
+
+// so that when we do 'x = var | filter x = "y"
+// the action 'filter..' will pull in the results from executing 'var', then try and apply the filter, then return the results and store into 'x'

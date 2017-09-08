@@ -9,10 +9,10 @@ myimage
 myfilesA = "file.dd" | extract as ntfs
 myfilesA
 
-myfilesB = "file.dd" | extract  as ntfs     //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
-myfilesB
+//myfilesB = "file.dd" | extract  as ntfs     //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
+//myfilesB
 
-myhashesdir = myfilesA | sha1
+//myhashesdir = myfilesA | sha1
 // myhashesdir
 
 //myhashespipe = "file.dd" | extract  as ntfs | sha1
@@ -34,7 +34,7 @@ myhashesdir = myfilesA | sha1
 //mypcap pcap
 //mypackets packet[]
 
-mypcap = "G:\school\sample.pcap" | extract as ntfs
+mypcap = "G:\school\sample.pcap" | extract as pcap
 mypcap
 myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
 myhttp
@@ -44,7 +44,7 @@ myhttp
 //type(myfilesA)
 //type(myimage)
 
-myEvent tuple[datetime,file,sha1]
+//myEvent tuple[datetime,file,sha1]
 
 //should properties be assignable?
 //myEvent.datetime = "02/01/2015"
