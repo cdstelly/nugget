@@ -2,18 +2,20 @@ myimage ntfs
 myfiles file[]
 myhashes sha1[]
 
-myimage = "file.dd" as ntfs
+myimage = "file.dd" | extract as ntfs
+myimage
 
-myfilesA = myimage | extract
+
+myfilesA = "file.dd" | extract as ntfs
 myfilesA
 
-myfilesB = "file.dd" as pcap | extract      //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
+myfilesB = "file.dd" | extract  as ntfs     //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
 myfilesB
 
 myhashesdir = myfilesA | sha1
-myhashesdir
+// myhashesdir
 
-//myhashespipe = "file.dd" as ntfs | extract | sha1
+//myhashespipe = "file.dd" | extract  as ntfs | sha1
 
 //myhashesdir
 //myhashespipe
@@ -21,8 +23,8 @@ myhashesdir
 //myfilesA
 //myfilesB
 
-//myhashesfila = "file.dd" as ntfs | extract | filter filename == "*.pdf",ctime>"01/01/01" | sha1
-//myhashesfilb = "file.dd" as ntfs | extract | filter ctime > "01/01/01" | sha1
+//myhashesfila = "file.dd" | extract  as ntfs | filter filename == "*.pdf",ctime>"01/01/01" | sha1
+//myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/01" | sha1
 //myhashesfila
 //myhashesfilb
 
@@ -32,8 +34,10 @@ myhashesdir
 //mypcap pcap
 //mypackets packet[]
 
-//mypcap = "G:\school\sample.pcap" as pcap | extract
-//myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+mypcap = "G:\school\sample.pcap" | extract as ntfs
+mypcap
+myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+myhttp
 
 //type(myhttp)
 //type(mypcap)
@@ -52,6 +56,6 @@ myEvent tuple[datetime,file,sha1]
 
 
 
-mymemory = "win7dump" as memory using rekall
-memext = mymemory | extract | grep passwords
+//mymemory = "win7dump" as memory using rekall
+//memext = mymemory | extract | grep passwords
 
