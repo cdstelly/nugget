@@ -62,5 +62,12 @@ func (na *ExtractPCAP) GetResults() interface{}{
 }
 
 func (na *ExtractPCAP) SetFilters(filters []NTypes.Filter) {
+	//TODO: investigate if resetting executed status will be a problem:
+	na.executed = false
 	na.filters = filters
 }
+
+// want to make filter an action
+
+// so that when we do 'x = var | filter x = "y"
+// the action 'filter..' will pull in the results from executing 'var', then try and apply the filter, then return the results and store into 'x'

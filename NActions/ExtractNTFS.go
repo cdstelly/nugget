@@ -185,7 +185,7 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 func (na *ExtractNTFS) doesFilePassFilters(fi NTypes.FileInfo) bool {
 	passes := true
 	for _,filter := range na.filters {
-		switch (filter.Field){
+		switch filter.Field{
 		case "filename":
 			if filter.Op != "==" {
 				fmt.Println("Error - Operation ", filter.Op, "not supported")
@@ -323,6 +323,7 @@ func checkError(err error) {
 }
 
 func (na *ExtractNTFS) SetFilters(filters []NTypes.Filter) {
+	//TODO: investigate if resetting executed status will be a problem:
+	na.executed = false
 	na.filters = filters
 }
-

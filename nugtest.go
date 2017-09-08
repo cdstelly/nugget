@@ -85,6 +85,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	switch action_verb {
 	case "filter":
 		//don't need to do anything here - will assign filters to actions in just a second
+		fmt.Println("Here we go boys!")
+		theAction = &NActions.FilterAction{}
 	case "extract":
 
 		extractType := getValue(ctx.Action_word()).(NTypes.Extract)
@@ -105,6 +107,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 
 	if action_verb != "filter" {
 		theAction.SetFilters(myFilters)
+		setValue(ctx, theAction)
+	} else {
 		setValue(ctx, theAction)
 	}
 }
@@ -214,16 +218,16 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	for _,action := range actions {
 		rawAction := getValue(action)
 		//if it's an extract action, we need to look behind and get some more info (like filepath and type)
+		fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
+
 		if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
 			//todo: get real values not dummy ones
 			extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
 			extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
-			//builtActions = append(builtActions, extractAction)
 		}
 		if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
 			//todo: get real values not dummy ones
 			extractAction.PCAPLocation = "G:\\school\\sample.pcap"
-			fmt.Println("found pcap!")
 		}
 		if act, ok := rawAction.(NActions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -252,7 +256,6 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 				if _, ok := registers[depVar]; ok {
 					//if it's an action..
 					if dep, ok := registers[depVar].(NActions.BaseAction); ok {
-						//we have a datatype baseAction
 						//fmt.Println("the dependency for this action will be variable: ", nVar)
 						builtAction.(NActions.BaseAction).SetDependency(dep)
 					}
@@ -261,14 +264,10 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 					fmt.Println("Error: Var '", depVar, "' not recognized.")
 				}
 			}
-			//else { //was not recognized, shouldn't reach here
-//				fmt.Println("Error: pattern not recognized.", ctx.GetText())
-//			}
 		}
-		//fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
+		fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
 		registers[varIdentifier] = builtActions[0]
 	}
-	//}
 }
 
 func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
@@ -294,7 +293,7 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 }
 
 //investigate from here -
-// maybe we generate an extract type here and pass it up the chain, just like we do for filter
+// maybe we generate an extract type here and pass it up the chain, just like we do for flter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 
 	if ctx.AsType() != nil {
@@ -307,8 +306,7 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		} else {
 			fmt.Println("error on type extraction")
 		}
-	}else if ctx.Filter() != nil {
-
+	} else if ctx.Filter() != nil {
 		setValue(ctx, getValue(ctx.Filter()))
 	} else {
 		setValue(ctx, ctx.GetText())
