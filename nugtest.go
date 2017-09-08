@@ -109,6 +109,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction.SetFilters(myFilters)
 		setValue(ctx, theAction)
 	} else {
+		theAction.SetFilters(myFilters)
 		setValue(ctx, theAction)
 	}
 }
@@ -323,6 +324,8 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 		fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
 		if ba,ok := v.(NActions.BaseAction); ok {
 			fmt.Println("Results for var:",theVar, ": ", ba.GetResults())
+			//ba.GetResults()
+			//fmt.Println("cutting off results for now..")
 		} else {
 			fmt.Println("couldn't execute var : ", theVar	, "because it is not of baseAction type")
 		}

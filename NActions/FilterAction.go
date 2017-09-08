@@ -35,21 +35,23 @@ func (na *FilterAction) SetDependency(action BaseAction) {
 	na.dependsOn = action
 }
 
+//todo: dependsOn can be nil..
 func (na *FilterAction) Execute() {
+	fmt.Println("going to execute filteraction..")
 	if na.dependsOn != nil {
 		fmt.Println("filteraction has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
-			na.dependsOn.Execute()
+			na.dependsOn.SetFilters(na.filters)
+
+			na.results = na.dependsOn.GetResults()
 		}
 	}
-	fmt.Println("going to execute filteraction..")
-
 	// set filters on the parent op
 	// execute
 	// return results?
-	na.dependsOn.SetFilters(na.filters)
-	operateOn := na.dependsOn.GetResults()
-	na.results = operateOn
+//	na.dependsOn.SetFilters(na.filters)
+//	operateOn := na.dependsOn.GetResults()
+
 	na.executed = true
 }
 

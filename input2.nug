@@ -1,13 +1,34 @@
+//type(myhttp)
+//type(mypcap)
+//type(myfilesA)
+//type(myimage)
+
+//myEvent tuple[datetime,file,sha1]
+
+//should properties be assignable?
+//myEvent.datetime = "02/01/2015"
+//myEvent.file = myFiles[2]
+//myEvent.sha1 = 51..21
+
+//todo:
+// implement some kind of API-styled function loader - goal: easy addition of new functions into the language
+
+
+
+//mymemory = "win7dump" as memory using rekall
+//memext = mymemory | extract | grep passwords
+
+
 myimage ntfs
 myfiles file[]
 myhashes sha1[]
 
-myimage = "file.dd" | extract as ntfs
-myimage
+//myimage = "file.dd" | extract as ntfs
+//myimage
 
 
-myfilesA = "file.dd" | extract as ntfs
-myfilesA
+//myfilesA = "file.dd" | extract as ntfs
+//myfilesA
 
 //myfilesB = "file.dd" | extract  as ntfs     //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
 //myfilesB
@@ -35,27 +56,7 @@ myfilesA
 //mypackets packet[]
 
 mypcap = "G:\school\sample.pcap" | extract as pcap
-mypcap
+//mypcap
 myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
 myhttp
-
-//type(myhttp)
-//type(mypcap)
-//type(myfilesA)
-//type(myimage)
-
-//myEvent tuple[datetime,file,sha1]
-
-//should properties be assignable?
-//myEvent.datetime = "02/01/2015"
-//myEvent.file = myFiles[2]
-//myEvent.sha1 = 51..21
-
-//todo:
-// implement some kind of API-styled function loader - goal: easy addition of new functions into the language
-
-
-
-//mymemory = "win7dump" as memory using rekall
-//memext = mymemory | extract | grep passwords
 

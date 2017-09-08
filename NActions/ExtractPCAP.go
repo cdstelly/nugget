@@ -6,6 +6,7 @@ import (
 	"github.com/google/gopacket/pcap"
 	"github.com/google/gopacket"
 	"fmt"
+	"strings"
 )
 
 //don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
@@ -32,16 +33,40 @@ func (na *ExtractPCAP) SetDependency(action BaseAction) {
 }
 
 func (na *ExtractPCAP) Execute() {
-	fmt.Println("executing pcap extraction")
 	na.Packets = na.GetPackets()
 	na.executed = true
 }
 
 func (na *ExtractPCAP) GetPackets() []gopacket.Packet{
+	fmt.Println("getting packets")
 	var err error
 
+	//get bpfs and apply them
+	var myBPF string
+	for _, f := range na.filters {
+		fmt.Println("Found a filter: ", f)
+		switch f.Field {
+		case "packetfilter":
+			if f.Op == "==" {
+				myBPF = f.Value
+				myBPF = strings.Trim(myBPF, "\"")
+				fmt.Println("Set the bnf filter value to: ", myBPF )
+			} else {
+				fmt.Println("Error: BNF only supports equality at the moment.")
+			}
+		default:
+			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
+		}
+	}
+
 	na.handle, err = pcap.OpenOffline(na.PCAPLocation)
-	checkError(err)
+	if err != nil {
+		panic(err)
+	}
+	err = na.handle.SetBPFFilter(myBPF)
+	if err != nil {
+		panic(err)
+	}
 
 	packetSource := gopacket.NewPacketSource(na.handle, na.handle.LinkType())
 
@@ -50,11 +75,11 @@ func (na *ExtractPCAP) GetPackets() []gopacket.Packet{
 		na.Packets = append(na.Packets, p)
 	}
 	na.executed = true
+	fmt.Println(len(na.Packets))
 	return na.Packets
 }
 
 func (na *ExtractPCAP) GetResults() interface{}{
-	fmt.Println("Getting results for extraect pcap!")
 	if na.executed == false {
 		na.Execute()
 	}
@@ -63,7 +88,7 @@ func (na *ExtractPCAP) GetResults() interface{}{
 
 func (na *ExtractPCAP) SetFilters(filters []NTypes.Filter) {
 	//TODO: investigate if resetting executed status will be a problem:
-	na.executed = false
+	//na.executed = false
 	na.filters = filters
 }
 
