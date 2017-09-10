@@ -45,18 +45,18 @@ myhashes sha1[]
 //myfilesB
 
 //myhashesfila = "file.dd" | extract  as ntfs | filter filename == "*.pdf",ctime>"01/01/01" | sha1
-//myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/01" | sha1
+
+myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sha1
 //myhashesfila
-//myhashesfilb
-
-
+myhashesfilb
 
 //reset
 //mypcap pcap
 //mypackets packet[]
 
-mypcap = "G:\school\sample.pcap" | extract as pcap
+//mypcap = "G:\school\sample.pcap" | extract as pcap
 //mypcap
-myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
-myhttp
+//myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+//myhttp
 
+//matches = "knownHashes.txt" | extract as plaintext-hashes | union fileAHashes
