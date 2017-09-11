@@ -60,9 +60,11 @@ myhashesfilb
 //mypcap pcap
 //mypackets packet[]
 
-//mypcap = "G:\school\sample.pcap" | extract as pcap
-//mypcap
-//myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
-//myhttp
+mypcap = "G:\school\sample.pcap" | extract as pcap
+mypcap
+myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+myhttp
+mygetreqs = myhttp | filter get == true
+
 
 //matches = "knownHashes.txt" | extract as plaintext-hashes | union fileAHashes
