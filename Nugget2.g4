@@ -49,6 +49,7 @@ action_word:
     'extract' asType |
     'sha1'    |
     'md5'     |
+	'sha256'|
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 
