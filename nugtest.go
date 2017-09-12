@@ -39,6 +39,7 @@ func init() {
 func setupTypeRegstry() {
 	typeRegistry["md5"] = reflect.TypeOf(NTypes.MD5{})
 	typeRegistry["sha1"] = reflect.TypeOf(NTypes.SHA1{})
+	typeRegistry["sha256"] = reflect.TypeOf(NTypes.SHA256{})
 	typeRegistry["datetime"] = reflect.TypeOf(NTypes.Datetime{})
 	typeRegistry["file"] = reflect.TypeOf(NTypes.FileInfo{})
 }
@@ -99,6 +100,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		}
 	case "sha1":
 		theAction = &NActions.SHA1Action{}
+	case "sha256":
+		theAction = &NActions.SHA256Action{}
 	case "md5":
 		theAction = &NActions.MD5Action{}
 	default:

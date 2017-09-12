@@ -3,10 +3,10 @@ package NActions
 import "fmt"
 import (
 	"../NTypes"
-	"crypto/md5"
+	"crypto/sha256"
 )
 
-type MD5Action struct {
+type SHA256Action struct {
 	executed  bool
 	dependsOn BaseAction
 	filters []NTypes.Filter
@@ -14,36 +14,29 @@ type MD5Action struct {
 	results []NTypes.MD5
 }
 
-func NewMD5Action(dep BaseAction) MD5Action {
-	n := MD5Action{}
-	n.dependsOn = dep
-	n.executed = false
-	return n
-}
-
-func (na *MD5Action) BeenExecuted() bool {
+func (na *SHA256Action) BeenExecuted() bool {
 	return na.executed
 }
 
-func (na *MD5Action) DependencySatisfied() bool {
+func (na *SHA256Action) DependencySatisfied() bool {
 	if na.dependsOn == nil {
 		return true
 	}
 	return na.dependsOn.BeenExecuted()
 }
 
-func (na *MD5Action) SetDependency(action BaseAction) {
+func (na *SHA256Action) SetDependency(action BaseAction) {
 	na.dependsOn = action
 }
 
-func (na *MD5Action) Execute() {
+func (na *SHA256Action) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("md5 has a dependency which hasn't been met..")
+		fmt.Println("SHA256Action has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute md5..")
+	fmt.Println("going to execute sha256..")
 
 	operateOn := na.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.FileInfo); ok {
@@ -51,7 +44,7 @@ func (na *MD5Action) Execute() {
 		var files []NTypes.FileInfo
 		files = operateOn.([]NTypes.FileInfo)
 		for index,file := range files {
-			hasher := md5.New()
+			hasher := sha256.New()
 			fn := GetAFilename(file)
 			hasher.Write([]byte(fn))
 			myhash := fmt.Sprintf("%x\n", hasher.Sum(nil))
@@ -62,15 +55,13 @@ func (na *MD5Action) Execute() {
 	na.executed = true
 }
 
-func (na *MD5Action) GetResults() interface{}{
+func (na *SHA256Action) GetResults() interface{}{
 	if !na.BeenExecuted() {
 		na.Execute()
 	}
 	return na.results
 }
 
-func (na *MD5Action) SetFilters(filters []NTypes.Filter) {
-	//TODO: investigate if resetting executed status will be a problem:
-	na.executed = false
+func (na *SHA256Action) SetFilters(filters []NTypes.Filter) {
 	na.filters = filters
 }

@@ -49,10 +49,7 @@ myhashes sha1[]
 //myhashesfila
 //myhashesfilb
 
-mymemory = "win7dump" as memory using rekall
-memext = mymemory | extract | grep passwords
-
-myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sha1
+myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sha256
 //myhashesfila
 myhashesfilb
 
@@ -68,3 +65,7 @@ mygetreqs = myhttp | filter get == true
 
 
 //matches = "knownHashes.txt" | extract as plaintext-hashes | union fileAHashes
+
+mymemory = "win7dump" as memory using rekall
+memext = mymemory | extract | grep passwords
+

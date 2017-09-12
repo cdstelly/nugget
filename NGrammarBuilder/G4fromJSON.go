@@ -69,7 +69,6 @@ func executeAntlrBuild() {
 	} else {
 		fmt.Println("Built Nugget")
 	}
-
 }
 
 func rewriteG4(replaceWith string) {
