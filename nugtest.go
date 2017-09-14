@@ -11,6 +11,8 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 
 	"reflect"
+	"net/rpc"
+	"log"
 )
 
 var (
@@ -366,7 +368,33 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 }
 
 
+
+type NugArg struct {
+	TheData []byte
+}
+
+type NugData int
+
+
+func testRemoteMD5() {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2000")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	args := &NugArg{[]byte("test")}
+	var reply string
+	err = client.Call("NugData.DoMD5", args, &reply)
+	if err != nil {
+		log.Fatal("md5 error:", err)
+	}
+	fmt.Printf("md5: %s=%s", string(args.TheData), reply)
+	os.Exit(0)
+}
+
+
 func main() {
+	//testRemoteMD5()
 	file, err := os.Open(pathToInput)
 	if err != nil {
 		panic(err)

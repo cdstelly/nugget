@@ -35,7 +35,6 @@ func (na *MD5Action) DependencySatisfied() bool {
 func (na *MD5Action) SetDependency(action BaseAction) {
 	na.dependsOn = action
 }
-
 func (na *MD5Action) Execute() {
 	if na.dependsOn != nil {
 		fmt.Println("md5 has a dependency which hasn't been met..")
