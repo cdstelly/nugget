@@ -14,13 +14,6 @@ type MD5Action struct {
 	results []NTypes.MD5
 }
 
-func NewMD5Action(dep BaseAction) MD5Action {
-	n := MD5Action{}
-	n.dependsOn = dep
-	n.executed = false
-	return n
-}
-
 func (na *MD5Action) BeenExecuted() bool {
 	return na.executed
 }
