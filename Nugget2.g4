@@ -26,7 +26,7 @@ assign: ID '=' STRING ('|' nugget_action)* |
 
 operation_on_singleton: singleton_op '(' ID ')';
 
-singleton_op: ('type' | 'print' | 'size');
+singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx');
 
 singleton_var: ID;
 
@@ -50,6 +50,7 @@ action_word:
     'sha1'    |
     'md5'     |
 	'sha256'|
+	'getGetRequests'|
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 

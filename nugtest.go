@@ -281,11 +281,9 @@ func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 	for i,_ := range ctx.AllFilter_term() {
 		myf := getValue(ctx.Filter_term(i))
 		if dep, ok := myf.(NTypes.Filter); ok {
-			//fmt.Println("OH MY GOD I THINK I HAVE THIS SYSTEM FIGURED OUT ", dep)
 			allFiltersForAction = append(allFiltersForAction , dep)
 		}
 	}
-	//fmt.Println(allFiltersForAction)
 	setValue(ctx, allFiltersForAction)
 }
 
@@ -347,12 +345,16 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 	}
 
 	theVar := ctx.ID().GetText()
-	if _, ok := registers[theVar]; ok {
+	if val, ok := registers[theVar].(NActions.BaseAction); ok {
 		switch operation {
 		case "type":
-			fmt.Println(reflect.TypeOf(registers[theVar]))
+			fmt.Println(reflect.TypeOf(val))
 		case "print":
-			fmt.Println(registers[theVar])
+			fmt.Println(val)
+		case "typex":
+			fmt.Println(reflect.TypeOf(val.GetResults()))
+		case "printx":
+			fmt.Println(val.GetResults())
 		case "size":
 			fmt.Println("len not implemented yet")
 		default:
@@ -366,8 +368,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
-
-
 
 type NugArg struct {
 	TheData []byte
@@ -391,7 +391,6 @@ func testRemoteMD5() {
 	fmt.Printf("md5: %s=%s", string(args.TheData), reply)
 	os.Exit(0)
 }
-
 
 func main() {
 	//testRemoteMD5()

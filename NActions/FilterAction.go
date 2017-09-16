@@ -13,13 +13,6 @@ type FilterAction struct {
 	results interface{}
 }
 
-func NewFilterAction(dep BaseAction) FilterAction{
-	n := FilterAction{}
-	n.dependsOn = dep
-	n.executed = false
-	return n
-}
-
 func (na *FilterAction) BeenExecuted() bool {
 	return na.executed
 }
@@ -46,11 +39,6 @@ func (na *FilterAction) Execute() {
 			na.results = na.dependsOn.GetResults()
 		}
 	}
-	// set filters on the parent op
-	// execute
-	// return results?
-//	na.dependsOn.SetFilters(na.filters)
-//	operateOn := na.dependsOn.GetResults()
 
 	na.executed = true
 }

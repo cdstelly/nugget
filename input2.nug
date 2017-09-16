@@ -10,11 +10,6 @@
 //myEvent.file = myFiles[2]
 //myEvent.sha1 = 51..21
 
-//todo:
-// implement some kind of API-styled function loader - goal: easy addition of new functions into the language
-
-
-
 //mymemory = "win7dump" as memory using rekall
 //memext = mymemory | extract | grep passwords
 
@@ -49,7 +44,7 @@ myhashes sha1[]
 //myhashesfila
 //myhashesfilb
 
-myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sha256
+myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sha1
 //myhashesfila
 myhashesfilb
 
@@ -58,14 +53,22 @@ myhashesfilb
 //mypackets packet[]
 
 mypcap = "G:\school\sample.pcap" | extract as pcap
-mypcap
+//mypcap
 myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
-myhttp
-mygetreqs = myhttp | filter get == true
+//myhttp
 
+otherpcap = "G:\school\sample.pcap" | extract as pcap
+getandpost = otherpcap | filter packetfilter == "tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504F5354 or tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420"
+//getandpost
+type(getandpost)
+typex(getandpost)
+printx(getandpost)
+
+type(myhashesfilb)
+typex(myhashesfilb)
 
 //matches = "knownHashes.txt" | extract as plaintext-hashes | union fileAHashes
 
-mymemory = "win7dump" as memory using rekall
-memext = mymemory | extract | grep passwords
+//mymemory = "win7dump" as memory using rekall
+//memext = mymemory | extract | grep passwords
 

@@ -17,7 +17,7 @@ type ExtractPCAP struct {
 
 	PCAPLocation string
 	handle *pcap.Handle
-	Packets []gopacket.Packet
+	Packets []NTypes.NPacket
 }
 
 func (na *ExtractPCAP) BeenExecuted() bool {
@@ -37,7 +37,7 @@ func (na *ExtractPCAP) Execute() {
 	na.executed = true
 }
 
-func (na *ExtractPCAP) GetPackets() []gopacket.Packet{
+func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 	fmt.Println("getting packets")
 	var err error
 
@@ -72,7 +72,7 @@ func (na *ExtractPCAP) GetPackets() []gopacket.Packet{
 
 	// asynchronously read the packet source
 	for p := range packetSource.Packets() {
-		na.Packets = append(na.Packets, p)
+		na.Packets = append(na.Packets, NTypes.NPacket{p})
 	}
 	na.executed = true
 	fmt.Println(len(na.Packets))
