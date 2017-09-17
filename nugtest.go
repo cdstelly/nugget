@@ -392,8 +392,35 @@ func testRemoteMD5() {
 	os.Exit(0)
 }
 
+func testRemoteTSK() {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	//load some data into tsk memory
+	args := &NugArg{[]byte("test")}
+	var reply string
+	err = client.Call("NugTSK.LoadData", args, &reply)
+	if err != nil {
+		log.Fatal("tsk load error:", err)
+	}
+	fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
+
+	//execute data len test
+	arg2 := &NugArg{[]byte("")}
+	err = client.Call("NugTSK.GetDataLen", arg2, &reply)
+	if err != nil {
+		log.Fatal("tsk len error:", err)
+	}
+	fmt.Printf("tsk len =%s\n", reply)
+
+	os.Exit(0)
+}
+
 func main() {
 	//testRemoteMD5()
+	testRemoteTSK()
 	file, err := os.Open(pathToInput)
 	if err != nil {
 		panic(err)
