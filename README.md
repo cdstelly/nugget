@@ -1,6 +1,17 @@
-# nugget
-Forensic Domain Specific Language
+Nugget
+===================
 
-# TODO
+Nugget is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. 
 
-- see issues
+Building
+----------
+
+Using
+------------
+
+Expanding
+--------------
+
+Bugs
+----------------
+
