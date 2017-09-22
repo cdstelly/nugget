@@ -4,13 +4,14 @@ import "fmt"
 import (
 	"../NTypes"
 	"sort"
-	"crypto/md5"
 )
 
 type SortAction struct {
 	executed  bool
 	dependsOn BaseAction
 	filters []NTypes.Filter
+
+	SortField string
 
 	results interface{}
 }
@@ -39,9 +40,16 @@ func (na *SortAction) Execute() {
 	fmt.Println("going to execute sort..")
 
 	operateOn := na.dependsOn.GetResults()
-	if _, ok := operateOn.([]NTypes. ); ok {
-
-
+	if _, ok := operateOn.([]NTypes.FileInfo); ok {
+		var files []NTypes.FileInfo
+		files = operateOn.([]NTypes.FileInfo)
+		if na.SortField == "ctime" {
+			sort.Sort(NTypes.ByCtime(files))
+		}
+		if na.SortField == "filename" {
+			sort.Sort(NTypes.ByFilename(files))
+		}
+		na.results = files
 	}
 	na.executed = true
 }

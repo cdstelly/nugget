@@ -30,8 +30,6 @@ singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx');
 
 singleton_var: ID;
 
-asType: 'as' nugget_type;
-
 nugget_type: 'string'  |
       'sha1'       |
       'md5'        |
@@ -47,13 +45,16 @@ nugget_action: action_word ;
 action_word:
     filter    |
     'extract' asType |
-    'sort'
+    'sort'    byField |
     'sha1'    |
     'md5'     |
 	'sha256'|
 	'getGetRequests'|
 	'NUGGETGENERATORPLACEHOLDER'
 ;
+
+asType: 'as' nugget_type;
+byField:'by' ID;
 
 filter :
     'filter' filter_term (',' filter_term)*;
