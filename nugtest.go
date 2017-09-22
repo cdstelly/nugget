@@ -70,12 +70,17 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	var myFilters []NTypes.Filter
 	var action_verb string
 
-	//we have some filters
+	// handle filters
 	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
 		action_verb = "filter"
+    //handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		action_verb = "extract"
+	//handle sorts
+	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
+		action_verb = "sort"
+    //handle everything else
 	} else {
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
@@ -88,8 +93,10 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	switch action_verb {
 	case "filter":
 		//don't need to do anything here - will assign filters to actions in just a second
-		fmt.Println("Here we go boys!")
 		theAction = &NActions.FilterAction{}
+	case "sort":
+		thisSortField := getValue(ctx.Action_word()).(NTypes.Sort)
+		theAction = &NActions.SortAction{SortField:thisSortField.Field}
 	case "extract":
 
 		extractType := getValue(ctx.Action_word()).(NTypes.Extract)
@@ -129,6 +136,7 @@ func (s *TreeShapeListener) ExitDefine(ctx *parser.DefineContext) {
 		fmt.Println("the variable ", identifier, " already exists!")
 	} else {
 		switch nugget_type {
+		//todo: minimize this code by using a registry, ie map types to strings as I do in setupTypeRegstry
 		case "ntfs":
 			if isList {
 				registers[identifier] = []NTypes.Extract{}
@@ -196,13 +204,6 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 	//currentVariable = ctx.ID(0).GetText()
 	//fmt.Println("cv:",currentVariable)
 }
-
-// howbout a new approach to actions
-
-// every exit action, we build and append to a list
-// this list is unique for every line of input
-// this means that list[4] relies on list[3] to execute and provide results for list[4]
-
 
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
@@ -300,6 +301,7 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 // maybe we generate an extract type here and pass it up the chain, just like we do for flter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 
+	//handle extractions
 	if ctx.AsType() != nil {
 		myT := getValue(ctx.AsType())
 		//fmt.Println("got: ", myT)
@@ -310,8 +312,16 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		} else {
 			fmt.Println("error on type extraction")
 		}
+	//handle filters
 	} else if ctx.Filter() != nil {
 		setValue(ctx, getValue(ctx.Filter()))
+	//handle sorts
+	} else if ctx.ByField() != nil {
+		fmt.Println("sort by: ", getValue(ctx.ByField()))
+		if val,ok := getValue(ctx.ByField()).(string); ok {
+			fmt.Println("sort string: ", val)
+			setValue(ctx, NTypes.Sort{Field: val })
+		}
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
@@ -320,6 +330,13 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
 }
+
+
+// ExitByField is called when production byField is exited.
+func (s *TreeShapeListener) ExitByField(ctx *parser.ByFieldContext) {
+	setValue(ctx,ctx.ID().GetText())
+}
+
 
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
@@ -368,6 +385,10 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
+
+/*****
+RPC Testing
+*****/
 
 type NugArg struct {
 	TheData []byte

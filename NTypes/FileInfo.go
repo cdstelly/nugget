@@ -1,6 +1,9 @@
 package NTypes
 
-import "time"
+import (
+	"time"
+	"strings"
+)
 
 type FileInfo struct {
 	Id          uint64
@@ -42,3 +45,21 @@ func (cbo ByOffset) Less(i, j int) bool {
 	return cbo[i].Clusteroffset < cbo[j].Clusteroffset
 }
 
+// FileInfo implements sort interface
+type ByCtime []FileInfo
+
+func (a ByCtime) Len() int           { return len(a) }
+func (a ByCtime) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByCtime) Less(i, j int) bool { return a[i].Createtime.Before(a[j].Createtime) }
+
+
+// FileInfo implements sort interface
+type ByFilename []FileInfo
+
+func (a ByFilename) Len() int           { return len(a) }
+func (a ByFilename) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByFilename) Less(i, j int) bool {
+	if a[i].Filenames == nil { return false }
+	if a[j].Filenames == nil { return false }
+	return strings.Compare(a[i].Filenames[0], a[j].Filenames[0]) == -1
+}

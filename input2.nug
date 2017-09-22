@@ -72,3 +72,9 @@ typex(myhashesfilb)
 //mymemory = "win7dump" as memory using rekall
 //memext = mymemory | extract | grep passwords
 
+
+myhashesfilc = "file.dd" | extract  as ntfs | filter ctime > "01/01/09"
+myhashesfilc
+
+myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
+myhashesfild
