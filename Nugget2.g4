@@ -47,6 +47,7 @@ nugget_action: action_word ;
 action_word:
     filter    |
     'extract' asType |
+    'sort'
     'sha1'    |
     'md5'     |
 	'sha256'|

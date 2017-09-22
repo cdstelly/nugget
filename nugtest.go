@@ -375,7 +375,6 @@ type NugArg struct {
 
 type NugData int
 
-
 func testRemoteMD5() {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2000")
 	if err != nil {
@@ -420,7 +419,8 @@ func testRemoteTSK() {
 
 func main() {
 	//testRemoteMD5()
-	testRemoteTSK()
+	//testRemoteTSK()
+
 	file, err := os.Open(pathToInput)
 	if err != nil {
 		panic(err)
