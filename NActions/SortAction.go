@@ -46,8 +46,20 @@ func (na *SortAction) Execute() {
 		if na.SortField == "ctime" {
 			sort.Sort(NTypes.ByCtime(files))
 		}
+		if na.SortField == "mtime" {
+			sort.Sort(NTypes.ByMtime(files))
+		}
+		if na.SortField == "etime" {
+			sort.Sort(NTypes.ByEtime(files))
+		}
+		if na.SortField == "atime" {
+			sort.Sort(NTypes.ByAtime(files))
+		}
 		if na.SortField == "filename" {
 			sort.Sort(NTypes.ByFilename(files))
+		}
+		if na.SortField == "filesize" {
+			sort.Sort(NTypes.ByFilesize(files))
 		}
 		na.results = files
 	}

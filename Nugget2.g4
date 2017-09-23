@@ -50,6 +50,7 @@ action_word:
     'md5'     |
 	'sha256'|
 	'getGetRequests'|
+	'diskinfo' |
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 

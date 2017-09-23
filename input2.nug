@@ -73,8 +73,11 @@ typex(myhashesfilb)
 //memext = mymemory | extract | grep passwords
 
 
-myhashesfilc = "file.dd" | extract  as ntfs | filter ctime > "01/01/09"
-myhashesfilc
+//myhashesfilc = "file.dd" | extract  as ntfs | filter ctime > "01/01/09"
+//myhashesfilc
 
-myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
-myhashesfild
+//myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
+//myhashesfild
+
+mydiskinfo = "file.dd" | extract as ntfs | diskinfo
+mydiskinfo
