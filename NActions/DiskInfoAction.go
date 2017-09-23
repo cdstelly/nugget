@@ -40,7 +40,6 @@ func (na *DiskInfoAction) Execute() {
 		}
 	}
 	fmt.Println("going to execute disk image info..")
-
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
 	na.uploadeImageToTSK()
@@ -60,8 +59,6 @@ func (na *DiskInfoAction) Execute() {
 			theInfoMap[key] = val
 		}
 	}
-
-
 	//todo how to handle new versions of FSSTAT?
 	myDiskImageInfo := NTypes.DiskImageInfo{}
 	myDiskImageInfo.FSType = theInfoMap["File System Type"]
@@ -71,9 +68,7 @@ func (na *DiskInfoAction) Execute() {
 	myDiskImageInfo.OEMName = theInfoMap["OEM Name"]
 	myDiskImageInfo.SerialNumber = theInfoMap["Volume Serial Number"]
 	myDiskImageInfo.Version = theInfoMap["Version"]
-
 	//fmt.Println(myDiskImageInfo)
-
 	na.results = myDiskImageInfo
 	na.executed = true
 }
@@ -119,7 +114,6 @@ func (na *DiskInfoAction) uploadeImageToTSK() {
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
-
 	//load some data into tsk memory
 	args := &NugArg{[]byte("test")}
 	var reply string

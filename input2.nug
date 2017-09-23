@@ -81,3 +81,13 @@ typex(myhashesfilb)
 
 mydiskinfo = "file.dd" | extract as ntfs | diskinfo
 mydiskinfo
+
+myfilehashes = "file.dd" | extract  as ntfs | sha256
+myfilehashes
+printx(myfilehashes)
+typex(myfilehashes)
+
+
+knownhashes = "file.dd" | extract as listof-sha1
+knownhashes = "file.dd" | extract as listof-md5
+knownhashes = "file.dd" | extract as listof-sha256
