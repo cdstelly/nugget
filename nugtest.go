@@ -120,7 +120,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	case "diskinfo":
 		theAction = &NActions.DiskInfoAction{}
 	case "union":
-		//todo: figure out how to pass file info forward as well?
+		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
 		var theListFromVar []string
 		if val, ok := registers[unionType.AgainstVarName].(NActions.BaseAction); ok {
