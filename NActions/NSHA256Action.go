@@ -47,7 +47,7 @@ func (na *SHA256Action) Execute() {
 			hasher := sha256.New()
 			fn := GetAFilename(file)
 			hasher.Write([]byte(fn))
-			myhash := fmt.Sprintf("%x\n", hasher.Sum(nil))
+			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
 			println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)
 			na.results = append(na.results, NTypes.SHA256{Digest:myhash})
 		}

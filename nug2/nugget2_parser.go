@@ -18,7 +18,7 @@ var _ = reflect.Copy
 var _ = strconv.Itoa
 
 var parserATN = []uint16{
-	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 40, 134,
+	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 44, 136,
 	4, 2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 4, 6, 9, 6, 4, 7, 9, 7,
 	4, 8, 9, 8, 4, 9, 9, 9, 4, 10, 9, 10, 4, 11, 9, 11, 4, 12, 9, 12, 4, 13,
 	9, 13, 4, 14, 9, 14, 4, 15, 9, 15, 4, 16, 9, 16, 3, 2, 3, 2, 3, 2, 7, 2,
@@ -29,51 +29,52 @@ var parserATN = []uint16{
 	6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 7, 6, 82, 10, 6, 12, 6, 14, 6, 85, 11,
 	6, 5, 6, 87, 10, 6, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 8, 3, 8, 3, 9, 3,
 	9, 3, 10, 3, 10, 3, 11, 3, 11, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12,
-	3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 5, 12, 113, 10, 12, 3, 13, 3, 13, 3,
-	13, 3, 14, 3, 14, 3, 14, 3, 15, 3, 15, 3, 15, 3, 15, 7, 15, 125, 10, 15,
-	12, 15, 14, 15, 128, 11, 15, 3, 16, 3, 16, 3, 16, 3, 16, 3, 16, 2, 2, 17,
-	2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 2, 4, 3, 2, 10,
-	14, 3, 2, 15, 23, 2, 139, 2, 37, 3, 2, 2, 2, 4, 45, 3, 2, 2, 2, 6, 47,
-	3, 2, 2, 2, 8, 52, 3, 2, 2, 2, 10, 86, 3, 2, 2, 2, 12, 88, 3, 2, 2, 2,
-	14, 93, 3, 2, 2, 2, 16, 95, 3, 2, 2, 2, 18, 97, 3, 2, 2, 2, 20, 99, 3,
-	2, 2, 2, 22, 112, 3, 2, 2, 2, 24, 114, 3, 2, 2, 2, 26, 117, 3, 2, 2, 2,
-	28, 120, 3, 2, 2, 2, 30, 129, 3, 2, 2, 2, 32, 36, 5, 4, 3, 2, 33, 36, 5,
-	12, 7, 2, 34, 36, 5, 16, 9, 2, 35, 32, 3, 2, 2, 2, 35, 33, 3, 2, 2, 2,
-	35, 34, 3, 2, 2, 2, 36, 39, 3, 2, 2, 2, 37, 35, 3, 2, 2, 2, 37, 38, 3,
-	2, 2, 2, 38, 40, 3, 2, 2, 2, 39, 37, 3, 2, 2, 2, 40, 41, 7, 2, 2, 3, 41,
-	3, 3, 2, 2, 2, 42, 46, 5, 6, 4, 2, 43, 46, 5, 8, 5, 2, 44, 46, 5, 10, 6,
-	2, 45, 42, 3, 2, 2, 2, 45, 43, 3, 2, 2, 2, 45, 44, 3, 2, 2, 2, 46, 5, 3,
-	2, 2, 2, 47, 48, 7, 36, 2, 2, 48, 50, 5, 18, 10, 2, 49, 51, 7, 34, 2, 2,
-	50, 49, 3, 2, 2, 2, 50, 51, 3, 2, 2, 2, 51, 7, 3, 2, 2, 2, 52, 53, 7, 36,
-	2, 2, 53, 58, 7, 3, 2, 2, 54, 56, 7, 4, 2, 2, 55, 54, 3, 2, 2, 2, 55, 56,
-	3, 2, 2, 2, 56, 57, 3, 2, 2, 2, 57, 59, 5, 18, 10, 2, 58, 55, 3, 2, 2,
-	2, 59, 60, 3, 2, 2, 2, 60, 58, 3, 2, 2, 2, 60, 61, 3, 2, 2, 2, 61, 62,
-	3, 2, 2, 2, 62, 64, 7, 5, 2, 2, 63, 65, 7, 34, 2, 2, 64, 63, 3, 2, 2, 2,
-	64, 65, 3, 2, 2, 2, 65, 9, 3, 2, 2, 2, 66, 67, 7, 36, 2, 2, 67, 68, 7,
-	6, 2, 2, 68, 73, 7, 37, 2, 2, 69, 70, 7, 7, 2, 2, 70, 72, 5, 20, 11, 2,
-	71, 69, 3, 2, 2, 2, 72, 75, 3, 2, 2, 2, 73, 71, 3, 2, 2, 2, 73, 74, 3,
-	2, 2, 2, 74, 87, 3, 2, 2, 2, 75, 73, 3, 2, 2, 2, 76, 77, 7, 36, 2, 2, 77,
-	78, 7, 6, 2, 2, 78, 83, 7, 36, 2, 2, 79, 80, 7, 7, 2, 2, 80, 82, 5, 20,
-	11, 2, 81, 79, 3, 2, 2, 2, 82, 85, 3, 2, 2, 2, 83, 81, 3, 2, 2, 2, 83,
-	84, 3, 2, 2, 2, 84, 87, 3, 2, 2, 2, 85, 83, 3, 2, 2, 2, 86, 66, 3, 2, 2,
-	2, 86, 76, 3, 2, 2, 2, 87, 11, 3, 2, 2, 2, 88, 89, 5, 14, 8, 2, 89, 90,
-	7, 8, 2, 2, 90, 91, 7, 36, 2, 2, 91, 92, 7, 9, 2, 2, 92, 13, 3, 2, 2, 2,
-	93, 94, 9, 2, 2, 2, 94, 15, 3, 2, 2, 2, 95, 96, 7, 36, 2, 2, 96, 17, 3,
-	2, 2, 2, 97, 98, 9, 3, 2, 2, 98, 19, 3, 2, 2, 2, 99, 100, 5, 22, 12, 2,
-	100, 21, 3, 2, 2, 2, 101, 113, 5, 28, 15, 2, 102, 103, 7, 24, 2, 2, 103,
-	113, 5, 24, 13, 2, 104, 105, 7, 25, 2, 2, 105, 113, 5, 26, 14, 2, 106,
-	113, 7, 16, 2, 2, 107, 113, 7, 17, 2, 2, 108, 113, 7, 26, 2, 2, 109, 113,
-	7, 27, 2, 2, 110, 113, 7, 28, 2, 2, 111, 113, 7, 29, 2, 2, 112, 101, 3,
-	2, 2, 2, 112, 102, 3, 2, 2, 2, 112, 104, 3, 2, 2, 2, 112, 106, 3, 2, 2,
-	2, 112, 107, 3, 2, 2, 2, 112, 108, 3, 2, 2, 2, 112, 109, 3, 2, 2, 2, 112,
-	110, 3, 2, 2, 2, 112, 111, 3, 2, 2, 2, 113, 23, 3, 2, 2, 2, 114, 115, 7,
-	30, 2, 2, 115, 116, 5, 18, 10, 2, 116, 25, 3, 2, 2, 2, 117, 118, 7, 31,
-	2, 2, 118, 119, 7, 36, 2, 2, 119, 27, 3, 2, 2, 2, 120, 121, 7, 32, 2, 2,
-	121, 126, 5, 30, 16, 2, 122, 123, 7, 4, 2, 2, 123, 125, 5, 30, 16, 2, 124,
-	122, 3, 2, 2, 2, 125, 128, 3, 2, 2, 2, 126, 124, 3, 2, 2, 2, 126, 127,
-	3, 2, 2, 2, 127, 29, 3, 2, 2, 2, 128, 126, 3, 2, 2, 2, 129, 130, 7, 36,
-	2, 2, 130, 131, 7, 33, 2, 2, 131, 132, 7, 37, 2, 2, 132, 31, 3, 2, 2, 2,
-	14, 35, 37, 45, 50, 55, 60, 64, 73, 83, 86, 112, 126,
+	3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 5, 12, 115, 10, 12, 3,
+	13, 3, 13, 3, 13, 3, 14, 3, 14, 3, 14, 3, 15, 3, 15, 3, 15, 3, 15, 7, 15,
+	127, 10, 15, 12, 15, 14, 15, 130, 11, 15, 3, 16, 3, 16, 3, 16, 3, 16, 3,
+	16, 2, 2, 17, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 2,
+	4, 3, 2, 10, 14, 3, 2, 15, 26, 2, 142, 2, 37, 3, 2, 2, 2, 4, 45, 3, 2,
+	2, 2, 6, 47, 3, 2, 2, 2, 8, 52, 3, 2, 2, 2, 10, 86, 3, 2, 2, 2, 12, 88,
+	3, 2, 2, 2, 14, 93, 3, 2, 2, 2, 16, 95, 3, 2, 2, 2, 18, 97, 3, 2, 2, 2,
+	20, 99, 3, 2, 2, 2, 22, 114, 3, 2, 2, 2, 24, 116, 3, 2, 2, 2, 26, 119,
+	3, 2, 2, 2, 28, 122, 3, 2, 2, 2, 30, 131, 3, 2, 2, 2, 32, 36, 5, 4, 3,
+	2, 33, 36, 5, 12, 7, 2, 34, 36, 5, 16, 9, 2, 35, 32, 3, 2, 2, 2, 35, 33,
+	3, 2, 2, 2, 35, 34, 3, 2, 2, 2, 36, 39, 3, 2, 2, 2, 37, 35, 3, 2, 2, 2,
+	37, 38, 3, 2, 2, 2, 38, 40, 3, 2, 2, 2, 39, 37, 3, 2, 2, 2, 40, 41, 7,
+	2, 2, 3, 41, 3, 3, 2, 2, 2, 42, 46, 5, 6, 4, 2, 43, 46, 5, 8, 5, 2, 44,
+	46, 5, 10, 6, 2, 45, 42, 3, 2, 2, 2, 45, 43, 3, 2, 2, 2, 45, 44, 3, 2,
+	2, 2, 46, 5, 3, 2, 2, 2, 47, 48, 7, 40, 2, 2, 48, 50, 5, 18, 10, 2, 49,
+	51, 7, 38, 2, 2, 50, 49, 3, 2, 2, 2, 50, 51, 3, 2, 2, 2, 51, 7, 3, 2, 2,
+	2, 52, 53, 7, 40, 2, 2, 53, 58, 7, 3, 2, 2, 54, 56, 7, 4, 2, 2, 55, 54,
+	3, 2, 2, 2, 55, 56, 3, 2, 2, 2, 56, 57, 3, 2, 2, 2, 57, 59, 5, 18, 10,
+	2, 58, 55, 3, 2, 2, 2, 59, 60, 3, 2, 2, 2, 60, 58, 3, 2, 2, 2, 60, 61,
+	3, 2, 2, 2, 61, 62, 3, 2, 2, 2, 62, 64, 7, 5, 2, 2, 63, 65, 7, 38, 2, 2,
+	64, 63, 3, 2, 2, 2, 64, 65, 3, 2, 2, 2, 65, 9, 3, 2, 2, 2, 66, 67, 7, 40,
+	2, 2, 67, 68, 7, 6, 2, 2, 68, 73, 7, 41, 2, 2, 69, 70, 7, 7, 2, 2, 70,
+	72, 5, 20, 11, 2, 71, 69, 3, 2, 2, 2, 72, 75, 3, 2, 2, 2, 73, 71, 3, 2,
+	2, 2, 73, 74, 3, 2, 2, 2, 74, 87, 3, 2, 2, 2, 75, 73, 3, 2, 2, 2, 76, 77,
+	7, 40, 2, 2, 77, 78, 7, 6, 2, 2, 78, 83, 7, 40, 2, 2, 79, 80, 7, 7, 2,
+	2, 80, 82, 5, 20, 11, 2, 81, 79, 3, 2, 2, 2, 82, 85, 3, 2, 2, 2, 83, 81,
+	3, 2, 2, 2, 83, 84, 3, 2, 2, 2, 84, 87, 3, 2, 2, 2, 85, 83, 3, 2, 2, 2,
+	86, 66, 3, 2, 2, 2, 86, 76, 3, 2, 2, 2, 87, 11, 3, 2, 2, 2, 88, 89, 5,
+	14, 8, 2, 89, 90, 7, 8, 2, 2, 90, 91, 7, 40, 2, 2, 91, 92, 7, 9, 2, 2,
+	92, 13, 3, 2, 2, 2, 93, 94, 9, 2, 2, 2, 94, 15, 3, 2, 2, 2, 95, 96, 7,
+	40, 2, 2, 96, 17, 3, 2, 2, 2, 97, 98, 9, 3, 2, 2, 98, 19, 3, 2, 2, 2, 99,
+	100, 5, 22, 12, 2, 100, 21, 3, 2, 2, 2, 101, 115, 5, 28, 15, 2, 102, 103,
+	7, 27, 2, 2, 103, 115, 5, 24, 13, 2, 104, 105, 7, 28, 2, 2, 105, 115, 5,
+	26, 14, 2, 106, 115, 7, 16, 2, 2, 107, 115, 7, 17, 2, 2, 108, 115, 7, 29,
+	2, 2, 109, 115, 7, 30, 2, 2, 110, 115, 7, 31, 2, 2, 111, 112, 7, 32, 2,
+	2, 112, 115, 7, 40, 2, 2, 113, 115, 7, 33, 2, 2, 114, 101, 3, 2, 2, 2,
+	114, 102, 3, 2, 2, 2, 114, 104, 3, 2, 2, 2, 114, 106, 3, 2, 2, 2, 114,
+	107, 3, 2, 2, 2, 114, 108, 3, 2, 2, 2, 114, 109, 3, 2, 2, 2, 114, 110,
+	3, 2, 2, 2, 114, 111, 3, 2, 2, 2, 114, 113, 3, 2, 2, 2, 115, 23, 3, 2,
+	2, 2, 116, 117, 7, 34, 2, 2, 117, 118, 5, 18, 10, 2, 118, 25, 3, 2, 2,
+	2, 119, 120, 7, 35, 2, 2, 120, 121, 7, 40, 2, 2, 121, 27, 3, 2, 2, 2, 122,
+	123, 7, 36, 2, 2, 123, 128, 5, 30, 16, 2, 124, 125, 7, 4, 2, 2, 125, 127,
+	5, 30, 16, 2, 126, 124, 3, 2, 2, 2, 127, 130, 3, 2, 2, 2, 128, 126, 3,
+	2, 2, 2, 128, 129, 3, 2, 2, 2, 129, 29, 3, 2, 2, 2, 130, 128, 3, 2, 2,
+	2, 131, 132, 7, 40, 2, 2, 132, 133, 7, 37, 2, 2, 133, 134, 7, 41, 2, 2,
+	134, 31, 3, 2, 2, 2, 14, 35, 37, 45, 50, 55, 60, 64, 73, 83, 86, 114, 128,
 }
 var deserializer = antlr.NewATNDeserializer(nil)
 var deserializedATN = deserializer.DeserializeFromUInt16(parserATN)
@@ -81,14 +82,15 @@ var deserializedATN = deserializer.DeserializeFromUInt16(parserATN)
 var literalNames = []string{
 	"", "'tuple['", "','", "']'", "'='", "'|'", "'('", "')'", "'type'", "'print'",
 	"'size'", "'typex'", "'printx'", "'string'", "'sha1'", "'md5'", "'ntfs'",
-	"'file'", "'packet'", "'pcap'", "'exifinfo'", "'datetime'", "'extract'",
-	"'sort'", "'sha256'", "'getGetRequests'", "'diskinfo'", "'NUGGETGENERATORPLACEHOLDER'",
+	"'file'", "'packet'", "'pcap'", "'exifinfo'", "'datetime'", "'listof-md5'",
+	"'listof-sha1'", "'listof-sha256'", "'extract'", "'sort'", "'sha256'",
+	"'getGetRequests'", "'diskinfo'", "'union'", "'NUGGETGENERATORPLACEHOLDER'",
 	"'as'", "'by'", "'filter'", "", "'[]'",
 }
 var symbolicNames = []string{
 	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "", "", "", "", "", "", "COMPOP", "LISTOP",
-	"INT", "ID", "STRING", "WS", "NL", "LINE_COMMENT",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "COMPOP",
+	"LISTOP", "INT", "ID", "STRING", "WS", "NL", "LINE_COMMENT",
 }
 
 var ruleNames = []string{
@@ -155,14 +157,18 @@ const (
 	Nugget2ParserT__27        = 28
 	Nugget2ParserT__28        = 29
 	Nugget2ParserT__29        = 30
-	Nugget2ParserCOMPOP       = 31
-	Nugget2ParserLISTOP       = 32
-	Nugget2ParserINT          = 33
-	Nugget2ParserID           = 34
-	Nugget2ParserSTRING       = 35
-	Nugget2ParserWS           = 36
-	Nugget2ParserNL           = 37
-	Nugget2ParserLINE_COMMENT = 38
+	Nugget2ParserT__30        = 31
+	Nugget2ParserT__31        = 32
+	Nugget2ParserT__32        = 33
+	Nugget2ParserT__33        = 34
+	Nugget2ParserCOMPOP       = 35
+	Nugget2ParserLISTOP       = 36
+	Nugget2ParserINT          = 37
+	Nugget2ParserID           = 38
+	Nugget2ParserSTRING       = 39
+	Nugget2ParserWS           = 40
+	Nugget2ParserNL           = 41
+	Nugget2ParserLINE_COMMENT = 42
 )
 
 // Nugget2Parser rules.
@@ -758,7 +764,7 @@ func (p *Nugget2Parser) Define_tuple() (localctx IDefine_tupleContext) {
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ok := true; ok; ok = (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<Nugget2ParserT__1)|(1<<Nugget2ParserT__12)|(1<<Nugget2ParserT__13)|(1<<Nugget2ParserT__14)|(1<<Nugget2ParserT__15)|(1<<Nugget2ParserT__16)|(1<<Nugget2ParserT__17)|(1<<Nugget2ParserT__18)|(1<<Nugget2ParserT__19)|(1<<Nugget2ParserT__20))) != 0) {
+	for ok := true; ok; ok = (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<Nugget2ParserT__1)|(1<<Nugget2ParserT__12)|(1<<Nugget2ParserT__13)|(1<<Nugget2ParserT__14)|(1<<Nugget2ParserT__15)|(1<<Nugget2ParserT__16)|(1<<Nugget2ParserT__17)|(1<<Nugget2ParserT__18)|(1<<Nugget2ParserT__19)|(1<<Nugget2ParserT__20)|(1<<Nugget2ParserT__21)|(1<<Nugget2ParserT__22)|(1<<Nugget2ParserT__23))) != 0) {
 		p.SetState(53)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
@@ -1364,7 +1370,7 @@ func (p *Nugget2Parser) Nugget_type() (localctx INugget_typeContext) {
 	p.SetState(95)
 	_la = p.GetTokenStream().LA(1)
 
-	if !(((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<Nugget2ParserT__12)|(1<<Nugget2ParserT__13)|(1<<Nugget2ParserT__14)|(1<<Nugget2ParserT__15)|(1<<Nugget2ParserT__16)|(1<<Nugget2ParserT__17)|(1<<Nugget2ParserT__18)|(1<<Nugget2ParserT__19)|(1<<Nugget2ParserT__20))) != 0) {
+	if !(((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<Nugget2ParserT__12)|(1<<Nugget2ParserT__13)|(1<<Nugget2ParserT__14)|(1<<Nugget2ParserT__15)|(1<<Nugget2ParserT__16)|(1<<Nugget2ParserT__17)|(1<<Nugget2ParserT__18)|(1<<Nugget2ParserT__19)|(1<<Nugget2ParserT__20)|(1<<Nugget2ParserT__21)|(1<<Nugget2ParserT__22)|(1<<Nugget2ParserT__23))) != 0) {
 		p.GetErrorHandler().RecoverInline(p)
 	} else {
 		p.GetErrorHandler().ReportMatch(p)
@@ -1539,6 +1545,10 @@ func (s *Action_wordContext) ByField() IByFieldContext {
 	return t.(IByFieldContext)
 }
 
+func (s *Action_wordContext) ID() antlr.TerminalNode {
+	return s.GetToken(Nugget2ParserID, 0)
+}
+
 func (s *Action_wordContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -1579,33 +1589,33 @@ func (p *Nugget2Parser) Action_word() (localctx IAction_wordContext) {
 		}
 	}()
 
-	p.SetState(110)
+	p.SetState(112)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
-	case Nugget2ParserT__29:
+	case Nugget2ParserT__33:
 		p.EnterOuterAlt(localctx, 1)
 		{
 			p.SetState(99)
 			p.Filter()
 		}
 
-	case Nugget2ParserT__21:
+	case Nugget2ParserT__24:
 		p.EnterOuterAlt(localctx, 2)
 		{
 			p.SetState(100)
-			p.Match(Nugget2ParserT__21)
+			p.Match(Nugget2ParserT__24)
 		}
 		{
 			p.SetState(101)
 			p.AsType()
 		}
 
-	case Nugget2ParserT__22:
+	case Nugget2ParserT__25:
 		p.EnterOuterAlt(localctx, 3)
 		{
 			p.SetState(102)
-			p.Match(Nugget2ParserT__22)
+			p.Match(Nugget2ParserT__25)
 		}
 		{
 			p.SetState(103)
@@ -1626,32 +1636,43 @@ func (p *Nugget2Parser) Action_word() (localctx IAction_wordContext) {
 			p.Match(Nugget2ParserT__14)
 		}
 
-	case Nugget2ParserT__23:
+	case Nugget2ParserT__26:
 		p.EnterOuterAlt(localctx, 6)
 		{
 			p.SetState(106)
-			p.Match(Nugget2ParserT__23)
+			p.Match(Nugget2ParserT__26)
 		}
 
-	case Nugget2ParserT__24:
+	case Nugget2ParserT__27:
 		p.EnterOuterAlt(localctx, 7)
 		{
 			p.SetState(107)
-			p.Match(Nugget2ParserT__24)
+			p.Match(Nugget2ParserT__27)
 		}
 
-	case Nugget2ParserT__25:
+	case Nugget2ParserT__28:
 		p.EnterOuterAlt(localctx, 8)
 		{
 			p.SetState(108)
-			p.Match(Nugget2ParserT__25)
+			p.Match(Nugget2ParserT__28)
 		}
 
-	case Nugget2ParserT__26:
+	case Nugget2ParserT__29:
 		p.EnterOuterAlt(localctx, 9)
 		{
 			p.SetState(109)
-			p.Match(Nugget2ParserT__26)
+			p.Match(Nugget2ParserT__29)
+		}
+		{
+			p.SetState(110)
+			p.Match(Nugget2ParserID)
+		}
+
+	case Nugget2ParserT__30:
+		p.EnterOuterAlt(localctx, 10)
+		{
+			p.SetState(111)
+			p.Match(Nugget2ParserT__30)
 		}
 
 	default:
@@ -1751,11 +1772,11 @@ func (p *Nugget2Parser) AsType() (localctx IAsTypeContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(112)
-		p.Match(Nugget2ParserT__27)
+		p.SetState(114)
+		p.Match(Nugget2ParserT__31)
 	}
 	{
-		p.SetState(113)
+		p.SetState(115)
 		p.Nugget_type()
 	}
 
@@ -1846,11 +1867,11 @@ func (p *Nugget2Parser) ByField() (localctx IByFieldContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(115)
-		p.Match(Nugget2ParserT__28)
+		p.SetState(117)
+		p.Match(Nugget2ParserT__32)
 	}
 	{
-		p.SetState(116)
+		p.SetState(118)
 		p.Match(Nugget2ParserID)
 	}
 
@@ -1961,28 +1982,28 @@ func (p *Nugget2Parser) Filter() (localctx IFilterContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(118)
-		p.Match(Nugget2ParserT__29)
+		p.SetState(120)
+		p.Match(Nugget2ParserT__33)
 	}
 	{
-		p.SetState(119)
+		p.SetState(121)
 		p.Filter_term()
 	}
-	p.SetState(124)
+	p.SetState(126)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Nugget2ParserT__1 {
 		{
-			p.SetState(120)
+			p.SetState(122)
 			p.Match(Nugget2ParserT__1)
 		}
 		{
-			p.SetState(121)
+			p.SetState(123)
 			p.Filter_term()
 		}
 
-		p.SetState(126)
+		p.SetState(128)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -2082,15 +2103,15 @@ func (p *Nugget2Parser) Filter_term() (localctx IFilter_termContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(127)
+		p.SetState(129)
 		p.Match(Nugget2ParserID)
 	}
 	{
-		p.SetState(128)
+		p.SetState(130)
 		p.Match(Nugget2ParserCOMPOP)
 	}
 	{
-		p.SetState(129)
+		p.SetState(131)
 		p.Match(Nugget2ParserSTRING)
 	}
 

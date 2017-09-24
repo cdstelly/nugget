@@ -30,7 +30,8 @@ singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx');
 
 singleton_var: ID;
 
-nugget_type: 'string'  |
+nugget_type:
+      'string'     |
       'sha1'       |
       'md5'        |
       'ntfs'       |
@@ -38,7 +39,12 @@ nugget_type: 'string'  |
       'packet'     |
       'pcap'       |
       'exifinfo'   |
-      'datetime';
+      'datetime'   |
+      'listof-md5' |
+      'listof-sha1'|
+      'listof-sha256'
+      ;
+
 
 nugget_action: action_word ;
 
@@ -51,6 +57,7 @@ action_word:
 	'sha256'|
 	'getGetRequests'|
 	'diskinfo' |
+	'union'    ID |
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 
