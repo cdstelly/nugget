@@ -11,7 +11,7 @@ type SHA256Action struct {
 	dependsOn BaseAction
 	filters []NTypes.Filter
 
-	results []NTypes.MD5
+	results []NTypes.SHA256
 }
 
 func (na *SHA256Action) BeenExecuted() bool {
@@ -49,7 +49,7 @@ func (na *SHA256Action) Execute() {
 			hasher.Write([]byte(fn))
 			myhash := fmt.Sprintf("%x\n", hasher.Sum(nil))
 			println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)
-			na.results = append(na.results, NTypes.MD5{Digest:myhash})
+			na.results = append(na.results, NTypes.SHA256{Digest:myhash})
 		}
 	}
 	na.executed = true

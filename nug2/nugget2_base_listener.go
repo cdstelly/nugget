@@ -69,12 +69,6 @@ func (s *BaseNugget2Listener) EnterSingleton_var(ctx *Singleton_varContext) {}
 // ExitSingleton_var is called when production singleton_var is exited.
 func (s *BaseNugget2Listener) ExitSingleton_var(ctx *Singleton_varContext) {}
 
-// EnterAsType is called when production asType is entered.
-func (s *BaseNugget2Listener) EnterAsType(ctx *AsTypeContext) {}
-
-// ExitAsType is called when production asType is exited.
-func (s *BaseNugget2Listener) ExitAsType(ctx *AsTypeContext) {}
-
 // EnterNugget_type is called when production nugget_type is entered.
 func (s *BaseNugget2Listener) EnterNugget_type(ctx *Nugget_typeContext) {}
 
@@ -92,6 +86,18 @@ func (s *BaseNugget2Listener) EnterAction_word(ctx *Action_wordContext) {}
 
 // ExitAction_word is called when production action_word is exited.
 func (s *BaseNugget2Listener) ExitAction_word(ctx *Action_wordContext) {}
+
+// EnterAsType is called when production asType is entered.
+func (s *BaseNugget2Listener) EnterAsType(ctx *AsTypeContext) {}
+
+// ExitAsType is called when production asType is exited.
+func (s *BaseNugget2Listener) ExitAsType(ctx *AsTypeContext) {}
+
+// EnterByField is called when production byField is entered.
+func (s *BaseNugget2Listener) EnterByField(ctx *ByFieldContext) {}
+
+// ExitByField is called when production byField is exited.
+func (s *BaseNugget2Listener) ExitByField(ctx *ByFieldContext) {}
 
 // EnterFilter is called when production filter is entered.
 func (s *BaseNugget2Listener) EnterFilter(ctx *FilterContext) {}

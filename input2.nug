@@ -73,8 +73,21 @@ typex(myhashesfilb)
 //memext = mymemory | extract | grep passwords
 
 
-myhashesfilc = "file.dd" | extract  as ntfs | filter ctime > "01/01/09"
-myhashesfilc
+//myhashesfilc = "file.dd" | extract  as ntfs | filter ctime > "01/01/09"
+//myhashesfilc
 
-myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
-myhashesfild
+//myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
+//myhashesfild
+
+mydiskinfo = "file.dd" | extract as ntfs | diskinfo
+mydiskinfo
+
+myfilehashes = "file.dd" | extract  as ntfs | sha256
+myfilehashes
+printx(myfilehashes)
+typex(myfilehashes)
+
+
+knownhashes = "file.dd" | extract as listof-sha1
+knownhashes = "file.dd" | extract as listof-md5
+knownhashes = "file.dd" | extract as listof-sha256

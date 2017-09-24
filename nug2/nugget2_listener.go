@@ -32,9 +32,6 @@ type Nugget2Listener interface {
 	// EnterSingleton_var is called when entering the singleton_var production.
 	EnterSingleton_var(c *Singleton_varContext)
 
-	// EnterAsType is called when entering the asType production.
-	EnterAsType(c *AsTypeContext)
-
 	// EnterNugget_type is called when entering the nugget_type production.
 	EnterNugget_type(c *Nugget_typeContext)
 
@@ -43,6 +40,12 @@ type Nugget2Listener interface {
 
 	// EnterAction_word is called when entering the action_word production.
 	EnterAction_word(c *Action_wordContext)
+
+	// EnterAsType is called when entering the asType production.
+	EnterAsType(c *AsTypeContext)
+
+	// EnterByField is called when entering the byField production.
+	EnterByField(c *ByFieldContext)
 
 	// EnterFilter is called when entering the filter production.
 	EnterFilter(c *FilterContext)
@@ -74,9 +77,6 @@ type Nugget2Listener interface {
 	// ExitSingleton_var is called when exiting the singleton_var production.
 	ExitSingleton_var(c *Singleton_varContext)
 
-	// ExitAsType is called when exiting the asType production.
-	ExitAsType(c *AsTypeContext)
-
 	// ExitNugget_type is called when exiting the nugget_type production.
 	ExitNugget_type(c *Nugget_typeContext)
 
@@ -85,6 +85,12 @@ type Nugget2Listener interface {
 
 	// ExitAction_word is called when exiting the action_word production.
 	ExitAction_word(c *Action_wordContext)
+
+	// ExitAsType is called when exiting the asType production.
+	ExitAsType(c *AsTypeContext)
+
+	// ExitByField is called when exiting the byField production.
+	ExitByField(c *ByFieldContext)
 
 	// ExitFilter is called when exiting the filter production.
 	ExitFilter(c *FilterContext)

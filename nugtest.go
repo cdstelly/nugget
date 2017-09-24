@@ -98,7 +98,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		thisSortField := getValue(ctx.Action_word()).(NTypes.Sort)
 		theAction = &NActions.SortAction{SortField:thisSortField.Field}
 	case "extract":
-
 		extractType := getValue(ctx.Action_word()).(NTypes.Extract)
 		if extractType.AsType == "pcap" {
 			theAction = &NActions.ExtractPCAP{}
@@ -113,6 +112,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.SHA256Action{}
 	case "md5":
 		theAction = &NActions.MD5Action{}
+	case "diskinfo":
+		theAction = &NActions.DiskInfoAction{}
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
@@ -389,7 +390,6 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 /*****
 RPC Testing
 *****/
-
 type NugArg struct {
 	TheData []byte
 }
