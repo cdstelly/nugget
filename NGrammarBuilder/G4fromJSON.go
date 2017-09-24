@@ -31,8 +31,8 @@ var (
 )
 
 func init() {
-	G4Path = "Nugget2.g4"
-	OutPath = "nug2"
+	G4Path = "Nugget.g4"
+	OutPath = "nug"
 	JSONDir = "NGrammarBuilder"
 	AntlrPath = "C:\\Users\\drew\\.Gogland1.0\\config\\plugins\\intellij-plugin-v4\\lib\\antlr-4.7-intellij-1.8.4-version-complete.jar"
 }

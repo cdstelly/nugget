@@ -7,7 +7,7 @@ import (
 	"os"
 	"./NTypes"
 	"./NActions"
-	"./nug2"
+	"./nug"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 
 	"reflect"
@@ -25,7 +25,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&pathToInput, "input", "input2.nug", "Path to input")
+	flag.StringVar(&pathToInput, "input", "input.nug", "Path to input")
 	flag.Parse()
 	registers = make(map[string]interface{})
 
@@ -54,7 +54,7 @@ func getValue(n antlr.ParseTree) interface{} {
 }
 
 type TreeShapeListener struct {
-	*parser.BaseNugget2Listener
+	*parser.BaseNuggetListener
 }
 
 func NewTreeShapeListener() *TreeShapeListener {
@@ -466,9 +466,9 @@ func main() {
 		if scanner.Text() == "" { continue }
 		fmt.Printf("nugget> %s\n", scanner.Text())
 		input := antlr.NewInputStream(scanner.Text())
-		lexer := parser.NewNugget2Lexer(input)
+		lexer := parser.NewNuggetLexer(input)
 		stream := antlr.NewCommonTokenStream(lexer, 0)
-		p := parser.NewNugget2Parser(stream)
+		p := parser.NewNuggetParser(stream)
 		p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 		p.BuildParseTrees = true
 		tree := p.Prog()

@@ -1,26 +1,105 @@
-test = "test.dd" extract files  
-f = "file:target.dd" extract files
-pdfs = f
-pdfs = f | select "*.pdf"
-pdfs = f | select "*.pdf", ctime > "01/01/2014"
-pdfs = f | select "*.pdf", ctime <= "02/01/2014"
-pdfs = f | select "*.pdf", ctime <= "01/01/2014", mtime > "01/02/2015"
+//type(myhttp)
+//type(mypcap)
+//type(myfilesA)
+//type(myimage)
 
-pdfhashes = pdfs | hash
-pdfhashes = pdfs | hash rd
-pdfhashes = pdfs | hash rd5
-hashed 	  = pdfhashes
-known 	  = hashed | join "file:known"
+//myEvent tuple[datetime,file,sha1]
 
-pdfs = "file:target.dd" extract files | select "*.pdf", ctime > "01/01/2015"
+//should properties be assignable?
+//myEvent.datetime = "02/01/2015"
+//myEvent.file = myFiles[2]
+//myEvent.sha1 = 51..21
 
-known = pdfs.content | hash md5 | join "file:known"
+//mymemory = "win7dump" as memory using rekall
+//memext = mymemory | extract | grep passwords
 
 
-pdfs = "file:target.dd" extract files | select "*.pdf", ctime > "01/01/2015" | hash md5 
+myimage ntfs
+myfiles file[]
+myhashes sha1[]
 
-save pdfs to pdfs.json
+//myimage = "file.dd" | extract as ntfs
+//myimage
 
-// test test comment
-// fnames = f as (name, size)
-// fnames = f as ($2, %5)
+
+//myfilesA = "file.dd" | extract as ntfs
+//myfilesA
+
+//myfilesB = "file.dd" | extract  as ntfs     //BAD INPUT -- giving a .dd as a pcap should result in runtime error when it gets executed upon
+//myfilesB
+
+//myhashesdir = myfilesA | sha1
+// myhashesdir
+
+//myhashespipe = "file.dd" | extract  as ntfs | sha1
+
+//myhashesdir
+//myhashespipe
+//asdf
+//myfilesA
+//myfilesB
+
+//myhashesfila = "file.dd" | extract  as ntfs | filter filename == "*.pdf",ctime>"01/01/01" | sha1
+//myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/01" | sha1
+//myhashesfila
+//myhashesfilb
+
+myhashesfilb = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sha1
+//myhashesfila
+myhashesfilb
+
+//reset
+//mypcap pcap
+//mypackets packet[]
+
+mypcap = "G:\school\sample.pcap" | extract as pcap
+//mypcap
+myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
+//myhttp
+
+otherpcap = "G:\school\sample.pcap" | extract as pcap
+getandpost = otherpcap | filter packetfilter == "tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504F5354 or tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420"
+//getandpost
+type(getandpost)
+typex(getandpost)
+printx(getandpost)
+
+type(myhashesfilb)
+typex(myhashesfilb)
+
+//matches = "knownHashes.txt" | extract as plaintext-hashes | union fileAHashes
+
+//mymemory = "win7dump" as memory using rekall
+//memext = mymemory | extract | grep passwords
+
+
+//myhashesfilc = "file.dd" | extract  as ntfs | filter ctime > "01/01/09"
+//myhashesfilc
+
+//myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
+//myhashesfild
+
+mydiskinfo = "file.dd" | extract as ntfs | diskinfo
+mydiskinfo
+
+myfilehashes = "file.dd" | extract  as ntfs | md5
+myfilehashes
+printx(myfilehashes)
+typex(myfilehashes)
+
+
+knownhashes = "file.dd" | extract as listof-md5
+//knownhashes = "file.dd" | extract as listof-md5
+//knownhashes = "file.dd" | extract as listof-sha256
+
+print(knownhashes)
+type(knownhashes)
+printx(knownhashes)
+typex(knownhashes)
+
+//how to pass file information forward?
+matches = myfilehashes | union knownhashes
+printx(matches)
+
+//ie, we want the above to print out the fileinfo in additioni to what matches
+
