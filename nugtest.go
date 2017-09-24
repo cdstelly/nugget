@@ -22,7 +22,6 @@ var (
 	nodeMap map[antlr.ParseTree]interface{}
 
 	typeRegistry map[string]reflect.Type
-
 )
 
 func init() {
@@ -62,10 +61,6 @@ func NewTreeShapeListener() *TreeShapeListener {
 	return new(TreeShapeListener)
 }
 
-func (s *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-
-}
-
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
 	var myFilters []NTypes.Filter
 	var action_verb string
@@ -80,6 +75,10 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
+	//handle unions
+	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
+		action_verb = "union"
+
     //handle everything else
 	} else {
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
@@ -103,6 +102,12 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 			theAction = &NActions.ExtractPCAP{}
 		} else if extractType.AsType == "ntfs" {
 			theAction = &NActions.ExtractNTFS{}
+		} else if extractType.AsType == "md5hashes" {
+			theAction = &NActions.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
+		} else if extractType.AsType == "sha1hashes" {
+			theAction = &NActions.ExtractList{ListType: "sha1",ListLocation: extractType.PathToExtract}
+		} else if extractType.AsType == "sha256hashes" {
+			theAction = &NActions.ExtractList{ListType: "sha256",ListLocation: extractType.PathToExtract}
 		} else {
 			fmt.Println("Error parsing given type: ", extractType.AsType)
 		}
@@ -114,6 +119,17 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.MD5Action{}
 	case "diskinfo":
 		theAction = &NActions.DiskInfoAction{}
+	case "union":
+		//todo: figure out how to pass file info forward as well?
+		unionType := getValue(ctx.Action_word()).(NTypes.Union)
+		var theListFromVar []string
+		if val, ok := registers[unionType.AgainstVarName].(NActions.BaseAction); ok {
+			fmt.Println(val.GetResults())
+			theListFromVar = val.GetResults().([]string)
+		} else {
+			fmt.Println("Error! Was not able to find var: ", unionType.AgainstVarName)
+		}
+		theAction = &NActions.UnionAction{VariableList: theListFromVar}
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
@@ -209,17 +225,6 @@ func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
-	//if no actions, then we do a simple calculation and assign it to a register, something like: myimage = "file.dd" as ntfs
-	/* removed when moving 'astype' with 'extract' action
-	if ctx.AsType() != nil {
-		extractTarget := ctx.STRING().GetText()
-		extractType := ctx.AsType().GetStop().GetText()
-		//fmt.Println("a direct assignment has extract info: ", extractTarget, " ", extractType)
-		registers[varIdentifier] = NTypes.Extract{PathToExtract: extractTarget,AsType:extractType}
-	} else {
-		*/
-
-
 	actions := ctx.AllNugget_action()
 	//setup actions if necessary
 	var builtActions []NActions.BaseAction
@@ -301,7 +306,6 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 //investigate from here -
 // maybe we generate an extract type here and pass it up the chain, just like we do for flter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
-
 	//handle extractions
 	if ctx.AsType() != nil {
 		myT := getValue(ctx.AsType())
@@ -310,6 +314,12 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"} )
 		} else if myT == "ntfs" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"} )
+		} else if myT == "listof-md5" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\md5hashes.txt", AsType: "md5hashes"} )
+		} else if myT == "listof-sha1" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"} )
+		} else if myT == "listof-sha256" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"} )
 		} else {
 			fmt.Println("error on type extraction")
 		}
@@ -319,14 +329,18 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle sorts
 	} else if ctx.ByField() != nil {
 		fmt.Println("sort by: ", getValue(ctx.ByField()))
-		if val,ok := getValue(ctx.ByField()).(string); ok {
+		if val, ok := getValue(ctx.ByField()).(string); ok {
 			fmt.Println("sort string: ", val)
-			setValue(ctx, NTypes.Sort{Field: val })
+			setValue(ctx, NTypes.Sort{Field: val})
 		}
+	//handle union
+	} else if ctx.ID() != nil {
+		setValue(ctx, NTypes.Union{Results:[]string{""}, AgainstVarName: ctx.ID().GetText()})
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
 }
+
 
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})

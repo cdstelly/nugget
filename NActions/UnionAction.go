@@ -1,9 +1,7 @@
 package NActions
 
-import "fmt"
 import (
 	"../NTypes"
-	"reflect"
 )
 
 type UnionAction struct {
@@ -31,12 +29,10 @@ func (na *UnionAction) SetDependency(action BaseAction) {
 }
 func (na *UnionAction) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("union has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute union..")
 	resultSet := []string{}
 
 	operateOn := na.dependsOn.GetResults()
@@ -44,7 +40,7 @@ func (na *UnionAction) Execute() {
 	//todo what about sha1 and sha256..
 	//todo optimize this n^2 comparison loop..
 	if strList, ok := operateOn.([]NTypes.MD5); ok {
-		fmt.Println("going to execute union against MD5..")
+		//fmt.Println("going to execute union against a hash..")
 		for _, stringFromVar := range na.VariableList {
 			for _, stringFromDep := range strList {
 				//fmt.Println("Comparing: ", stringFromVar, stringFromDep)

@@ -82,12 +82,24 @@ typex(myhashesfilb)
 mydiskinfo = "file.dd" | extract as ntfs | diskinfo
 mydiskinfo
 
-myfilehashes = "file.dd" | extract  as ntfs | sha256
+myfilehashes = "file.dd" | extract  as ntfs | md5
 myfilehashes
 printx(myfilehashes)
 typex(myfilehashes)
 
 
-knownhashes = "file.dd" | extract as listof-sha1
 knownhashes = "file.dd" | extract as listof-md5
-knownhashes = "file.dd" | extract as listof-sha256
+//knownhashes = "file.dd" | extract as listof-md5
+//knownhashes = "file.dd" | extract as listof-sha256
+
+print(knownhashes)
+type(knownhashes)
+printx(knownhashes)
+typex(knownhashes)
+
+//how to pass file information forward?
+matches = myfilehashes | union knownhashes
+printx(matches)
+
+//ie, we want the above to print out the fileinfo in additioni to what matches
+
