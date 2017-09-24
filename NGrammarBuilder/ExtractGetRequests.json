@@ -1,0 +1,6 @@
+{
+  "name": "getGetRequests",
+  "codepath": "NExtractGetRequestsAction.go",
+  "operatesOn": ["pcap"],
+  "produces": "strings"
+}

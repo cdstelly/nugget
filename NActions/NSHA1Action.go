@@ -61,7 +61,7 @@ func (na *SHA1Action) Execute() {
 			hasher := sha1.New()
 			fn := GetAFilename(file)
 			hasher.Write([]byte(fn))
-			myhash := fmt.Sprintf("%x\n", hasher.Sum(nil))
+			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
 			println("index: ", index, " file: ", file.Filenames, " sha1: ", myhash)
 			na.results = append(na.results, NTypes.SHA1{myhash})
 		}
@@ -77,5 +77,7 @@ func (na *SHA1Action) GetResults() interface{}{
 }
 
 func (na *SHA1Action) SetFilters(filters []NTypes.Filter) {
+	//TODO: investigate if resetting executed status will be a problem:
+	na.executed = false
 	na.filters = filters
 }

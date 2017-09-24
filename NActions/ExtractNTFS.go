@@ -169,11 +169,12 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 		if len(fi.Dataruns) > fraglimit { // revisit -- registry files are causing crashes, extremely fragmented files with lots of data runs slow things down significantly
 			fmt.Println("Won't add file ", GetAFilename(fi), "  id: ", fi.Id, " -- too fragmented (over ", fraglimit, " fragments)")
 		} else {
-			//fileInfoMapping[fi.Id] = fi //TODO see if we can get rid of array and just keep mapping
-			if na.doesFilePassFilters(fi) {
-				allfiles = append(allfiles, fi)
-			} else {
-				fmt.Println("the file: ", GetAFilename(fi), "did not match our filter")
+			if GetAFilename(fi) != "null" {
+				if na.doesFilePassFilters(fi) {
+						allfiles = append(allfiles, fi)
+				} else {
+					//fmt.Println("the file: ", GetAFilename(fi), "did not match our filter")
+				}
 			}
  		}
 	}
@@ -185,7 +186,7 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 func (na *ExtractNTFS) doesFilePassFilters(fi NTypes.FileInfo) bool {
 	passes := true
 	for _,filter := range na.filters {
-		switch (filter.Field){
+		switch filter.Field{
 		case "filename":
 			if filter.Op != "==" {
 				fmt.Println("Error - Operation ", filter.Op, "not supported")
@@ -204,18 +205,20 @@ func (na *ExtractNTFS) doesFilePassFilters(fi NTypes.FileInfo) bool {
 				}
 			}
 		case "ctime":
+			theTime := strings.Trim(filter.Value, "\"")
 			layout := "01/02/06"
-			t, err := time.Parse(layout, filter.Value)
+			t, err := time.Parse(layout, theTime)
 			checkError(err)
+			//fmt.Println("datetime of filter:", t.String(), " datetime of file: ", fi.Createtime.String())
 			switch(filter.Op) {
 			case ">":
-				return t.After(fi.Createtime)
-			case ">=":
-				return t.Equal(fi.Createtime) || t.After(fi.Createtime)
-			case "<=":
-				return t.Equal(fi.Createtime) || t.Before(fi.Createtime)
-			case "<":
 				return t.Before(fi.Createtime)
+			case ">=":
+				return t.Equal(fi.Createtime) || t.Before(fi.Createtime)
+			case "<=":
+				return t.Equal(fi.Createtime) || t.After(fi.Createtime)
+			case "<":
+				return t.After(fi.Createtime)
 			case "==":
 				d := fi.Createtime.String()
 				dt, err := time.Parse(layout,d)
@@ -225,18 +228,19 @@ func (na *ExtractNTFS) doesFilePassFilters(fi NTypes.FileInfo) bool {
 				fmt.Println("Error - operation", filter.Op, " not recognized")
 			}
 		case "mtime":
+			theTime := strings.Trim(filter.Value, "\"")
 			layout := "01/02/06"
-			t, err := time.Parse(layout, filter.Value)
+			t, err := time.Parse(layout, theTime)
 			checkError(err)
 			switch(filter.Op) {
 			case ">":
-				return t.After(fi.Modifytime)
-			case ">=":
-				return t.Equal(fi.Modifytime) || t.After(fi.Modifytime)
-			case "<=":
-				return t.Equal(fi.Modifytime) || t.Before(fi.Modifytime)
-			case "<":
 				return t.Before(fi.Modifytime)
+			case ">=":
+				return t.Equal(fi.Modifytime) || t.Before(fi.Modifytime)
+			case "<=":
+				return t.Equal(fi.Modifytime) || t.After(fi.Modifytime)
+			case "<":
+				return t.After(fi.Modifytime)
 			case "==":
 				d := fi.Modifytime.String()
 				dt, err := time.Parse(layout,d)
@@ -323,6 +327,7 @@ func checkError(err error) {
 }
 
 func (na *ExtractNTFS) SetFilters(filters []NTypes.Filter) {
+	//TODO: investigate if resetting executed status will be a problem:
+	na.executed = false
 	na.filters = filters
 }
-

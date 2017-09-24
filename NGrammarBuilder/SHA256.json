@@ -1,0 +1,6 @@
+{
+  "name": "sha256",
+  "codepath": "NSHA256Action.go",
+  "operatesOn": ["bytes"],
+  "produces": "strings"
+}

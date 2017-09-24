@@ -1,116 +1,83 @@
-grammar Nugget; 
+grammar Nugget;
 
-tokens {
-	ROOT,
-	ATTR_LIST
+@header {
+    // import "../NTypes"
 }
 
-nugget:   sin 		EOF
-	| execute 	EOF
-	| initextract
-	| printId	EOF
-	| assign	EOF
-	| save		EOF 
-	| EOF
+prog: (         define_assign |
+       operation_on_singleton |
+         singleton_var )*
+        EOF
 ;
 
-initextract : StrLit '=' target EXTRACT subtype
-	    | initextract streamTask
+define_assign:   define |
+                 define_tuple |
+                 assign
 ;
 
-assign	: StrLit '=' StrLit ;
+define: ID nugget_type LISTOP? ;
 
-execute	: StrLit '=' StrLit '|' task  (streamTask)*
-	| StrLit '=' StrLit '|' task filter (',' filter)*  (streamTask)*
-	| StrLit '=' StrLit '|' task StrLit (streamTask)*
+define_tuple: ID 'tuple[' (','? nugget_type)+ ']' LISTOP?;
+
+
+assign: ID '=' STRING ('|' nugget_action)* |
+        ID '=' ID ('|' nugget_action)*
 ;
 
-streamTask : '|' task
-	   | '|' task filter (',' filter)*
-	   | '|' task StrLit
+operation_on_singleton: singleton_op '(' ID ')';
+
+singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx');
+
+singleton_var: ID;
+
+nugget_type:
+      'string'     |
+      'sha1'       |
+      'md5'        |
+      'ntfs'       |
+      'file'       |
+      'packet'     |
+      'pcap'       |
+      'exifinfo'   |
+      'datetime'   |
+      'listof-md5' |
+      'listof-sha1'|
+      'listof-sha256'
+      ;
+
+
+nugget_action: action_word ;
+
+action_word:
+    filter    |
+    'extract' asType |
+    'sort'    byField |
+    'sha1'    |
+    'md5'     |
+	'sha256'|
+	'getGetRequests'|
+	'diskinfo' |
+	'union'    ID |
+	'NUGGETGENERATORPLACEHOLDER'
 ;
 
-save :	'save' StrLit 'to' StrLit
-;
+asType: 'as' nugget_type;
+byField:'by' ID;
 
-filter  : filename
-	| timefilter
-;
+filter :
+    'filter' filter_term (',' filter_term)*;
 
-filename : '"' StrLit '"'
-;
+filter_term: ID COMPOP STRING;
 
-timefilter: reference OPERATION date
-;
+COMPOP: ('>' | '<' | '>=' | '<=' | '==');
+LISTOP: '[]';
 
-reference : CTIME
-	  | MTIME
-;
+INT : [0-9]+;
+ID : [a-zA-Z]+;
+STRING: '"' ('""'|~'"')* '"';
 
-date 	: '"' DATE '"' 
-;
-
-subtype	: FILES
-	| IMAGES
-	| DOCUMENTS
-	| ALL
-; 
-
-task    : HASH
-	| EXTRACT
-	| SELECT
-	| JOIN
-;
-
-target  : '"' StrLit '"' 
-	| StrLit
-;
-	
-field
-	: StrLit (',' StrLit)*
-	| '\'' field '\''
-;
-
-sourceidentifier
-	: StrLit
-	| '\'' sourceidentifier '\''
-;
-
-printId
-	: StrLit
-;
-
-sin
-	: SIN '(' NUMBER ')'
-;
-
-CTIME:  'ctime' | 'CTIME';
-MTIME:  'mtime' | 'MTIME'; 
-SIN: 	'sin';
-LOAD:	'load'|'LOAD';
-FROM: 	'from'|'FROM';
-ALL: 	'all'|'ALL';
-HASH: 	'hash'|'HASH';
-SELECT: 'select'|'SELECT';
-FILES: 	'files'|'FILES';
-IMAGES:	'images'|'IMAGES';
-DOCUMENTS: 	'documents' | 'DOCUMENTS'; 
-EXTRACT:	'extract'|'EXTRACT';
-JOIN:   'join'|'JOIN';
-
-WS: [ \n\t\r]+ -> skip;
-COMMENT: '//' .*? -> skip;
-
-NUMBER: DIGIT+ ;
-StrLit  : ('a'..'z' | 'A'..'Z' | '.' | ':' | '*' | DIGIT)+;
-OPERATION : '>' | '<' | '<=' | '>=' | '=' ;
-DATE	: DIGIT DIGIT '/' DIGIT DIGIT '/' DIGIT DIGIT DIGIT DIGIT;
-
-fragment DIGIT : '0'..'9';
-fragment DLMT  : ',';
-fragment WILDCARD : '*';
-
+WS : [ \t\r\n]+ -> skip;
+NL : '\r'? '\n';
 
 LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
-    ;
+    :   '//' ~[\r\n]* -> skip;

@@ -8,111 +8,93 @@ import "github.com/antlr/antlr4/runtime/Go/antlr"
 type NuggetListener interface {
 	antlr.ParseTreeListener
 
-	// EnterNugget is called when entering the nugget production.
-	EnterNugget(c *NuggetContext)
+	// EnterProg is called when entering the prog production.
+	EnterProg(c *ProgContext)
 
-	// EnterInitextract is called when entering the initextract production.
-	EnterInitextract(c *InitextractContext)
+	// EnterDefine_assign is called when entering the define_assign production.
+	EnterDefine_assign(c *Define_assignContext)
+
+	// EnterDefine is called when entering the define production.
+	EnterDefine(c *DefineContext)
+
+	// EnterDefine_tuple is called when entering the define_tuple production.
+	EnterDefine_tuple(c *Define_tupleContext)
 
 	// EnterAssign is called when entering the assign production.
 	EnterAssign(c *AssignContext)
 
-	// EnterExecute is called when entering the execute production.
-	EnterExecute(c *ExecuteContext)
+	// EnterOperation_on_singleton is called when entering the operation_on_singleton production.
+	EnterOperation_on_singleton(c *Operation_on_singletonContext)
 
-	// EnterStreamTask is called when entering the streamTask production.
-	EnterStreamTask(c *StreamTaskContext)
+	// EnterSingleton_op is called when entering the singleton_op production.
+	EnterSingleton_op(c *Singleton_opContext)
 
-	// EnterSave is called when entering the save production.
-	EnterSave(c *SaveContext)
+	// EnterSingleton_var is called when entering the singleton_var production.
+	EnterSingleton_var(c *Singleton_varContext)
+
+	// EnterNugget_type is called when entering the nugget_type production.
+	EnterNugget_type(c *Nugget_typeContext)
+
+	// EnterNugget_action is called when entering the nugget_action production.
+	EnterNugget_action(c *Nugget_actionContext)
+
+	// EnterAction_word is called when entering the action_word production.
+	EnterAction_word(c *Action_wordContext)
+
+	// EnterAsType is called when entering the asType production.
+	EnterAsType(c *AsTypeContext)
+
+	// EnterByField is called when entering the byField production.
+	EnterByField(c *ByFieldContext)
 
 	// EnterFilter is called when entering the filter production.
 	EnterFilter(c *FilterContext)
 
-	// EnterFilename is called when entering the filename production.
-	EnterFilename(c *FilenameContext)
+	// EnterFilter_term is called when entering the filter_term production.
+	EnterFilter_term(c *Filter_termContext)
 
-	// EnterTimefilter is called when entering the timefilter production.
-	EnterTimefilter(c *TimefilterContext)
+	// ExitProg is called when exiting the prog production.
+	ExitProg(c *ProgContext)
 
-	// EnterReference is called when entering the reference production.
-	EnterReference(c *ReferenceContext)
+	// ExitDefine_assign is called when exiting the define_assign production.
+	ExitDefine_assign(c *Define_assignContext)
 
-	// EnterDate is called when entering the date production.
-	EnterDate(c *DateContext)
+	// ExitDefine is called when exiting the define production.
+	ExitDefine(c *DefineContext)
 
-	// EnterSubtype is called when entering the subtype production.
-	EnterSubtype(c *SubtypeContext)
-
-	// EnterTask is called when entering the task production.
-	EnterTask(c *TaskContext)
-
-	// EnterTarget is called when entering the target production.
-	EnterTarget(c *TargetContext)
-
-	// EnterField is called when entering the field production.
-	EnterField(c *FieldContext)
-
-	// EnterSourceidentifier is called when entering the sourceidentifier production.
-	EnterSourceidentifier(c *SourceidentifierContext)
-
-	// EnterPrintId is called when entering the printId production.
-	EnterPrintId(c *PrintIdContext)
-
-	// EnterSin is called when entering the sin production.
-	EnterSin(c *SinContext)
-
-	// ExitNugget is called when exiting the nugget production.
-	ExitNugget(c *NuggetContext)
-
-	// ExitInitextract is called when exiting the initextract production.
-	ExitInitextract(c *InitextractContext)
+	// ExitDefine_tuple is called when exiting the define_tuple production.
+	ExitDefine_tuple(c *Define_tupleContext)
 
 	// ExitAssign is called when exiting the assign production.
 	ExitAssign(c *AssignContext)
 
-	// ExitExecute is called when exiting the execute production.
-	ExitExecute(c *ExecuteContext)
+	// ExitOperation_on_singleton is called when exiting the operation_on_singleton production.
+	ExitOperation_on_singleton(c *Operation_on_singletonContext)
 
-	// ExitStreamTask is called when exiting the streamTask production.
-	ExitStreamTask(c *StreamTaskContext)
+	// ExitSingleton_op is called when exiting the singleton_op production.
+	ExitSingleton_op(c *Singleton_opContext)
 
-	// ExitSave is called when exiting the save production.
-	ExitSave(c *SaveContext)
+	// ExitSingleton_var is called when exiting the singleton_var production.
+	ExitSingleton_var(c *Singleton_varContext)
+
+	// ExitNugget_type is called when exiting the nugget_type production.
+	ExitNugget_type(c *Nugget_typeContext)
+
+	// ExitNugget_action is called when exiting the nugget_action production.
+	ExitNugget_action(c *Nugget_actionContext)
+
+	// ExitAction_word is called when exiting the action_word production.
+	ExitAction_word(c *Action_wordContext)
+
+	// ExitAsType is called when exiting the asType production.
+	ExitAsType(c *AsTypeContext)
+
+	// ExitByField is called when exiting the byField production.
+	ExitByField(c *ByFieldContext)
 
 	// ExitFilter is called when exiting the filter production.
 	ExitFilter(c *FilterContext)
 
-	// ExitFilename is called when exiting the filename production.
-	ExitFilename(c *FilenameContext)
-
-	// ExitTimefilter is called when exiting the timefilter production.
-	ExitTimefilter(c *TimefilterContext)
-
-	// ExitReference is called when exiting the reference production.
-	ExitReference(c *ReferenceContext)
-
-	// ExitDate is called when exiting the date production.
-	ExitDate(c *DateContext)
-
-	// ExitSubtype is called when exiting the subtype production.
-	ExitSubtype(c *SubtypeContext)
-
-	// ExitTask is called when exiting the task production.
-	ExitTask(c *TaskContext)
-
-	// ExitTarget is called when exiting the target production.
-	ExitTarget(c *TargetContext)
-
-	// ExitField is called when exiting the field production.
-	ExitField(c *FieldContext)
-
-	// ExitSourceidentifier is called when exiting the sourceidentifier production.
-	ExitSourceidentifier(c *SourceidentifierContext)
-
-	// ExitPrintId is called when exiting the printId production.
-	ExitPrintId(c *PrintIdContext)
-
-	// ExitSin is called when exiting the sin production.
-	ExitSin(c *SinContext)
+	// ExitFilter_term is called when exiting the filter_term production.
+	ExitFilter_term(c *Filter_termContext)
 }
