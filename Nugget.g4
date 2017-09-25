@@ -40,6 +40,7 @@ nugget_type:
       'pcap'       |
       'exifinfo'   |
       'datetime'   |
+      'memory'     |
       'listof-md5' |
       'listof-sha1'|
       'listof-sha256'
@@ -58,6 +59,7 @@ action_word:
 	'getGetRequests'|
 	'diskinfo' |
 	'union'    ID |
+	'pslist' |
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 
