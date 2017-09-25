@@ -79,8 +79,8 @@ typex(myhashesfilb)
 //myhashesfild = "file.dd" | extract  as ntfs | filter ctime > "01/01/09" | sort by ctime
 //myhashesfild
 
-mydiskinfo = "file.dd" | extract as ntfs | diskinfo
-mydiskinfo
+// mydiskinfo = "file.dd" | extract as ntfs | diskinfo
+// mydiskinfo
 
 myfilehashes = "file.dd" | extract  as ntfs | md5
 myfilehashes
@@ -101,5 +101,7 @@ typex(knownhashes)
 matches = myfilehashes | union knownhashes
 printx(matches)
 
-//ie, we want the above to print out the fileinfo in additioni to what matches
+mymemdump = "thememory.mddramimage" | extract as memory
+mypslist = mymemdump | pslist
 
+printx(mypslist)

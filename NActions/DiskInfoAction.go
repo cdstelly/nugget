@@ -42,7 +42,7 @@ func (na *DiskInfoAction) Execute() {
 	fmt.Println("going to execute disk image info..")
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
-	na.uploadeImageToTSK()
+	na.uploadImageToTSK()
 	diskImageInfo := getImageInfoFromTSK()
 	//fmt.Println(diskImageInfo)
 
@@ -109,7 +109,7 @@ func getImageInfoFromTSK() string {
 	return reply
 }
 
-func (na *DiskInfoAction) uploadeImageToTSK() {
+func (na *DiskInfoAction) uploadImageToTSK() {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)

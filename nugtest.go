@@ -72,6 +72,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
     //handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		action_verb = "extract"
+		fmt.Println("it's an extract")
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
@@ -108,6 +109,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 			theAction = &NActions.ExtractList{ListType: "sha1",ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha256hashes" {
 			theAction = &NActions.ExtractList{ListType: "sha256",ListLocation: extractType.PathToExtract}
+		} else if extractType.AsType == "memory" {
+			theAction = &NActions.ExtractMemory{}
 		} else {
 			fmt.Println("Error parsing given type: ", extractType.AsType)
 		}
@@ -130,6 +133,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 			fmt.Println("Error! Was not able to find var: ", unionType.AgainstVarName)
 		}
 		theAction = &NActions.UnionAction{VariableList: theListFromVar}
+	case "pslist":
+		theAction = &NActions.ProcessListAction{}
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
@@ -320,6 +325,8 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"} )
 		} else if myT == "listof-sha256" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"} )
+		} else if myT == "memory" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"} )
 		} else {
 			fmt.Println("error on type extraction")
 		}
@@ -407,24 +414,7 @@ RPC Testing
 type NugArg struct {
 	TheData []byte
 }
-
 type NugData int
-
-func testRemoteMD5() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2000")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
-
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugData.DoMD5", args, &reply)
-	if err != nil {
-		log.Fatal("md5 error:", err)
-	}
-	fmt.Printf("md5: %s=%s", string(args.TheData), reply)
-	os.Exit(0)
-}
 
 func testRemoteTSK() {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
@@ -452,9 +442,34 @@ func testRemoteTSK() {
 	os.Exit(0)
 }
 
+func testRemoteVol() {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2002")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	//load some data into tsk memory
+	args := &NugArg{[]byte("test")}
+	var reply string
+	err = client.Call("NugVol.LoadData", args, &reply)
+	if err != nil {
+		log.Fatal("load error:", err)
+	}
+	fmt.Printf("vol: %s=%s\n", string(args.TheData), reply)
+
+	//execute data len test
+	arg2 := &NugArg{[]byte("")}
+	err = client.Call("NugVol.PSList", arg2, &reply)
+	if err != nil {
+		log.Fatal("len error:", err)
+	}
+
+	os.Exit(0)
+}
+
 func main() {
-	//testRemoteMD5()
 	//testRemoteTSK()
+	//testRemoteVol()
 
 	file, err := os.Open(pathToInput)
 	if err != nil {
