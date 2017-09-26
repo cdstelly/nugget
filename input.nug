@@ -105,3 +105,6 @@ mymemdump = "thememory.mddramimage" | extract as memory
 mypslist = mymemdump | pslist
 
 printx(mypslist)
+
+//any way to loop through multiple?
+// howbout do memdmp1 | pslist and union w/ memdmp2

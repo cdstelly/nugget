@@ -448,7 +448,7 @@ func testRemoteVol() {
 		log.Fatal("dialing:", err)
 	}
 
-	//load some data into tsk memory
+	//load some data into volatility memory
 	args := &NugArg{[]byte("test")}
 	var reply string
 	err = client.Call("NugVol.LoadData", args, &reply)
