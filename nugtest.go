@@ -222,11 +222,6 @@ func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 	registers[identifier] = theTuples
 }
 
-func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
-	//currentVariable = ctx.ID(0).GetText()
-	//fmt.Println("cv:",currentVariable)
-}
-
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
@@ -448,7 +443,7 @@ func testRemoteVol() {
 		log.Fatal("dialing:", err)
 	}
 
-	//load some data into tsk memory
+	//load some data into volatility memory
 	args := &NugArg{[]byte("test")}
 	var reply string
 	err = client.Call("NugVol.LoadData", args, &reply)
