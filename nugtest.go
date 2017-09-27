@@ -222,11 +222,6 @@ func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 	registers[identifier] = theTuples
 }
 
-func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
-	//currentVariable = ctx.ID(0).GetText()
-	//fmt.Println("cv:",currentVariable)
-}
-
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
