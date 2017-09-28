@@ -68,7 +68,7 @@ func (na *DiskInfoAction) Execute() {
 	myDiskImageInfo.OEMName = theInfoMap["OEM Name"]
 	myDiskImageInfo.SerialNumber = theInfoMap["Volume Serial Number"]
 	myDiskImageInfo.Version = theInfoMap["Version"]
-	//fmt.Println(myDiskImageInfo)
+
 	na.results = myDiskImageInfo
 	na.executed = true
 }
