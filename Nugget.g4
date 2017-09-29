@@ -50,16 +50,17 @@ nugget_type:
 nugget_action: action_word ;
 
 action_word:
-    filter    |
-    'extract' asType |
+    filter            |
+    'extract' asType  |
     'sort'    byField |
-    'sha1'    |
-    'md5'     |
-	'sha256'|
-	'getGetRequests'|
-	'diskinfo' |
-	'union'    ID |
-	'pslist' |
+    'sha1'            |
+    'md5'             |
+	'sha256'          |
+	'getGetRequests'  |
+	'diskinfo'        |
+	'union'    ID     |
+	'pslist'          |
+	'grep'     STRING |
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 

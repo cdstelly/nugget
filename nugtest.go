@@ -76,10 +76,12 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
+		//handle unions
+	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Grep); ok {
+		action_verb = "grep"
 	//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		action_verb = "union"
-
     //handle everything else
 	} else {
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
@@ -122,6 +124,9 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.MD5Action{}
 	case "diskinfo":
 		theAction = &NActions.DiskInfoAction{}
+	case "grep":
+		grepType := getValue(ctx.Action_word()).(NTypes.Grep)
+		theAction = &NActions.GrepAction{Expression: grepType.Expression}
 	case "union":
 		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
@@ -240,7 +245,8 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		}
 		if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
 			//todo: get real values not dummy ones
-			extractAction.PCAPLocation = "G:\\school\\sample.pcap"
+			//extractAction.PCAPLocation = "G:\\school\\sample.pcap"
+			extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-11-19-09_54.pcap"
 		}
 		if act, ok := rawAction.(NActions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -337,7 +343,10 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		}
 	//handle union
 	} else if ctx.ID() != nil {
-		setValue(ctx, NTypes.Union{Results:[]string{""}, AgainstVarName: ctx.ID().GetText()})
+		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
+	//handle grep
+	} else if ctx.STRING() !=  nil {
+		setValue(ctx, NTypes.Grep{Expression:ctx.STRING().GetText()})
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
@@ -388,7 +397,13 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		case "typex":
 			fmt.Println(reflect.TypeOf(val.GetResults()))
 		case "printx":
-			fmt.Println(val.GetResults())
+			if strings, ok := val.GetResults().([]string); ok {
+				for _, singleLine := range strings {
+					fmt.Println(singleLine)
+				}
+			} else {
+				fmt.Println(val.GetResults())
+			}
 		case "size":
 			fmt.Println("len not implemented yet")
 		default:
