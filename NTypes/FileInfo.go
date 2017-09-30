@@ -3,10 +3,15 @@ package NTypes
 import (
 	"time"
 	"strings"
+	"net/rpc"
+	"log"
+	"fmt"
+	"crypto/md5"
+	"encoding/base64"
 )
 
 type FileInfo struct {
-	Id          uint64
+	Id          string 		//tsk represents as string w/ dashes
 	Filenames   []string
 	Createtime  time.Time
 	Modifytime  time.Time
@@ -16,7 +21,48 @@ type FileInfo struct {
 	Flags       string
 	Filesize    uint64
 	Dataruns    []DataRun
-	ReconstructedData []byte
+	reconstructedData []byte
+	beenReconstructed bool
+}
+
+func getFileFromTSK(inode string) []byte {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	//load some data into tsk memory
+	args := &NugArg{[]byte(""),inode}
+	var reply string
+	err = client.Call("NugTSK.GetFileData", args, &reply)
+	if err != nil {
+		log.Fatal("tsk get file data error:", err)
+	}
+	decodedreply, err := base64.StdEncoding.DecodeString(reply)
+	if err != nil {
+		panic(err)
+	}
+	hasher := md5.New()
+	hasher.Write(decodedreply)
+//	myhash := fmt.Sprintf("%x", hasher.Sum(nil))
+
+	return decodedreply
+}
+
+func (fi *FileInfo) ReconstructTheData() {
+	fi.beenReconstructed = true
+	fi.reconstructedData = getFileFromTSK("27767-128-3")
+}
+
+func (fi *FileInfo) GetFileData() []byte {
+	if fi.beenReconstructed == false {
+		fi.ReconstructTheData()
+	}
+	return fi.reconstructedData
+}
+
+func (fi *FileInfo) SetFileData(data []byte) {
+	fi.reconstructedData = data
 }
 
 type DataRun struct {
@@ -26,7 +72,7 @@ type DataRun struct {
 }
 
 type RealOffsetRun struct {
-	FileId        uint64
+	FileId        string
 	NumBytesInRun uint64
 	Clusteroffset uint64
 }

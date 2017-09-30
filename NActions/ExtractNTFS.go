@@ -10,9 +10,10 @@ import (
 	"fmt"
 
 	"regexp"
+	"net/rpc"
+	"log"
 )
 
-//don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
 type ExtractNTFS struct {
 	executed  bool
 	dependsOn BaseAction
@@ -23,6 +24,8 @@ type ExtractNTFS struct {
 
 	NTFSFiles []NTypes.FileInfo
 	NTFSDataRuns []NTypes.RealOffsetRun
+
+	beenUploaded bool
 }
 
 func (na *ExtractNTFS) BeenExecuted() bool {
@@ -39,9 +42,101 @@ func (na *ExtractNTFS) SetDependency(action BaseAction) {
 
 func (na *ExtractNTFS) Execute() {
 	fmt.Println("Executing an NTFS extraction: ", na.NTFSImageMetadataLocation)
-	na.NTFSFiles = na.ExtractMetadataFromNTFS()
+	//na.NTFSFiles = na.ExtractMetadataFromNTFS()
+	na.NTFSFiles = na.ExtractMetadataFromNTFSwithTSK()
 	na.executed = true
 }
+
+func (na *ExtractNTFS) ExtractMetadataFromNTFSwithTSK() []NTypes.FileInfo {
+
+	if na.beenUploaded == false {
+		na.UploadData()
+	}
+	bodyFileAsStr := getBodyFileFromTSK()
+	var files []NTypes.FileInfo
+	for _, entry := range strings.Split(bodyFileAsStr, "\n") {
+		if len(entry) > 10 {
+			if strings.Contains(entry, "($FILE_NAME)") == false {
+				files = append(files, na.convertBodyFileStringToFileInfo(entry))
+			}
+		}
+	}
+	return files
+}
+
+func (na *ExtractNTFS) convertBodyFileStringToFileInfo(input string) NTypes.FileInfo {
+/*
+MD5
+name
+inode
+mode_as_string
+UID
+GID
+size
+atime
+mtime
+ctime
+crtime
+ */
+	theSplitLine := strings.Split(input,"|")
+	var myFile NTypes.FileInfo
+	myFile.Filenames = append(myFile.Filenames, theSplitLine[1])
+	myFile.Id = theSplitLine[2]
+	//fmt.Println("the file id: ", myFile.Id)
+	myFile.Flags = theSplitLine[3]
+
+	mytmptwo, err := strconv.Atoi(theSplitLine[6])
+	myFile.Filesize = uint64(mytmptwo)
+	tmpTime,err := strconv.Atoi(theSplitLine[7])
+	myFile.Accesstime = time.Unix(int64(tmpTime),0)
+	tmpTime,err = strconv.Atoi(theSplitLine[8])
+	myFile.Modifytime = time.Unix(int64(tmpTime),0)
+	tmpTime,err = strconv.Atoi(theSplitLine[9])
+	myFile.Createtime = time.Unix(int64(tmpTime),0)
+	tmpTime,err = strconv.Atoi(theSplitLine[10])
+	myFile.Emodifytime = time.Unix(int64(tmpTime),0)
+
+	if err != nil {
+		panic(err)
+	}
+
+	//fmt.Println("the filename: " + myFile.Filenames[0] + " and the size: " + strconv.Itoa(int(myFile.Filesize)))
+	return myFile
+}
+
+func (na *ExtractNTFS) UploadData() {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+	//load some data into tsk memory
+	args := &NTypes.NugArg{[]byte("test"),""}
+	var reply string
+	err = client.Call("NugTSK.LoadData", args, &reply)
+	if err != nil {
+		log.Fatal("tsk load error:", err)
+	}
+	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
+	na.beenUploaded = true
+}
+
+func getBodyFileFromTSK() string {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	//load some data into tsk memory
+	args := &NTypes.NugArg{[]byte(""),""}
+	var reply string
+	err = client.Call("NugTSK.GetBodyFile", args, &reply)
+	if err != nil {
+		log.Fatal("tsk getbodyfile error:", err)
+	}
+	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
+	return reply
+}
+
 
 func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 	file, err := os.Open(na.NTFSImageMetadataLocation)
@@ -89,8 +184,8 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 				tmpint = 1
 				if key == "m" {
 					//fmt.Printf("[-] MFT ID: %s\n", value)
-					tmpuint, err = strconv.ParseUint(value, 10, 64)
-					fi.Id = tmpuint
+
+					fi.Id = value
 				}
 				if key == "fn" {
 					//fmt.Printf("[-] Filename: %s\n", value)
@@ -145,7 +240,7 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 				if numc_set == true && co_set == true {
 					fi.Dataruns = append(fi.Dataruns, dr)
 
-					if fi.Id > 0 {
+					if fi.Id > "0" {
 						sr.FileId = fi.Id
 						sr.Clusteroffset = dr.Clusteroffset
 						sr.NumBytesInRun = dr.Numclusters * uint64(4096)
@@ -294,7 +389,7 @@ func readFile(imageFD *os.File, info NTypes.FileInfo) (int) {
 		fmt.Println("Did not read the expect number of bytes for file: ", GetAFilename(info), "\t ID: ", info.Id)
 		// maybe a sparse file if we get here?, maybe rewriting filelen instead of dealing with sparse will work for now
 	}
-	info.ReconstructedData = fileData
+	info.SetFileData(fileData)
 	return totalBytesRead
 }
 

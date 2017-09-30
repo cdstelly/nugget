@@ -86,11 +86,6 @@ func (na *DiskInfoAction) SetFilters(filters []NTypes.Filter) {
 	na.filters = filters
 }
 
-type NugArg struct {
-	TheData []byte
-}
-
-type NugData int
 
 func getImageInfoFromTSK() string {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
@@ -99,7 +94,7 @@ func getImageInfoFromTSK() string {
 	}
 
 	//load some data into tsk memory
-	args := &NugArg{[]byte("")}
+	args := &NTypes.NugArg{[]byte(""),""}
 	var reply string
 	err = client.Call("NugTSK.ExecImageInfo", args, &reply)
 	if err != nil {
@@ -115,7 +110,7 @@ func (na *DiskInfoAction) uploadImageToTSK() {
 		log.Fatal("dialing:", err)
 	}
 	//load some data into tsk memory
-	args := &NugArg{[]byte("test")}
+	args := &NTypes.NugArg{[]byte("test"),""}
 	var reply string
 	err = client.Call("NugTSK.LoadData", args, &reply)
 	if err != nil {
