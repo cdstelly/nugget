@@ -39,13 +39,13 @@ func (na *MD5Action) Execute() {
 
 	operateOn := na.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.FileInfo); ok {
-		//we have a file to operate on
+
 		var files []NTypes.FileInfo
 		files = operateOn.([]NTypes.FileInfo)
 		for index,file := range files {
 			hasher := md5.New()
-			fn := GetAFilename(file)
-			hasher.Write([]byte(fn))
+			//fn := GetAFilename(file)
+			hasher.Write(file.GetFileData())
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
 			println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)
 			na.results = append(na.results, NTypes.MD5{Digest:myhash})

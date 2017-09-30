@@ -68,7 +68,7 @@ func getPSListFromVOL() string {
 	}
 
 	//load some data into tsk memory
-	args := &NugArg{[]byte("")}
+	args := &NTypes.NugArg{[]byte(""),""}
 	var reply string
 	err = client.Call("NugVol.PSList", args, &reply)
 	if err != nil {
@@ -84,7 +84,7 @@ func (na *ProcessListAction) uploadImageToVOL() {
 		log.Fatal("dialing:", err)
 	}
 	//load some data into tsk memory
-	args := &NugArg{[]byte("test")}
+	args := &NTypes.NugArg{[]byte("test"),""}
 	var reply string
 	err = client.Call("NugVol.LoadData", args, &reply)
 	if err != nil {
