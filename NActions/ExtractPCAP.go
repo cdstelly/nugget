@@ -49,7 +49,7 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 			if f.Op == "==" {
 				myBPF = f.Value
 				myBPF = strings.Trim(myBPF, "\"")
-				fmt.Println("Set the bnf filter value to: ", myBPF )
+				fmt.Println("Set the bnf filter value to: " + myBPF)
 			} else {
 				fmt.Println("Error: BNF only supports equality at the moment.")
 			}
@@ -57,19 +57,20 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
 		}
 	}
-
+	fmt.Println("pcap ocation: " + na.PCAPLocation)
 	na.handle, err = pcap.OpenOffline(na.PCAPLocation)
 	if err != nil {
-		panic(err)
+		fmt.Println("Error reading pcap file: " , err)
+		//panic(err)
 	}
 	err = na.handle.SetBPFFilter(myBPF)
 	if err != nil {
+		fmt.Println("Error setting BPF: " , err)
 		panic(err)
 	}
 
 	packetSource := gopacket.NewPacketSource(na.handle, na.handle.LinkType())
 
-	// asynchronously read the packet source
 	for p := range packetSource.Packets() {
 		na.Packets = append(na.Packets, NTypes.NPacket{p})
 	}

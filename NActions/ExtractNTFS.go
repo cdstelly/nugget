@@ -10,6 +10,8 @@ import (
 	"fmt"
 
 	"regexp"
+	"net/rpc"
+	"log"
 )
 
 //don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
@@ -23,6 +25,8 @@ type ExtractNTFS struct {
 
 	NTFSFiles []NTypes.FileInfo
 	NTFSDataRuns []NTypes.RealOffsetRun
+
+	beenUploaded bool
 }
 
 func (na *ExtractNTFS) BeenExecuted() bool {
@@ -39,9 +43,95 @@ func (na *ExtractNTFS) SetDependency(action BaseAction) {
 
 func (na *ExtractNTFS) Execute() {
 	fmt.Println("Executing an NTFS extraction: ", na.NTFSImageMetadataLocation)
-	na.NTFSFiles = na.ExtractMetadataFromNTFS()
+	//na.NTFSFiles = na.ExtractMetadataFromNTFS()
+	na.NTFSFiles = na.ExtractMetadataFromNTFSwithTSK()
 	na.executed = true
 }
+
+func (na *ExtractNTFS) ExtractMetadataFromNTFSwithTSK() []NTypes.FileInfo {
+
+	if na.beenUploaded == false {
+		na.UploadData()
+	}
+	bodyFileAsStr := getBodyFileFromTSK()
+	var files []NTypes.FileInfo
+	for _, entry := range strings.Split(bodyFileAsStr, "\n") {
+		if len(entry) > 10 {
+			files = append(files, na.convertBodyFileStringToFileInfo(entry))
+		}
+	}
+	return files
+}
+
+func (na *ExtractNTFS) convertBodyFileStringToFileInfo(input string) NTypes.FileInfo {
+/*
+MD5
+name
+inode
+mode_as_string
+UID
+GID
+size
+atime
+mtime
+ctime
+crtime
+ */
+	theSplitLine := strings.Split(input,"|")
+	var myFile NTypes.FileInfo
+	myFile.Filenames = append(myFile.Filenames, theSplitLine[1])
+	mytmp, _ := strconv.Atoi(theSplitLine[2])
+	myFile.Id = uint64(mytmp)
+	myFile.Flags = theSplitLine[3]
+
+	mytmptwo, _ := strconv.Atoi(theSplitLine[6])
+	myFile.Filesize = uint64(mytmptwo)
+	tmpTime,_ := strconv.Atoi(theSplitLine[7])
+	myFile.Accesstime = time.Unix(int64(tmpTime),0)
+	tmpTime,_ = strconv.Atoi(theSplitLine[8])
+	myFile.Modifytime = time.Unix(int64(tmpTime),0)
+	tmpTime,_ = strconv.Atoi(theSplitLine[9])
+	myFile.Createtime = time.Unix(int64(tmpTime),0)
+	tmpTime,_ = strconv.Atoi(theSplitLine[10])
+	myFile.Emodifytime = time.Unix(int64(tmpTime),0)
+
+	//fmt.Println("the filename: " + myFile.Filenames[0] + " and the size: " + strconv.Itoa(int(myFile.Filesize)))
+	return myFile
+}
+
+func (na *ExtractNTFS) UploadData() {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+	//load some data into tsk memory
+	args := &NugArg{[]byte("test")}
+	var reply string
+	err = client.Call("NugTSK.LoadData", args, &reply)
+	if err != nil {
+		log.Fatal("tsk load error:", err)
+	}
+	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
+	na.beenUploaded = true
+}
+
+func getBodyFileFromTSK() string {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	//load some data into tsk memory
+	args := &NugArg{[]byte("")}
+	var reply string
+	err = client.Call("NugTSK.GetBodyFile", args, &reply)
+	if err != nil {
+		log.Fatal("vol load error:", err)
+	}
+	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
+	return reply
+}
+
 
 func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 	file, err := os.Open(na.NTFSImageMetadataLocation)

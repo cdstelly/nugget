@@ -103,16 +103,15 @@ printx(matches)
 
 mymemdump = "thememory.mddramimage" | extract as memory
 mypslist = mymemdump | pslist
-
-// printx(mypslist)
+printx(mypslist)
 
 //any way to loop through multiple?
 // howbout do memdmp1 | pslist and union w/ memdmp2
 
-MyNTFSImage = "file:ntfs-partition.raw" | extract as ntfs
-MyFiles = MyNTFSImage | filter ctime > "01/01/2017"
-MyHashes = MyFiles | md5
-MyHashes
+//MyNTFSImage = "file:ntfs-partition.raw" | extract as ntfs
+//MyFiles = MyNTFSImage | filter ctime > "01/01/2017"
+//MyHashes = MyFiles | md5
+//MyHashes
 
 MyNetTraffic = "G:\school\m57\data\net-2009-11-19-09_54.pcap" | extract as pcap
 MyEmailTraffic = MyNetTraffic | filter packetfilter == "tcp and dst port 25 and smtp"
@@ -125,3 +124,12 @@ MyHTTPTraffic
 GetRequests = MyHTTPTraffic | grep "^GET.*"
 printx(GetRequests)
 
+mymemdump2 = "thememory.mddramimage" | extract as memory
+mypslist2 = mymemdump2 | pslist
+printx(mypslist2)
+
+
+MyNTFSImage = "file:  .raw" | extract as ntfs
+MyFiles = MyNTFSImage | filter ctime > "01/01/2017"
+MyHashes = MyFiles | md5
+MyHashes
