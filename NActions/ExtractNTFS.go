@@ -14,7 +14,6 @@ import (
 	"log"
 )
 
-//don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
 type ExtractNTFS struct {
 	executed  bool
 	dependsOn BaseAction
