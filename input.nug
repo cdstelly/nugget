@@ -131,4 +131,5 @@ printx(mypslistt)
 MyNTFSImage = "file:  .raw" | extract as ntfs
 MyFiles = MyNTFSImage | filter ctime > "01/01/2017"
 MyHashes = MyFiles | md5
-MyHashes-
+MyHashes
+

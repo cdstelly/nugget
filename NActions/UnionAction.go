@@ -10,7 +10,7 @@ type UnionAction struct {
 	filters []NTypes.Filter
 
 	results []string
-	VariableList []string
+	VariableList []string  //the stuff we get in to union against 
 }
 
 func (na *UnionAction) BeenExecuted() bool {
