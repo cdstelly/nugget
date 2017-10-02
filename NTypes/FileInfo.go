@@ -5,7 +5,6 @@ import (
 	"strings"
 	"net/rpc"
 	"log"
-	"fmt"
 	"crypto/md5"
 	"encoding/base64"
 )
