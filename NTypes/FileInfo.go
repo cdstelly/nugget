@@ -7,6 +7,8 @@ import (
 	"log"
 	"crypto/md5"
 	"encoding/base64"
+	"fmt"
+	"regexp"
 )
 
 type FileInfo struct {
@@ -50,7 +52,7 @@ func getFileFromTSK(inode string) []byte {
 
 func (fi *FileInfo) ReconstructTheData() {
 	fi.beenReconstructed = true
-	fi.reconstructedData = getFileFromTSK("27767-128-3")
+	fi.reconstructedData = getFileFromTSK(fi.Id)
 }
 
 func (fi *FileInfo) GetFileData() []byte {
@@ -62,6 +64,90 @@ func (fi *FileInfo) GetFileData() []byte {
 
 func (fi *FileInfo) SetFileData(data []byte) {
 	fi.reconstructedData = data
+}
+
+func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
+	passes := true
+	for _,filter := range theFilters {
+		switch filter.Field{
+		case "filename":
+			if filter.Op != "==" {
+				fmt.Println("Error - Operation ", filter.Op, "not supported")
+			} else {
+				if strings.Contains(filter.Value, "*") {
+					filterStr := strings.TrimSpace(filter.Value)
+					filterStr = strings.Trim(filterStr, `"`)
+					match, _ := regexp.MatchString(filterStr, fi.Filenames[0])
+					if !match {
+						//fmt.Println("Target: ", fi.Filenames[0], " did not match Fitler: ", filterStr)
+						return false
+					}
+				} else {
+					match := strings.Compare(filter.Value, fi.Filenames[0])
+					if match != 0 {
+						//did not match exactly
+						return false
+					}
+				}
+			}
+		case "ctime":
+			theTime := strings.Trim(filter.Value, "\"")
+			layout := "01/02/2006"
+			t, err := time.Parse(layout, theTime)
+			if err != nil {
+				fmt.Errorf("Error! %s", err)
+			}
+			//fmt.Println("datetime of filter:", t.String(), " datetime of file: ", fi.Createtime.String())
+			switch(filter.Op) {
+			case ">":
+				return t.Before(fi.Createtime)
+			case ">=":
+				return t.Equal(fi.Createtime) || t.Before(fi.Createtime)
+			case "<=":
+				return t.Equal(fi.Createtime) || t.After(fi.Createtime)
+			case "<":
+				return t.After(fi.Createtime)
+			case "==":
+				d := fi.Createtime.String()
+				dt, err := time.Parse(layout,d)
+				if err != nil {
+					fmt.Errorf("Error! %s", err)
+				}
+				return t.Equal(dt)
+			default:
+				fmt.Println("Error - operation", filter.Op, " not recognized")
+			}
+		case "mtime":
+			theTime := strings.Trim(filter.Value, "\"")
+			layout := "01/02/2006"
+			t, err := time.Parse(layout, theTime)
+			if err != nil {
+				fmt.Errorf("Error! %s", err)
+			}
+			switch(filter.Op) {
+			case "<":
+				return t.Before(fi.Modifytime)
+			case "<=":
+				return t.Equal(fi.Modifytime) || t.Before(fi.Modifytime)
+			case ">=":
+				return t.Equal(fi.Modifytime) || t.After(fi.Modifytime)
+			case ">":
+				return t.After(fi.Modifytime)
+			case "==":
+				d := fi.Modifytime.String()
+				dt, err := time.Parse(layout,d)
+				if err != nil {
+					fmt.Errorf("Error! %s", err)
+				}
+				return t.Equal(dt)
+			default:
+				fmt.Println("Error - operation", filter.Op, " not recognized")
+			}
+		default:
+			fmt.Println("Error -- filter field not supported by FileInfo")
+		}
+	}
+	return passes
 }
 
 type DataRun struct {

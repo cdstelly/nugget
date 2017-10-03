@@ -125,11 +125,14 @@
 
 mymemdumpt = "thememory.mddramimage" | extract as memory
 mypslistt = mymemdumpt | pslist
-printx(mypslistt)
+//printx(mypslistt)
 
 
 MyNTFSImage = "file:  .raw" | extract as ntfs
-MyFiles = MyNTFSImage | filter ctime > "01/01/2017"
+MyFiles = MyNTFSImage | filter filename==".*.JPG"
 MyHashes = MyFiles | md5
 MyHashes
 
+KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
+Matched = MyHashes | union KnownKittyHashes
+Matched

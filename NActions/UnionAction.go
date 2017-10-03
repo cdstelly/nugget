@@ -2,6 +2,7 @@ package NActions
 
 import (
 	"../NTypes"
+	"fmt"
 )
 
 type UnionAction struct {
@@ -10,7 +11,7 @@ type UnionAction struct {
 	filters []NTypes.Filter
 
 	results []string
-	VariableList []string  //the stuff we get in to union against 
+	VariableList []string  //the stuff we get in to union against
 }
 
 func (na *UnionAction) BeenExecuted() bool {
@@ -40,7 +41,7 @@ func (na *UnionAction) Execute() {
 	//todo what about sha1 and sha256..
 	//todo optimize this n^2 comparison loop..
 	if strList, ok := operateOn.([]NTypes.MD5); ok {
-		//fmt.Println("going to execute union against a hash..")
+		fmt.Println("going to execute union against a hash..")
 		for _, stringFromVar := range na.VariableList {
 			for _, stringFromDep := range strList {
 				//fmt.Println("Comparing: ", stringFromVar, stringFromDep)
