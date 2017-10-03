@@ -79,10 +79,8 @@ func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
 					filterStr = strings.Trim(filterStr, `"`)
 					match, _ := regexp.MatchString(filterStr, fi.Filenames[0])
 					if !match {
-						fmt.Println("Target: ", fi.Filenames[0], " did not match Fitler: ", filterStr)
+						//fmt.Println("Target: ", fi.Filenames[0], " did not match Fitler: ", filterStr)
 						return false
-					} else {
-						fmt.Println("Target: ", fi.Filenames[0], "matched Fitler: ", filterStr)
 					}
 				} else {
 					match := strings.Compare(filter.Value, fi.Filenames[0])
@@ -149,9 +147,6 @@ func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
 			fmt.Println("Error -- filter field not supported by FileInfo")
 		}
 	}
-
-
-	fmt.Println("the file: " + fi.Filenames[0] + " passed the filter: ", theFilters)
 	return passes
 }
 

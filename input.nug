@@ -129,7 +129,10 @@ mypslistt = mymemdumpt | pslist
 
 
 MyNTFSImage = "file:  .raw" | extract as ntfs
-MyFiles = MyNTFSImage | filter filename==".*.jpg"
+MyFiles = MyNTFSImage | filter filename==".*.JPG"
 MyHashes = MyFiles | md5
 MyHashes
 
+KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
+Matched = MyHashes | union KnownKittyHashes
+Matched
