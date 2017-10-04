@@ -30,13 +30,13 @@ func (na *MD5Action) SetDependency(action BaseAction) {
 }
 func (na *MD5Action) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("md5 has a dependency which hasn't been met..")
+		//fmt.Println("md5 has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute md5..")
+	//fmt.Println("going to execute md5..")
 
 	operateOn := na.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.FileInfo); ok {
