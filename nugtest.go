@@ -404,6 +404,14 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			} else {
 				fmt.Println(val.GetResults())
 			}
+		case "raw":
+			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
+				for _, fi := range files {
+					fmt.Println(fi)
+				}
+			} else {
+				fmt.Println(val.GetResults())
+			}
 		case "size":
 			fmt.Println("len not implemented yet")
 		default:
