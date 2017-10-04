@@ -26,6 +26,10 @@ type FileInfo struct {
 	beenReconstructed bool
 }
 
+func (fi FileInfo) String() string {
+	return string(fi.GetFileData())
+}
+
 func getFileFromTSK(inode string) []byte {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
 	if err != nil {
@@ -77,6 +81,7 @@ func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
 				if strings.Contains(filter.Value, "*") {
 					filterStr := strings.TrimSpace(filter.Value)
 					filterStr = strings.Trim(filterStr, `"`)
+					filterStr = "(?i)" + filterStr  // force it to case insensitive //todo: maybe leave this up to user
 					match, _ := regexp.MatchString(filterStr, fi.Filenames[0])
 					if !match {
 						//fmt.Println("Target: ", fi.Filenames[0], " did not match Fitler: ", filterStr)

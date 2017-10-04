@@ -9,7 +9,6 @@ type NPacket struct {
 }
 
 func (p NPacket) String() string {
-
 	applicationLayer := p.Pkt.ApplicationLayer()
 	if applicationLayer != nil {
 		return string(applicationLayer.Payload()) + "\n"

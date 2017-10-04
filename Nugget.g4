@@ -26,7 +26,7 @@ assign: ID '=' STRING ('|' nugget_action)* |
 
 operation_on_singleton: singleton_op '(' ID ')';
 
-singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx');
+singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx' | 'raw');
 
 singleton_var: ID;
 
