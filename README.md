@@ -55,4 +55,4 @@ Expanding
 
 Bugs
 ---------------
-Please use the github issue tracker. 
+Please use GitHub's [issue tracker](https://github.com/cdstelly/nugget/issues). 
