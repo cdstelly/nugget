@@ -40,7 +40,7 @@ func (na *ExtractNTFS) SetDependency(action BaseAction) {
 }
 
 func (na *ExtractNTFS) Execute() {
-	fmt.Println("Executing an NTFS extraction: ", na.NTFSImageMetadataLocation)
+	//fmt.Println("Executing an NTFS extraction: ", na.NTFSImageMetadataLocation)
 	//na.NTFSFiles = na.ExtractMetadataFromNTFS()
 	na.NTFSFiles = na.ExtractMetadataFromNTFSwithTSK()
 	na.executed = true

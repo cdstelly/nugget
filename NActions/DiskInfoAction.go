@@ -1,6 +1,6 @@
 package NActions
 
-import "fmt"
+
 import (
 	"../NTypes"
 	"net/rpc"
@@ -34,12 +34,12 @@ func (na *DiskInfoAction) SetDependency(action BaseAction) {
 }
 func (na *DiskInfoAction) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("disk image info has a dependency which hasn't been met..")
+		//fmt.Println("disk image info has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute disk image info..")
+	//fmt.Println("going to execute disk image info..")
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
 	na.uploadImageToTSK()

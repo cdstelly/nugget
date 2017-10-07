@@ -1,6 +1,6 @@
 package NActions
 
-import "fmt"
+
 import (
 	"../NTypes"
 )
@@ -30,10 +30,10 @@ func (na *FilterAction) SetDependency(action BaseAction) {
 
 //todo: dependsOn can be nil..
 func (na *FilterAction) Execute() {
-	fmt.Println("going to execute filteraction..")
+	//fmt.Println("going to execute filteraction..")
 	var myTempResults interface{}
 	if na.dependsOn != nil {
-		fmt.Println("filteraction has a dependency which hasn't been met..")
+		//fmt.Println("filteraction has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			//na.dependsOn.SetFilters(na.filters)
 			//na.results = na.dependsOn.GetResults()
