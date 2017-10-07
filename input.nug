@@ -132,6 +132,7 @@ MyHashes
 KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
 Matched = MyHashes | union KnownKittyHashes
 Matched
+printx(Matched)
 
 //MyNewNTFS = "file: raw" | extract as ntfs
 //MyEmailFiles = MyNewNTFS | filter filename==".*.dbx"
