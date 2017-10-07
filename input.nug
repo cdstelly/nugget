@@ -123,10 +123,6 @@
 //GetRequests = MyHTTPTraffic | grep "^GET.*"
 //printx(GetRequests)
 
-mymemdumpt = "thememory.mddramimage" | extract as memory
-mypslistt = mymemdumpt | pslist
-//printx(mypslistt)
-
 
 MyNTFSImage = "file:  .raw" | extract as ntfs
 MyFiles = MyNTFSImage | filter filename==".*.JPG"
@@ -135,11 +131,21 @@ MyHashes
 
 KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
 Matched = MyHashes | union KnownKittyHashes
-//Matched
+Matched
 
-MyNewNTFS = "file: raw" | extract as ntfs
-MyEmailFiles = MyNewNTFS | filter filename==".*.dbx"
-MyEmailFiles
-print(MyEmailFiles)
-printx(MyEmailFiles)
-raw(MyEmailFiles)
+//MyNewNTFS = "file: raw" | extract as ntfs
+//MyEmailFiles = MyNewNTFS | filter filename==".*.dbx"
+//MyEmailFiles
+//print(MyEmailFiles)
+//printx(MyEmailFiles)
+//raw(MyEmailFiles)
+
+
+//compare two pslists
+//mymemdump = "thememory.mddramimage" | extract as memory
+//mypslist = mymemdump | pslist
+//printx(mypslist)
+
+//othermemdump = "thememory2.mddramimage" | extract as memory
+//otherpslist = othermemdump | pslist
+//printx(otherpslist)

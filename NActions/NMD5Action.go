@@ -47,7 +47,7 @@ func (na *MD5Action) Execute() {
 			hasher.Write(file.GetFileData())
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
 			//fmt.Println("fn:" + file.Filenames[0] + "\tmd5: " + myhash)
-			na.results = append(na.results, NTypes.MD5{Digest:myhash})
+			na.results = append(na.results, NTypes.MD5{Digest:myhash, HashOf:file})
 		}
 	}
 	na.executed = true
