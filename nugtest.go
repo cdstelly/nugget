@@ -72,7 +72,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
     //handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		action_verb = "extract"
-		fmt.Println("it's an extract")
+		//fmt.Println("it's an extract")
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
@@ -87,7 +87,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
 		} else {
-			fmt.Println("uh oh - wasn't able to determine action type")
+			fmt.Println("error - wasn't able to determine action type")
 		}
 	}
 
@@ -236,7 +236,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	for _,action := range actions {
 		rawAction := getValue(action)
 		//if it's an extract action, we need to look behind and get some more info (like filepath and type)
-		fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
+		//fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
 
 		if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
 			//todo: get real values not dummy ones
@@ -262,12 +262,12 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	//we have raw actions, now build the chain of dependencies for each
 	for index, builtAction := range builtActions {
 		if index+1 < len(builtActions) {
-			fmt.Println("action at index: ", index, "is ", reflect.TypeOf(builtAction)," : ", builtAction, " and depends on: ", builtActions[index+1])
+			//fmt.Println("action at index: ", index, "is ", reflect.TypeOf(builtAction)," : ", builtAction, " and depends on: ", builtActions[index+1])
 			var depAction NActions.BaseAction
 			depAction = builtActions[index+1]
 			builtAction.(NActions.BaseAction).SetDependency(depAction)
 		} else {
-			fmt.Println("action at index: ", index,"is ", reflect.TypeOf(builtAction)," : ", builtAction, " and has no dependency. Setting dep to the var")
+			//fmt.Println("action at index: ", index,"is ", reflect.TypeOf(builtAction)," : ", builtAction, " and has no dependency. Setting dep to the var")
 			if len(ctx.AllID()) > 1 {
 				depVar := ctx.ID(1).GetText()
 
@@ -278,13 +278,12 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 						//fmt.Println("the dependency for this action will be variable: ", nVar)
 						builtAction.(NActions.BaseAction).SetDependency(dep)
 					}
-					// else what if it's an extraction??
 				} else {
 					fmt.Println("Error: Var '", depVar, "' not recognized.")
 				}
 			}
 		}
-		fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
+		//fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
 		registers[varIdentifier] = builtActions[0]
 	}
 }
@@ -305,7 +304,7 @@ func (s *TreeShapeListener) ExitNugget_type(ctx *parser.Nugget_typeContext) {
 }
 
 func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
-	fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
+	//fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
@@ -336,9 +335,9 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		setValue(ctx, getValue(ctx.Filter()))
 	//handle sorts
 	} else if ctx.ByField() != nil {
-		fmt.Println("sort by: ", getValue(ctx.ByField()))
+		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
-			fmt.Println("sort string: ", val)
+			//fmt.Println("sort string: ", val)
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
 	//handle union
@@ -367,9 +366,9 @@ func (s *TreeShapeListener) ExitByField(ctx *parser.ByFieldContext) {
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
 	if v, ok := registers[theVar]; ok {
-		fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
+		//fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
 		if ba,ok := v.(NActions.BaseAction); ok {
-			fmt.Println("Results for var:",theVar, ": ", ba.GetResults())
+			fmt.Println("Results for var ",theVar, ": ", ba.GetResults())
 			//ba.GetResults()
 			//fmt.Println("cutting off results for now..")
 		} else {
@@ -500,11 +499,11 @@ func main() {
 		fmt.Printf("nugget> %s\n", scanner.Text())
 		input := antlr.NewInputStream(scanner.Text())
 		lexer := parser.NewNuggetLexer(input)
-		stream := antlr.NewCommonTokenStream(lexer, 0)
-		p := parser.NewNuggetParser(stream)
-		p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-		p.BuildParseTrees = true
-		tree := p.Prog()
+		tokenstream := antlr.NewCommonTokenStream(lexer, 0)
+		tokenparser := parser.NewNuggetParser(tokenstream)
+		tokenparser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+		tokenparser.BuildParseTrees = true
+		tree := tokenparser.Prog()
 		antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
 		fmt.Println()
 	}

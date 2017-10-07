@@ -1,6 +1,5 @@
 package NActions
 
-import "fmt"
 import (
 	"../NTypes"
 )
@@ -29,12 +28,12 @@ func (na *NExtractGetRequests) SetDependency(action BaseAction) {
 }
 func (na *NExtractGetRequests) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("getGetReqs has a dependency which hasn't been met..")
+		//fmt.Println("getGetReqs has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute getGetReqs..")
+	//fmt.Println("going to execute getGetReqs..")
 
 	operateOn := na.dependsOn.GetResults()
 

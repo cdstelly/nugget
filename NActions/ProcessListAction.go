@@ -1,6 +1,5 @@
 package NActions
 
-import "fmt"
 import (
 	"../NTypes"
 	"net/rpc"
@@ -34,12 +33,12 @@ func (na *ProcessListAction) SetDependency(action BaseAction) {
 
 func (na *ProcessListAction) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("process list has a dependency which hasn't been met..")
+		//fmt.Println("process list has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute process list..")
+	//fmt.Println("going to execute process list..")
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
 	na.uploadImageToVOL()

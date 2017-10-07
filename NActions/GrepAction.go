@@ -35,12 +35,12 @@ func (na *GrepAction) SetDependency(action BaseAction) {
 
 func (na *GrepAction) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("grep action has a dependency which hasn't been met..")
+		//fmt.Println("grep action has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute grep..")
+	//fmt.Println("going to execute grep..")
 
 	if na.dependsOn == nil {
 		fmt.Println("Error! Was not able to compute SHA1 because dependency is nil")

@@ -43,13 +43,13 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 	//get bpfs and apply them
 	var myBPF string
 	for _, f := range na.filters {
-		fmt.Println("Found a filter: ", f)
+		//fmt.Println("Found a filter: ", f)
 		switch f.Field {
 		case "packetfilter":
 			if f.Op == "==" {
 				myBPF = f.Value
 				myBPF = strings.Trim(myBPF, "\"")
-				fmt.Println("Set the bnf filter value to: " + myBPF)
+				//fmt.Println("Set the bnf filter value to: " + myBPF)
 			} else {
 				fmt.Println("Error: BNF only supports equality at the moment.")
 			}
