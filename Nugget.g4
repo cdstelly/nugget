@@ -64,12 +64,12 @@ action_word:
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 
-asType: 'as' nugget_type;
+asType: 'as' nugget_type (byteOffsetSize)?;
 byField:'by' ID;
 
-filter :
-    'filter' filter_term (',' filter_term)*;
+byteOffsetSize : '['INT ',' INT ']';
 
+filter : 'filter' filter_term (',' filter_term)*;
 filter_term: ID COMPOP STRING;
 
 COMPOP: ('>' | '<' | '>=' | '<=' | '==');

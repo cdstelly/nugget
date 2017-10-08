@@ -9,10 +9,8 @@ import (
 	"./NActions"
 	"./nug"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-
 	"reflect"
-	"net/rpc"
-	"log"
+	"strconv"
 )
 
 var (
@@ -37,6 +35,7 @@ func init() {
 	setupTypeRegstry()
 }
 
+//todo: finish typeregistry so we can clean up typing code
 func setupTypeRegstry() {
 	typeRegistry["md5"] = reflect.TypeOf(NTypes.MD5{})
 	typeRegistry["sha1"] = reflect.TypeOf(NTypes.SHA1{})
@@ -45,6 +44,7 @@ func setupTypeRegstry() {
 	typeRegistry["file"] = reflect.TypeOf(NTypes.FileInfo{})
 }
 
+//getValue and setValue will take care of passing around results from individual rules
 func setValue(ctx antlr.ParseTree, value interface{}) {
 	nodeMap[ctx] = value
 }
@@ -308,8 +308,6 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
-//investigate from here -
-// maybe we generate an extract type here and pass it up the chain, just like we do for flter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
@@ -351,17 +349,13 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	}
 }
 
-
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
 }
 
-
-// ExitByField is called when production byField is exited.
 func (s *TreeShapeListener) ExitByField(ctx *parser.ByFieldContext) {
 	setValue(ctx,ctx.ID().GetText())
 }
-
 
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
@@ -425,69 +419,16 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
 
-/*****
-RPC Testing
-*****/
-type NugArg struct {
-	TheData []byte
-}
-type NugData int
-
-func testRemoteTSK() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext) {
+	byteOffset,err := strconv.Atoi(ctx.INT(0).GetText())
+	clusterSize, err := strconv.Atoi(ctx.INT(1).GetText())
 	if err != nil {
-		log.Fatal("dialing:", err)
+		fmt.Println("Error parsing byte offset:" , err)
 	}
-
-	//load some data into tsk memory
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugTSK.LoadData", args, &reply)
-	if err != nil {
-		log.Fatal("tsk load error:", err)
-	}
-	fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
-
-	//execute data len test
-	arg2 := &NugArg{[]byte("")}
-	err = client.Call("NugTSK.GetDataLen", arg2, &reply)
-	if err != nil {
-		log.Fatal("tsk len error:", err)
-	}
-	fmt.Printf("tsk len =%s\n", reply)
-
-	os.Exit(0)
-}
-
-func testRemoteVol() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2002")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
-
-	//load some data into volatility memory
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugVol.LoadData", args, &reply)
-	if err != nil {
-		log.Fatal("load error:", err)
-	}
-	fmt.Printf("vol: %s=%s\n", string(args.TheData), reply)
-
-	//execute data len test
-	arg2 := &NugArg{[]byte("")}
-	err = client.Call("NugVol.PSList", arg2, &reply)
-	if err != nil {
-		log.Fatal("len error:", err)
-	}
-
-	os.Exit(0)
+	setValue(ctx, NTypes.OffsetInfo{byteOffset,clusterSize})
 }
 
 func main() {
-	//testRemoteTSK()
-	//testRemoteVol()
-
 	file, err := os.Open(pathToInput)
 	if err != nil {
 		panic(err)
