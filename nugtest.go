@@ -34,6 +34,7 @@ func init() {
 	setupTypeRegstry()
 }
 
+//todo: finish typeregistry so we can clean up typing code
 func setupTypeRegstry() {
 	typeRegistry["md5"] = reflect.TypeOf(NTypes.MD5{})
 	typeRegistry["sha1"] = reflect.TypeOf(NTypes.SHA1{})
@@ -42,6 +43,7 @@ func setupTypeRegstry() {
 	typeRegistry["file"] = reflect.TypeOf(NTypes.FileInfo{})
 }
 
+//getValue and setValue will take care of passing around results from individual rules
 func setValue(ctx antlr.ParseTree, value interface{}) {
 	nodeMap[ctx] = value
 }
