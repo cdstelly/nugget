@@ -11,8 +11,6 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 
 	"reflect"
-	"net/rpc"
-	"log"
 )
 
 var (
@@ -425,64 +423,6 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
 
-/*****
-RPC Testing
-*****/
-type NugArg struct {
-	TheData []byte
-}
-type NugData int
-
-func testRemoteTSK() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
-
-	//load some data into tsk memory
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugTSK.LoadData", args, &reply)
-	if err != nil {
-		log.Fatal("tsk load error:", err)
-	}
-	fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
-
-	//execute data len test
-	arg2 := &NugArg{[]byte("")}
-	err = client.Call("NugTSK.GetDataLen", arg2, &reply)
-	if err != nil {
-		log.Fatal("tsk len error:", err)
-	}
-	fmt.Printf("tsk len =%s\n", reply)
-
-	os.Exit(0)
-}
-
-func testRemoteVol() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2002")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
-
-	//load some data into volatility memory
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugVol.LoadData", args, &reply)
-	if err != nil {
-		log.Fatal("load error:", err)
-	}
-	fmt.Printf("vol: %s=%s\n", string(args.TheData), reply)
-
-	//execute data len test
-	arg2 := &NugArg{[]byte("")}
-	err = client.Call("NugVol.PSList", arg2, &reply)
-	if err != nil {
-		log.Fatal("len error:", err)
-	}
-
-	os.Exit(0)
-}
 
 func main() {
 	//testRemoteTSK()

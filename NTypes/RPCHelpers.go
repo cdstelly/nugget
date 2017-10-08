@@ -6,3 +6,4 @@ type NugArg struct {
 }
 
 type NugData int
+
