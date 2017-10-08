@@ -14,6 +14,11 @@ type DiskImageInfo struct {
 	SectorRange	string
 }
 
+type OffsetInfo struct {
+	OffsetBytes int
+	ClusterSize int
+}
+
 func (di DiskImageInfo) String() string {
 	var	myString string
 	myString = fmt.Sprintf("Version: %s\n", di.Version)

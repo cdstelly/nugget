@@ -124,7 +124,7 @@
 //printx(GetRequests)
 
 
-MyNTFSImage = "file:  .raw" | extract as ntfs
+MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
 MyFiles = MyNTFSImage | filter filename==".*.JPG"
 MyHashes = MyFiles | md5
 MyHashes

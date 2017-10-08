@@ -10,6 +10,7 @@ import (
 	"./nug"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"reflect"
+	"strconv"
 )
 
 var (
@@ -416,6 +417,15 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 
 func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
+}
+
+func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext) {
+	byteOffset,err := strconv.Atoi(ctx.INT(0).GetText())
+	clusterSize, err := strconv.Atoi(ctx.INT(1).GetText())
+	if err != nil {
+		fmt.Println("Error parsing byte offset:" , err)
+	}
+	setValue(ctx, NTypes.OffsetInfo{byteOffset,clusterSize})
 }
 
 func main() {

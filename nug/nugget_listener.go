@@ -47,6 +47,9 @@ type NuggetListener interface {
 	// EnterByField is called when entering the byField production.
 	EnterByField(c *ByFieldContext)
 
+	// EnterByteOffsetSize is called when entering the byteOffsetSize production.
+	EnterByteOffsetSize(c *ByteOffsetSizeContext)
+
 	// EnterFilter is called when entering the filter production.
 	EnterFilter(c *FilterContext)
 
@@ -91,6 +94,9 @@ type NuggetListener interface {
 
 	// ExitByField is called when exiting the byField production.
 	ExitByField(c *ByFieldContext)
+
+	// ExitByteOffsetSize is called when exiting the byteOffsetSize production.
+	ExitByteOffsetSize(c *ByteOffsetSizeContext)
 
 	// ExitFilter is called when exiting the filter production.
 	ExitFilter(c *FilterContext)
