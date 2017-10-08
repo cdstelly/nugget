@@ -9,7 +9,6 @@ import (
 	"./NActions"
 	"./nug"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-
 	"reflect"
 )
 
@@ -306,8 +305,6 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
-//investigate from here -
-// maybe we generate an extract type here and pass it up the chain, just like we do for flter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
@@ -349,17 +346,13 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	}
 }
 
-
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
 }
 
-
-// ExitByField is called when production byField is exited.
 func (s *TreeShapeListener) ExitByField(ctx *parser.ByFieldContext) {
 	setValue(ctx,ctx.ID().GetText())
 }
-
 
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
@@ -423,11 +416,7 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
 
-
 func main() {
-	//testRemoteTSK()
-	//testRemoteVol()
-
 	file, err := os.Open(pathToInput)
 	if err != nil {
 		panic(err)
