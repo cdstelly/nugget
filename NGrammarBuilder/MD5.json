@@ -2,5 +2,6 @@
   "name": "md5",
   "codepath": "NMD5Action.go",
   "operatesOn": ["bytes"],
-  "produces": "strings"
+  "produces": "strings",
+  "port": 2000
 }
