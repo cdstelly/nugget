@@ -30,25 +30,24 @@ func (na *MD5Action) SetDependency(action BaseAction) {
 }
 func (na *MD5Action) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("md5 has a dependency which hasn't been met..")
+		//fmt.Println("md5 has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
+
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute md5..")
+	//fmt.Println("going to execute md5..")
 
 	operateOn := na.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.FileInfo); ok {
-		//we have a file to operate on
 		var files []NTypes.FileInfo
 		files = operateOn.([]NTypes.FileInfo)
-		for index,file := range files {
+		for _,file := range files {
 			hasher := md5.New()
-			fn := GetAFilename(file)
-			hasher.Write([]byte(fn))
+			hasher.Write(file.GetFileData())
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
-			println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)
-			na.results = append(na.results, NTypes.MD5{Digest:myhash})
+			//fmt.Println("fn:" + file.Filenames[0] + "\tmd5: " + myhash)
+			na.results = append(na.results, NTypes.MD5{Digest:myhash, HashOf:file})
 		}
 	}
 	na.executed = true

@@ -1,6 +1,6 @@
 package NActions
 
-import "fmt"
+
 import (
 	"../NTypes"
 	"net/rpc"
@@ -34,15 +34,15 @@ func (na *DiskInfoAction) SetDependency(action BaseAction) {
 }
 func (na *DiskInfoAction) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("disk image info has a dependency which hasn't been met..")
+		//fmt.Println("disk image info has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute disk image info..")
+	//fmt.Println("going to execute disk image info..")
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
-	na.uploadeImageToTSK()
+	na.uploadImageToTSK()
 	diskImageInfo := getImageInfoFromTSK()
 	//fmt.Println(diskImageInfo)
 
@@ -68,7 +68,7 @@ func (na *DiskInfoAction) Execute() {
 	myDiskImageInfo.OEMName = theInfoMap["OEM Name"]
 	myDiskImageInfo.SerialNumber = theInfoMap["Volume Serial Number"]
 	myDiskImageInfo.Version = theInfoMap["Version"]
-	//fmt.Println(myDiskImageInfo)
+
 	na.results = myDiskImageInfo
 	na.executed = true
 }
@@ -86,11 +86,6 @@ func (na *DiskInfoAction) SetFilters(filters []NTypes.Filter) {
 	na.filters = filters
 }
 
-type NugArg struct {
-	TheData []byte
-}
-
-type NugData int
 
 func getImageInfoFromTSK() string {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
@@ -99,7 +94,7 @@ func getImageInfoFromTSK() string {
 	}
 
 	//load some data into tsk memory
-	args := &NugArg{[]byte("")}
+	args := &NTypes.NugArg{[]byte(""),""}
 	var reply string
 	err = client.Call("NugTSK.ExecImageInfo", args, &reply)
 	if err != nil {
@@ -109,13 +104,13 @@ func getImageInfoFromTSK() string {
 	return reply
 }
 
-func (na *DiskInfoAction) uploadeImageToTSK() {
+func (na *DiskInfoAction) uploadImageToTSK() {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
 	//load some data into tsk memory
-	args := &NugArg{[]byte("test")}
+	args := &NTypes.NugArg{[]byte("test"),""}
 	var reply string
 	err = client.Call("NugTSK.LoadData", args, &reply)
 	if err != nil {

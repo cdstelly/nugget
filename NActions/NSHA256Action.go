@@ -31,24 +31,24 @@ func (na *SHA256Action) SetDependency(action BaseAction) {
 
 func (na *SHA256Action) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("SHA256Action has a dependency which hasn't been met..")
+		//fmt.Println("SHA256Action has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute sha256..")
+	//fmt.Println("going to execute sha256..")
 
 	operateOn := na.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.FileInfo); ok {
 		//we have a file to operate on
 		var files []NTypes.FileInfo
 		files = operateOn.([]NTypes.FileInfo)
-		for index,file := range files {
+		for _,file := range files {
 			hasher := sha256.New()
 			fn := GetAFilename(file)
 			hasher.Write([]byte(fn))
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
-			println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)
+			//println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)
 			na.results = append(na.results, NTypes.SHA256{Digest:myhash})
 		}
 	}

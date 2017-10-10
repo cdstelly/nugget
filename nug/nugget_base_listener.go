@@ -99,6 +99,12 @@ func (s *BaseNuggetListener) EnterByField(ctx *ByFieldContext) {}
 // ExitByField is called when production byField is exited.
 func (s *BaseNuggetListener) ExitByField(ctx *ByFieldContext) {}
 
+// EnterByteOffsetSize is called when production byteOffsetSize is entered.
+func (s *BaseNuggetListener) EnterByteOffsetSize(ctx *ByteOffsetSizeContext) {}
+
+// ExitByteOffsetSize is called when production byteOffsetSize is exited.
+func (s *BaseNuggetListener) ExitByteOffsetSize(ctx *ByteOffsetSizeContext) {}
+
 // EnterFilter is called when production filter is entered.
 func (s *BaseNuggetListener) EnterFilter(ctx *FilterContext) {}
 

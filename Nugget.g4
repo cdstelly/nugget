@@ -26,7 +26,7 @@ assign: ID '=' STRING ('|' nugget_action)* |
 
 operation_on_singleton: singleton_op '(' ID ')';
 
-singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx');
+singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx' | 'raw');
 
 singleton_var: ID;
 
@@ -40,6 +40,7 @@ nugget_type:
       'pcap'       |
       'exifinfo'   |
       'datetime'   |
+      'memory'     |
       'listof-md5' |
       'listof-sha1'|
       'listof-sha256'
@@ -49,24 +50,26 @@ nugget_type:
 nugget_action: action_word ;
 
 action_word:
-    filter    |
-    'extract' asType |
+    filter            |
+    'extract' asType  |
     'sort'    byField |
-    'sha1'    |
-    'md5'     |
-	'sha256'|
-	'getGetRequests'|
-	'diskinfo' |
-	'union'    ID |
+    'sha1'            |
+    'md5'             |
+	'sha256'          |
+	'getGetRequests'  |
+	'diskinfo'        |
+	'union'    ID     |
+	'pslist'          |
+	'grep'     STRING |
 	'NUGGETGENERATORPLACEHOLDER'
 ;
 
-asType: 'as' nugget_type;
+asType: 'as' nugget_type (byteOffsetSize)?;
 byField:'by' ID;
 
-filter :
-    'filter' filter_term (',' filter_term)*;
+byteOffsetSize : '['INT ',' INT ']';
 
+filter : 'filter' filter_term (',' filter_term)*;
 filter_term: ID COMPOP STRING;
 
 COMPOP: ('>' | '<' | '>=' | '<=' | '==');

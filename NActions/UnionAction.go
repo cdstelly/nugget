@@ -7,10 +7,10 @@ import (
 type UnionAction struct {
 	executed  bool
 	dependsOn BaseAction
-	filters []NTypes.Filter
+	filters   []NTypes.Filter
 
-	results []string
-	VariableList []string
+	results      []string
+	VariableList []string //the stuff we get in to union against
 }
 
 func (na *UnionAction) BeenExecuted() bool {
@@ -40,12 +40,18 @@ func (na *UnionAction) Execute() {
 	//todo what about sha1 and sha256..
 	//todo optimize this n^2 comparison loop..
 	if strList, ok := operateOn.([]NTypes.MD5); ok {
-		//fmt.Println("going to execute union against a hash..")
+//		fmt.Println("going to execute union against a hash..")
+
 		for _, stringFromVar := range na.VariableList {
 			for _, stringFromDep := range strList {
 				//fmt.Println("Comparing: ", stringFromVar, stringFromDep)
 				if stringFromVar == stringFromDep.Digest {
-					resultSet = append(resultSet,stringFromDep.Digest)
+					if fileData, weHaveFileInfo := stringFromDep.HashOf.(NTypes.FileInfo); weHaveFileInfo {
+						fn := fileData.Filenames[0]
+						resultSet = append(resultSet, fn + "\t" + stringFromDep.Digest)
+					} else {
+						resultSet = append(resultSet, stringFromDep.Digest)
+					}
 				}
 			}
 		}
@@ -55,7 +61,7 @@ func (na *UnionAction) Execute() {
 	na.executed = true
 }
 
-func (na *UnionAction) GetResults() interface{}{
+func (na *UnionAction) GetResults() interface{} {
 	if !na.BeenExecuted() {
 		na.Execute()
 	}

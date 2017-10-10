@@ -9,10 +9,8 @@ import (
 	"./NActions"
 	"./nug"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-
 	"reflect"
-	"net/rpc"
-	"log"
+	"strconv"
 )
 
 var (
@@ -37,6 +35,7 @@ func init() {
 	setupTypeRegstry()
 }
 
+//todo: finish typeregistry so we can clean up typing code
 func setupTypeRegstry() {
 	typeRegistry["md5"] = reflect.TypeOf(NTypes.MD5{})
 	typeRegistry["sha1"] = reflect.TypeOf(NTypes.SHA1{})
@@ -45,6 +44,7 @@ func setupTypeRegstry() {
 	typeRegistry["file"] = reflect.TypeOf(NTypes.FileInfo{})
 }
 
+//getValue and setValue will take care of passing around results from individual rules
 func setValue(ctx antlr.ParseTree, value interface{}) {
 	nodeMap[ctx] = value
 }
@@ -72,19 +72,22 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
     //handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		action_verb = "extract"
+		//fmt.Println("it's an extract")
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
+		//handle unions
+	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Grep); ok {
+		action_verb = "grep"
 	//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		action_verb = "union"
-
     //handle everything else
 	} else {
 		if av,ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
 		} else {
-			fmt.Println("uh oh - wasn't able to determine action type")
+			fmt.Println("error - wasn't able to determine action type")
 		}
 	}
 
@@ -108,6 +111,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 			theAction = &NActions.ExtractList{ListType: "sha1",ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha256hashes" {
 			theAction = &NActions.ExtractList{ListType: "sha256",ListLocation: extractType.PathToExtract}
+		} else if extractType.AsType == "memory" {
+			theAction = &NActions.ExtractMemory{}
 		} else {
 			fmt.Println("Error parsing given type: ", extractType.AsType)
 		}
@@ -119,6 +124,9 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.MD5Action{}
 	case "diskinfo":
 		theAction = &NActions.DiskInfoAction{}
+	case "grep":
+		grepType := getValue(ctx.Action_word()).(NTypes.Grep)
+		theAction = &NActions.GrepAction{Expression: grepType.Expression}
 	case "union":
 		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
@@ -130,6 +138,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 			fmt.Println("Error! Was not able to find var: ", unionType.AgainstVarName)
 		}
 		theAction = &NActions.UnionAction{VariableList: theListFromVar}
+	case "pslist":
+		theAction = &NActions.ProcessListAction{}
 	default:
 		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
 	}
@@ -217,11 +227,6 @@ func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 	registers[identifier] = theTuples
 }
 
-func (s *TreeShapeListener) EnterAssign(ctx *parser.AssignContext) {
-	//currentVariable = ctx.ID(0).GetText()
-	//fmt.Println("cv:",currentVariable)
-}
-
 func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	varIdentifier := ctx.ID(0).GetText()
 
@@ -231,7 +236,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	for _,action := range actions {
 		rawAction := getValue(action)
 		//if it's an extract action, we need to look behind and get some more info (like filepath and type)
-		fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
+		//fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
 
 		if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
 			//todo: get real values not dummy ones
@@ -240,7 +245,8 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		}
 		if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
 			//todo: get real values not dummy ones
-			extractAction.PCAPLocation = "G:\\school\\sample.pcap"
+			//extractAction.PCAPLocation = "G:\\school\\sample.pcap"
+			extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-11-19-09_54.pcap"
 		}
 		if act, ok := rawAction.(NActions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -256,12 +262,12 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	//we have raw actions, now build the chain of dependencies for each
 	for index, builtAction := range builtActions {
 		if index+1 < len(builtActions) {
-			fmt.Println("action at index: ", index, "is ", reflect.TypeOf(builtAction)," : ", builtAction, " and depends on: ", builtActions[index+1])
+			//fmt.Println("action at index: ", index, "is ", reflect.TypeOf(builtAction)," : ", builtAction, " and depends on: ", builtActions[index+1])
 			var depAction NActions.BaseAction
 			depAction = builtActions[index+1]
 			builtAction.(NActions.BaseAction).SetDependency(depAction)
 		} else {
-			fmt.Println("action at index: ", index,"is ", reflect.TypeOf(builtAction)," : ", builtAction, " and has no dependency. Setting dep to the var")
+			//fmt.Println("action at index: ", index,"is ", reflect.TypeOf(builtAction)," : ", builtAction, " and has no dependency. Setting dep to the var")
 			if len(ctx.AllID()) > 1 {
 				depVar := ctx.ID(1).GetText()
 
@@ -272,13 +278,12 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 						//fmt.Println("the dependency for this action will be variable: ", nVar)
 						builtAction.(NActions.BaseAction).SetDependency(dep)
 					}
-					// else what if it's an extraction??
 				} else {
 					fmt.Println("Error: Var '", depVar, "' not recognized.")
 				}
 			}
 		}
-		fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
+		//fmt.Println("setting the var ", varIdentifier, " to ", builtActions[0])
 		registers[varIdentifier] = builtActions[0]
 	}
 }
@@ -299,12 +304,10 @@ func (s *TreeShapeListener) ExitNugget_type(ctx *parser.Nugget_typeContext) {
 }
 
 func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
-	fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
+	//fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
-//investigate from here -
-// maybe we generate an extract type here and pass it up the chain, just like we do for flter
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
@@ -320,6 +323,8 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"} )
 		} else if myT == "listof-sha256" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"} )
+		} else if myT == "memory" {
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"} )
 		} else {
 			fmt.Println("error on type extraction")
 		}
@@ -328,37 +333,36 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		setValue(ctx, getValue(ctx.Filter()))
 	//handle sorts
 	} else if ctx.ByField() != nil {
-		fmt.Println("sort by: ", getValue(ctx.ByField()))
+		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
-			fmt.Println("sort string: ", val)
+			//fmt.Println("sort string: ", val)
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
 	//handle union
 	} else if ctx.ID() != nil {
-		setValue(ctx, NTypes.Union{Results:[]string{""}, AgainstVarName: ctx.ID().GetText()})
+		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
+	//handle grep
+	} else if ctx.STRING() !=  nil {
+		setValue(ctx, NTypes.Grep{Expression:ctx.STRING().GetText()})
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
 }
 
-
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
 	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
 }
 
-
-// ExitByField is called when production byField is exited.
 func (s *TreeShapeListener) ExitByField(ctx *parser.ByFieldContext) {
 	setValue(ctx,ctx.ID().GetText())
 }
 
-
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
 	if v, ok := registers[theVar]; ok {
-		fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
+		//fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
 		if ba,ok := v.(NActions.BaseAction); ok {
-			fmt.Println("Results for var:",theVar, ": ", ba.GetResults())
+			fmt.Println("Results for var ",theVar, ": ", ba.GetResults())
 			//ba.GetResults()
 			//fmt.Println("cutting off results for now..")
 		} else {
@@ -386,7 +390,21 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		case "typex":
 			fmt.Println(reflect.TypeOf(val.GetResults()))
 		case "printx":
-			fmt.Println(val.GetResults())
+			if strings, ok := val.GetResults().([]string); ok {
+				for _, singleLine := range strings {
+					fmt.Println(singleLine)
+				}
+			} else {
+				fmt.Println(val.GetResults())
+			}
+		case "raw":
+			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
+				for _, fi := range files {
+					fmt.Println(fi)
+				}
+			} else {
+				fmt.Println(val.GetResults())
+			}
 		case "size":
 			fmt.Println("len not implemented yet")
 		default:
@@ -401,61 +419,16 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 	setValue(ctx, ctx.GetText())
 }
 
-/*****
-RPC Testing
-*****/
-type NugArg struct {
-	TheData []byte
-}
-
-type NugData int
-
-func testRemoteMD5() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2000")
+func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext) {
+	byteOffset,err := strconv.Atoi(ctx.INT(0).GetText())
+	clusterSize, err := strconv.Atoi(ctx.INT(1).GetText())
 	if err != nil {
-		log.Fatal("dialing:", err)
+		fmt.Println("Error parsing byte offset:" , err)
 	}
-
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugData.DoMD5", args, &reply)
-	if err != nil {
-		log.Fatal("md5 error:", err)
-	}
-	fmt.Printf("md5: %s=%s", string(args.TheData), reply)
-	os.Exit(0)
-}
-
-func testRemoteTSK() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
-
-	//load some data into tsk memory
-	args := &NugArg{[]byte("test")}
-	var reply string
-	err = client.Call("NugTSK.LoadData", args, &reply)
-	if err != nil {
-		log.Fatal("tsk load error:", err)
-	}
-	fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
-
-	//execute data len test
-	arg2 := &NugArg{[]byte("")}
-	err = client.Call("NugTSK.GetDataLen", arg2, &reply)
-	if err != nil {
-		log.Fatal("tsk len error:", err)
-	}
-	fmt.Printf("tsk len =%s\n", reply)
-
-	os.Exit(0)
+	setValue(ctx, NTypes.OffsetInfo{byteOffset,clusterSize})
 }
 
 func main() {
-	//testRemoteMD5()
-	//testRemoteTSK()
-
 	file, err := os.Open(pathToInput)
 	if err != nil {
 		panic(err)
@@ -467,11 +440,11 @@ func main() {
 		fmt.Printf("nugget> %s\n", scanner.Text())
 		input := antlr.NewInputStream(scanner.Text())
 		lexer := parser.NewNuggetLexer(input)
-		stream := antlr.NewCommonTokenStream(lexer, 0)
-		p := parser.NewNuggetParser(stream)
-		p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-		p.BuildParseTrees = true
-		tree := p.Prog()
+		tokenstream := antlr.NewCommonTokenStream(lexer, 0)
+		tokenparser := parser.NewNuggetParser(tokenstream)
+		tokenparser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+		tokenparser.BuildParseTrees = true
+		tree := tokenparser.Prog()
 		antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
 		fmt.Println()
 	}

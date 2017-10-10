@@ -3,10 +3,16 @@ package NTypes
 import (
 	"time"
 	"strings"
+	"net/rpc"
+	"log"
+	"crypto/md5"
+	"encoding/base64"
+	"fmt"
+	"regexp"
 )
 
 type FileInfo struct {
-	Id          uint64
+	Id          string 		//tsk represents as string w/ dashes
 	Filenames   []string
 	Createtime  time.Time
 	Modifytime  time.Time
@@ -16,7 +22,137 @@ type FileInfo struct {
 	Flags       string
 	Filesize    uint64
 	Dataruns    []DataRun
-	ReconstructedData []byte
+	reconstructedData []byte
+	beenReconstructed bool
+}
+
+func (fi FileInfo) String() string {
+	return string(fi.GetFileData())
+}
+
+func getFileFromTSK(inode string) []byte {
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	if err != nil {
+		log.Fatal("dialing:", err)
+	}
+
+	//load some data into tsk memory
+	args := &NugArg{[]byte(""),inode}
+	var reply string
+	err = client.Call("NugTSK.GetFileData", args, &reply)
+	if err != nil {
+		log.Fatal("tsk get file data error:", err)
+	}
+	decodedreply, err := base64.StdEncoding.DecodeString(reply)
+	if err != nil {
+		panic(err)
+	}
+	hasher := md5.New()
+	hasher.Write(decodedreply)
+//	myhash := fmt.Sprintf("%x", hasher.Sum(nil))
+
+	return decodedreply
+}
+
+func (fi *FileInfo) ReconstructTheData() {
+	fi.beenReconstructed = true
+	fi.reconstructedData = getFileFromTSK(fi.Id)
+}
+
+func (fi *FileInfo) GetFileData() []byte {
+	if fi.beenReconstructed == false {
+		fi.ReconstructTheData()
+	}
+	return fi.reconstructedData
+}
+
+func (fi *FileInfo) SetFileData(data []byte) {
+	fi.reconstructedData = data
+}
+
+func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
+	passes := true
+	for _,filter := range theFilters {
+		switch filter.Field{
+		case "filename":
+			if filter.Op != "==" {
+				fmt.Println("Error - Operation ", filter.Op, "not supported")
+			} else {
+				if strings.Contains(filter.Value, "*") {
+					filterStr := strings.TrimSpace(filter.Value)
+					filterStr = strings.Trim(filterStr, `"`)
+					filterStr = "(?i)" + filterStr  // force it to case insensitive //todo: maybe leave this up to user
+					match, _ := regexp.MatchString(filterStr, fi.Filenames[0])
+					if !match {
+						//fmt.Println("Target: ", fi.Filenames[0], " did not match Fitler: ", filterStr)
+						return false
+					}
+				} else {
+					match := strings.Compare(filter.Value, fi.Filenames[0])
+					if match != 0 {
+						//did not match exactly
+						return false
+					}
+				}
+			}
+		case "ctime":
+			theTime := strings.Trim(filter.Value, "\"")
+			layout := "01/02/2006"
+			t, err := time.Parse(layout, theTime)
+			if err != nil {
+				fmt.Errorf("Error! %s", err)
+			}
+			//fmt.Println("datetime of filter:", t.String(), " datetime of file: ", fi.Createtime.String())
+			switch(filter.Op) {
+			case ">":
+				return t.Before(fi.Createtime)
+			case ">=":
+				return t.Equal(fi.Createtime) || t.Before(fi.Createtime)
+			case "<=":
+				return t.Equal(fi.Createtime) || t.After(fi.Createtime)
+			case "<":
+				return t.After(fi.Createtime)
+			case "==":
+				d := fi.Createtime.String()
+				dt, err := time.Parse(layout,d)
+				if err != nil {
+					fmt.Errorf("Error! %s", err)
+				}
+				return t.Equal(dt)
+			default:
+				fmt.Println("Error - operation", filter.Op, " not recognized")
+			}
+		case "mtime":
+			theTime := strings.Trim(filter.Value, "\"")
+			layout := "01/02/2006"
+			t, err := time.Parse(layout, theTime)
+			if err != nil {
+				fmt.Errorf("Error! %s", err)
+			}
+			switch(filter.Op) {
+			case "<":
+				return t.Before(fi.Modifytime)
+			case "<=":
+				return t.Equal(fi.Modifytime) || t.Before(fi.Modifytime)
+			case ">=":
+				return t.Equal(fi.Modifytime) || t.After(fi.Modifytime)
+			case ">":
+				return t.After(fi.Modifytime)
+			case "==":
+				d := fi.Modifytime.String()
+				dt, err := time.Parse(layout,d)
+				if err != nil {
+					fmt.Errorf("Error! %s", err)
+				}
+				return t.Equal(dt)
+			default:
+				fmt.Println("Error - operation", filter.Op, " not recognized")
+			}
+		default:
+			fmt.Println("Error -- filter field not supported by FileInfo")
+		}
+	}
+	return passes
 }
 
 type DataRun struct {
@@ -26,7 +162,7 @@ type DataRun struct {
 }
 
 type RealOffsetRun struct {
-	FileId        uint64
+	FileId        string
 	NumBytesInRun uint64
 	Clusteroffset uint64
 }

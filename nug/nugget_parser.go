@@ -18,85 +18,94 @@ var _ = reflect.Copy
 var _ = strconv.Itoa
 
 var parserATN = []uint16{
-	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 44, 136,
+	3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 49, 149,
 	4, 2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 4, 6, 9, 6, 4, 7, 9, 7,
 	4, 8, 9, 8, 4, 9, 9, 9, 4, 10, 9, 10, 4, 11, 9, 11, 4, 12, 9, 12, 4, 13,
-	9, 13, 4, 14, 9, 14, 4, 15, 9, 15, 4, 16, 9, 16, 3, 2, 3, 2, 3, 2, 7, 2,
-	36, 10, 2, 12, 2, 14, 2, 39, 11, 2, 3, 2, 3, 2, 3, 3, 3, 3, 3, 3, 5, 3,
-	46, 10, 3, 3, 4, 3, 4, 3, 4, 5, 4, 51, 10, 4, 3, 5, 3, 5, 3, 5, 5, 5, 56,
-	10, 5, 3, 5, 6, 5, 59, 10, 5, 13, 5, 14, 5, 60, 3, 5, 3, 5, 5, 5, 65, 10,
-	5, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 7, 6, 72, 10, 6, 12, 6, 14, 6, 75, 11,
-	6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 7, 6, 82, 10, 6, 12, 6, 14, 6, 85, 11,
-	6, 5, 6, 87, 10, 6, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 8, 3, 8, 3, 9, 3,
-	9, 3, 10, 3, 10, 3, 11, 3, 11, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12,
-	3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 5, 12, 115, 10, 12, 3,
-	13, 3, 13, 3, 13, 3, 14, 3, 14, 3, 14, 3, 15, 3, 15, 3, 15, 3, 15, 7, 15,
-	127, 10, 15, 12, 15, 14, 15, 130, 11, 15, 3, 16, 3, 16, 3, 16, 3, 16, 3,
-	16, 2, 2, 17, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 2,
-	4, 3, 2, 10, 14, 3, 2, 15, 26, 2, 142, 2, 37, 3, 2, 2, 2, 4, 45, 3, 2,
-	2, 2, 6, 47, 3, 2, 2, 2, 8, 52, 3, 2, 2, 2, 10, 86, 3, 2, 2, 2, 12, 88,
-	3, 2, 2, 2, 14, 93, 3, 2, 2, 2, 16, 95, 3, 2, 2, 2, 18, 97, 3, 2, 2, 2,
-	20, 99, 3, 2, 2, 2, 22, 114, 3, 2, 2, 2, 24, 116, 3, 2, 2, 2, 26, 119,
-	3, 2, 2, 2, 28, 122, 3, 2, 2, 2, 30, 131, 3, 2, 2, 2, 32, 36, 5, 4, 3,
-	2, 33, 36, 5, 12, 7, 2, 34, 36, 5, 16, 9, 2, 35, 32, 3, 2, 2, 2, 35, 33,
-	3, 2, 2, 2, 35, 34, 3, 2, 2, 2, 36, 39, 3, 2, 2, 2, 37, 35, 3, 2, 2, 2,
-	37, 38, 3, 2, 2, 2, 38, 40, 3, 2, 2, 2, 39, 37, 3, 2, 2, 2, 40, 41, 7,
-	2, 2, 3, 41, 3, 3, 2, 2, 2, 42, 46, 5, 6, 4, 2, 43, 46, 5, 8, 5, 2, 44,
-	46, 5, 10, 6, 2, 45, 42, 3, 2, 2, 2, 45, 43, 3, 2, 2, 2, 45, 44, 3, 2,
-	2, 2, 46, 5, 3, 2, 2, 2, 47, 48, 7, 40, 2, 2, 48, 50, 5, 18, 10, 2, 49,
-	51, 7, 38, 2, 2, 50, 49, 3, 2, 2, 2, 50, 51, 3, 2, 2, 2, 51, 7, 3, 2, 2,
-	2, 52, 53, 7, 40, 2, 2, 53, 58, 7, 3, 2, 2, 54, 56, 7, 4, 2, 2, 55, 54,
-	3, 2, 2, 2, 55, 56, 3, 2, 2, 2, 56, 57, 3, 2, 2, 2, 57, 59, 5, 18, 10,
-	2, 58, 55, 3, 2, 2, 2, 59, 60, 3, 2, 2, 2, 60, 58, 3, 2, 2, 2, 60, 61,
-	3, 2, 2, 2, 61, 62, 3, 2, 2, 2, 62, 64, 7, 5, 2, 2, 63, 65, 7, 38, 2, 2,
-	64, 63, 3, 2, 2, 2, 64, 65, 3, 2, 2, 2, 65, 9, 3, 2, 2, 2, 66, 67, 7, 40,
-	2, 2, 67, 68, 7, 6, 2, 2, 68, 73, 7, 41, 2, 2, 69, 70, 7, 7, 2, 2, 70,
-	72, 5, 20, 11, 2, 71, 69, 3, 2, 2, 2, 72, 75, 3, 2, 2, 2, 73, 71, 3, 2,
-	2, 2, 73, 74, 3, 2, 2, 2, 74, 87, 3, 2, 2, 2, 75, 73, 3, 2, 2, 2, 76, 77,
-	7, 40, 2, 2, 77, 78, 7, 6, 2, 2, 78, 83, 7, 40, 2, 2, 79, 80, 7, 7, 2,
-	2, 80, 82, 5, 20, 11, 2, 81, 79, 3, 2, 2, 2, 82, 85, 3, 2, 2, 2, 83, 81,
-	3, 2, 2, 2, 83, 84, 3, 2, 2, 2, 84, 87, 3, 2, 2, 2, 85, 83, 3, 2, 2, 2,
-	86, 66, 3, 2, 2, 2, 86, 76, 3, 2, 2, 2, 87, 11, 3, 2, 2, 2, 88, 89, 5,
-	14, 8, 2, 89, 90, 7, 8, 2, 2, 90, 91, 7, 40, 2, 2, 91, 92, 7, 9, 2, 2,
-	92, 13, 3, 2, 2, 2, 93, 94, 9, 2, 2, 2, 94, 15, 3, 2, 2, 2, 95, 96, 7,
-	40, 2, 2, 96, 17, 3, 2, 2, 2, 97, 98, 9, 3, 2, 2, 98, 19, 3, 2, 2, 2, 99,
-	100, 5, 22, 12, 2, 100, 21, 3, 2, 2, 2, 101, 115, 5, 28, 15, 2, 102, 103,
-	7, 27, 2, 2, 103, 115, 5, 24, 13, 2, 104, 105, 7, 28, 2, 2, 105, 115, 5,
-	26, 14, 2, 106, 115, 7, 16, 2, 2, 107, 115, 7, 17, 2, 2, 108, 115, 7, 29,
-	2, 2, 109, 115, 7, 30, 2, 2, 110, 115, 7, 31, 2, 2, 111, 112, 7, 32, 2,
-	2, 112, 115, 7, 40, 2, 2, 113, 115, 7, 33, 2, 2, 114, 101, 3, 2, 2, 2,
-	114, 102, 3, 2, 2, 2, 114, 104, 3, 2, 2, 2, 114, 106, 3, 2, 2, 2, 114,
-	107, 3, 2, 2, 2, 114, 108, 3, 2, 2, 2, 114, 109, 3, 2, 2, 2, 114, 110,
-	3, 2, 2, 2, 114, 111, 3, 2, 2, 2, 114, 113, 3, 2, 2, 2, 115, 23, 3, 2,
-	2, 2, 116, 117, 7, 34, 2, 2, 117, 118, 5, 18, 10, 2, 118, 25, 3, 2, 2,
-	2, 119, 120, 7, 35, 2, 2, 120, 121, 7, 40, 2, 2, 121, 27, 3, 2, 2, 2, 122,
-	123, 7, 36, 2, 2, 123, 128, 5, 30, 16, 2, 124, 125, 7, 4, 2, 2, 125, 127,
-	5, 30, 16, 2, 126, 124, 3, 2, 2, 2, 127, 130, 3, 2, 2, 2, 128, 126, 3,
-	2, 2, 2, 128, 129, 3, 2, 2, 2, 129, 29, 3, 2, 2, 2, 130, 128, 3, 2, 2,
-	2, 131, 132, 7, 40, 2, 2, 132, 133, 7, 37, 2, 2, 133, 134, 7, 41, 2, 2,
-	134, 31, 3, 2, 2, 2, 14, 35, 37, 45, 50, 55, 60, 64, 73, 83, 86, 114, 128,
+	9, 13, 4, 14, 9, 14, 4, 15, 9, 15, 4, 16, 9, 16, 4, 17, 9, 17, 3, 2, 3,
+	2, 3, 2, 7, 2, 38, 10, 2, 12, 2, 14, 2, 41, 11, 2, 3, 2, 3, 2, 3, 3, 3,
+	3, 3, 3, 5, 3, 48, 10, 3, 3, 4, 3, 4, 3, 4, 5, 4, 53, 10, 4, 3, 5, 3, 5,
+	3, 5, 5, 5, 58, 10, 5, 3, 5, 6, 5, 61, 10, 5, 13, 5, 14, 5, 62, 3, 5, 3,
+	5, 5, 5, 67, 10, 5, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 7, 6, 74, 10, 6, 12,
+	6, 14, 6, 77, 11, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 7, 6, 84, 10, 6, 12,
+	6, 14, 6, 87, 11, 6, 5, 6, 89, 10, 6, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3,
+	8, 3, 8, 3, 9, 3, 9, 3, 10, 3, 10, 3, 11, 3, 11, 3, 12, 3, 12, 3, 12, 3,
+	12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12, 3, 12,
+	3, 12, 3, 12, 5, 12, 120, 10, 12, 3, 13, 3, 13, 3, 13, 5, 13, 125, 10,
+	13, 3, 14, 3, 14, 3, 14, 3, 15, 3, 15, 3, 15, 3, 15, 3, 15, 3, 15, 3, 16,
+	3, 16, 3, 16, 3, 16, 7, 16, 140, 10, 16, 12, 16, 14, 16, 143, 11, 16, 3,
+	17, 3, 17, 3, 17, 3, 17, 3, 17, 2, 2, 18, 2, 4, 6, 8, 10, 12, 14, 16, 18,
+	20, 22, 24, 26, 28, 30, 32, 2, 4, 3, 2, 10, 15, 3, 2, 16, 28, 2, 157, 2,
+	39, 3, 2, 2, 2, 4, 47, 3, 2, 2, 2, 6, 49, 3, 2, 2, 2, 8, 54, 3, 2, 2, 2,
+	10, 88, 3, 2, 2, 2, 12, 90, 3, 2, 2, 2, 14, 95, 3, 2, 2, 2, 16, 97, 3,
+	2, 2, 2, 18, 99, 3, 2, 2, 2, 20, 101, 3, 2, 2, 2, 22, 119, 3, 2, 2, 2,
+	24, 121, 3, 2, 2, 2, 26, 126, 3, 2, 2, 2, 28, 129, 3, 2, 2, 2, 30, 135,
+	3, 2, 2, 2, 32, 144, 3, 2, 2, 2, 34, 38, 5, 4, 3, 2, 35, 38, 5, 12, 7,
+	2, 36, 38, 5, 16, 9, 2, 37, 34, 3, 2, 2, 2, 37, 35, 3, 2, 2, 2, 37, 36,
+	3, 2, 2, 2, 38, 41, 3, 2, 2, 2, 39, 37, 3, 2, 2, 2, 39, 40, 3, 2, 2, 2,
+	40, 42, 3, 2, 2, 2, 41, 39, 3, 2, 2, 2, 42, 43, 7, 2, 2, 3, 43, 3, 3, 2,
+	2, 2, 44, 48, 5, 6, 4, 2, 45, 48, 5, 8, 5, 2, 46, 48, 5, 10, 6, 2, 47,
+	44, 3, 2, 2, 2, 47, 45, 3, 2, 2, 2, 47, 46, 3, 2, 2, 2, 48, 5, 3, 2, 2,
+	2, 49, 50, 7, 45, 2, 2, 50, 52, 5, 18, 10, 2, 51, 53, 7, 43, 2, 2, 52,
+	51, 3, 2, 2, 2, 52, 53, 3, 2, 2, 2, 53, 7, 3, 2, 2, 2, 54, 55, 7, 45, 2,
+	2, 55, 60, 7, 3, 2, 2, 56, 58, 7, 4, 2, 2, 57, 56, 3, 2, 2, 2, 57, 58,
+	3, 2, 2, 2, 58, 59, 3, 2, 2, 2, 59, 61, 5, 18, 10, 2, 60, 57, 3, 2, 2,
+	2, 61, 62, 3, 2, 2, 2, 62, 60, 3, 2, 2, 2, 62, 63, 3, 2, 2, 2, 63, 64,
+	3, 2, 2, 2, 64, 66, 7, 5, 2, 2, 65, 67, 7, 43, 2, 2, 66, 65, 3, 2, 2, 2,
+	66, 67, 3, 2, 2, 2, 67, 9, 3, 2, 2, 2, 68, 69, 7, 45, 2, 2, 69, 70, 7,
+	6, 2, 2, 70, 75, 7, 46, 2, 2, 71, 72, 7, 7, 2, 2, 72, 74, 5, 20, 11, 2,
+	73, 71, 3, 2, 2, 2, 74, 77, 3, 2, 2, 2, 75, 73, 3, 2, 2, 2, 75, 76, 3,
+	2, 2, 2, 76, 89, 3, 2, 2, 2, 77, 75, 3, 2, 2, 2, 78, 79, 7, 45, 2, 2, 79,
+	80, 7, 6, 2, 2, 80, 85, 7, 45, 2, 2, 81, 82, 7, 7, 2, 2, 82, 84, 5, 20,
+	11, 2, 83, 81, 3, 2, 2, 2, 84, 87, 3, 2, 2, 2, 85, 83, 3, 2, 2, 2, 85,
+	86, 3, 2, 2, 2, 86, 89, 3, 2, 2, 2, 87, 85, 3, 2, 2, 2, 88, 68, 3, 2, 2,
+	2, 88, 78, 3, 2, 2, 2, 89, 11, 3, 2, 2, 2, 90, 91, 5, 14, 8, 2, 91, 92,
+	7, 8, 2, 2, 92, 93, 7, 45, 2, 2, 93, 94, 7, 9, 2, 2, 94, 13, 3, 2, 2, 2,
+	95, 96, 9, 2, 2, 2, 96, 15, 3, 2, 2, 2, 97, 98, 7, 45, 2, 2, 98, 17, 3,
+	2, 2, 2, 99, 100, 9, 3, 2, 2, 100, 19, 3, 2, 2, 2, 101, 102, 5, 22, 12,
+	2, 102, 21, 3, 2, 2, 2, 103, 120, 5, 30, 16, 2, 104, 105, 7, 29, 2, 2,
+	105, 120, 5, 24, 13, 2, 106, 107, 7, 30, 2, 2, 107, 120, 5, 26, 14, 2,
+	108, 120, 7, 17, 2, 2, 109, 120, 7, 18, 2, 2, 110, 120, 7, 31, 2, 2, 111,
+	120, 7, 32, 2, 2, 112, 120, 7, 33, 2, 2, 113, 114, 7, 34, 2, 2, 114, 120,
+	7, 45, 2, 2, 115, 120, 7, 35, 2, 2, 116, 117, 7, 36, 2, 2, 117, 120, 7,
+	46, 2, 2, 118, 120, 7, 37, 2, 2, 119, 103, 3, 2, 2, 2, 119, 104, 3, 2,
+	2, 2, 119, 106, 3, 2, 2, 2, 119, 108, 3, 2, 2, 2, 119, 109, 3, 2, 2, 2,
+	119, 110, 3, 2, 2, 2, 119, 111, 3, 2, 2, 2, 119, 112, 3, 2, 2, 2, 119,
+	113, 3, 2, 2, 2, 119, 115, 3, 2, 2, 2, 119, 116, 3, 2, 2, 2, 119, 118,
+	3, 2, 2, 2, 120, 23, 3, 2, 2, 2, 121, 122, 7, 38, 2, 2, 122, 124, 5, 18,
+	10, 2, 123, 125, 5, 28, 15, 2, 124, 123, 3, 2, 2, 2, 124, 125, 3, 2, 2,
+	2, 125, 25, 3, 2, 2, 2, 126, 127, 7, 39, 2, 2, 127, 128, 7, 45, 2, 2, 128,
+	27, 3, 2, 2, 2, 129, 130, 7, 40, 2, 2, 130, 131, 7, 44, 2, 2, 131, 132,
+	7, 4, 2, 2, 132, 133, 7, 44, 2, 2, 133, 134, 7, 5, 2, 2, 134, 29, 3, 2,
+	2, 2, 135, 136, 7, 41, 2, 2, 136, 141, 5, 32, 17, 2, 137, 138, 7, 4, 2,
+	2, 138, 140, 5, 32, 17, 2, 139, 137, 3, 2, 2, 2, 140, 143, 3, 2, 2, 2,
+	141, 139, 3, 2, 2, 2, 141, 142, 3, 2, 2, 2, 142, 31, 3, 2, 2, 2, 143, 141,
+	3, 2, 2, 2, 144, 145, 7, 45, 2, 2, 145, 146, 7, 42, 2, 2, 146, 147, 7,
+	46, 2, 2, 147, 33, 3, 2, 2, 2, 15, 37, 39, 47, 52, 57, 62, 66, 75, 85,
+	88, 119, 124, 141,
 }
 var deserializer = antlr.NewATNDeserializer(nil)
 var deserializedATN = deserializer.DeserializeFromUInt16(parserATN)
 
 var literalNames = []string{
 	"", "'tuple['", "','", "']'", "'='", "'|'", "'('", "')'", "'type'", "'print'",
-	"'size'", "'typex'", "'printx'", "'string'", "'sha1'", "'md5'", "'ntfs'",
-	"'file'", "'packet'", "'pcap'", "'exifinfo'", "'datetime'", "'listof-md5'",
-	"'listof-sha1'", "'listof-sha256'", "'extract'", "'sort'", "'sha256'",
-	"'getGetRequests'", "'diskinfo'", "'union'", "'NUGGETGENERATORPLACEHOLDER'",
-	"'as'", "'by'", "'filter'", "", "'[]'",
+	"'size'", "'typex'", "'printx'", "'raw'", "'string'", "'sha1'", "'md5'",
+	"'ntfs'", "'file'", "'packet'", "'pcap'", "'exifinfo'", "'datetime'", "'memory'",
+	"'listof-md5'", "'listof-sha1'", "'listof-sha256'", "'extract'", "'sort'",
+	"'sha256'", "'getGetRequests'", "'diskinfo'", "'union'", "'pslist'", "'grep'",
+	"'NUGGETGENERATORPLACEHOLDER'", "'as'", "'by'", "'['", "'filter'", "",
+	"'[]'",
 }
 var symbolicNames = []string{
 	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "COMPOP",
-	"LISTOP", "INT", "ID", "STRING", "WS", "NL", "LINE_COMMENT",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "COMPOP", "LISTOP", "INT", "ID", "STRING", "WS", "NL",
+	"LINE_COMMENT",
 }
 
 var ruleNames = []string{
 	"prog", "define_assign", "define", "define_tuple", "assign", "operation_on_singleton",
 	"singleton_op", "singleton_var", "nugget_type", "nugget_action", "action_word",
-	"asType", "byField", "filter", "filter_term",
+	"asType", "byField", "byteOffsetSize", "filter", "filter_term",
 }
 var decisionToDFA = make([]*antlr.DFA, len(deserializedATN.DecisionToState))
 
@@ -161,14 +170,19 @@ const (
 	NuggetParserT__31        = 32
 	NuggetParserT__32        = 33
 	NuggetParserT__33        = 34
-	NuggetParserCOMPOP       = 35
-	NuggetParserLISTOP       = 36
-	NuggetParserINT          = 37
-	NuggetParserID           = 38
-	NuggetParserSTRING       = 39
-	NuggetParserWS           = 40
-	NuggetParserNL           = 41
-	NuggetParserLINE_COMMENT = 42
+	NuggetParserT__34        = 35
+	NuggetParserT__35        = 36
+	NuggetParserT__36        = 37
+	NuggetParserT__37        = 38
+	NuggetParserT__38        = 39
+	NuggetParserCOMPOP       = 40
+	NuggetParserLISTOP       = 41
+	NuggetParserINT          = 42
+	NuggetParserID           = 43
+	NuggetParserSTRING       = 44
+	NuggetParserWS           = 45
+	NuggetParserNL           = 46
+	NuggetParserLINE_COMMENT = 47
 )
 
 // NuggetParser rules.
@@ -186,8 +200,9 @@ const (
 	NuggetParserRULE_action_word            = 10
 	NuggetParserRULE_asType                 = 11
 	NuggetParserRULE_byField                = 12
-	NuggetParserRULE_filter                 = 13
-	NuggetParserRULE_filter_term            = 14
+	NuggetParserRULE_byteOffsetSize         = 13
+	NuggetParserRULE_filter                 = 14
+	NuggetParserRULE_filter_term            = 15
 )
 
 // IProgContext is an interface to support dynamic dispatch.
@@ -343,40 +358,40 @@ func (p *NuggetParser) Prog() (localctx IProgContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(35)
+	p.SetState(37)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-8)&-(0x1f+1)) == 0 && ((1<<uint((_la-8)))&((1<<(NuggetParserT__7-8))|(1<<(NuggetParserT__8-8))|(1<<(NuggetParserT__9-8))|(1<<(NuggetParserT__10-8))|(1<<(NuggetParserT__11-8))|(1<<(NuggetParserID-8)))) != 0 {
-		p.SetState(33)
+	for (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__7)|(1<<NuggetParserT__8)|(1<<NuggetParserT__9)|(1<<NuggetParserT__10)|(1<<NuggetParserT__11)|(1<<NuggetParserT__12))) != 0) || _la == NuggetParserID {
+		p.SetState(35)
 		p.GetErrorHandler().Sync(p)
 		switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 0, p.GetParserRuleContext()) {
 		case 1:
 			{
-				p.SetState(30)
+				p.SetState(32)
 				p.Define_assign()
 			}
 
 		case 2:
 			{
-				p.SetState(31)
+				p.SetState(33)
 				p.Operation_on_singleton()
 			}
 
 		case 3:
 			{
-				p.SetState(32)
+				p.SetState(34)
 				p.Singleton_var()
 			}
 
 		}
 
-		p.SetState(37)
+		p.SetState(39)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(38)
+		p.SetState(40)
 		p.Match(NuggetParserEOF)
 	}
 
@@ -491,27 +506,27 @@ func (p *NuggetParser) Define_assign() (localctx IDefine_assignContext) {
 		}
 	}()
 
-	p.SetState(43)
+	p.SetState(45)
 	p.GetErrorHandler().Sync(p)
 	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 2, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(40)
+			p.SetState(42)
 			p.Define()
 		}
 
 	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(41)
+			p.SetState(43)
 			p.Define_tuple()
 		}
 
 	case 3:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(42)
+			p.SetState(44)
 			p.Assign()
 		}
 
@@ -619,20 +634,20 @@ func (p *NuggetParser) Define() (localctx IDefineContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(45)
+		p.SetState(47)
 		p.Match(NuggetParserID)
 	}
 	{
-		p.SetState(46)
+		p.SetState(48)
 		p.Nugget_type()
 	}
-	p.SetState(48)
+	p.SetState(50)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == NuggetParserLISTOP {
 		{
-			p.SetState(47)
+			p.SetState(49)
 			p.Match(NuggetParserLISTOP)
 		}
 
@@ -753,49 +768,49 @@ func (p *NuggetParser) Define_tuple() (localctx IDefine_tupleContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(50)
+		p.SetState(52)
 		p.Match(NuggetParserID)
 	}
 	{
-		p.SetState(51)
+		p.SetState(53)
 		p.Match(NuggetParserT__0)
 	}
-	p.SetState(56)
+	p.SetState(58)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ok := true; ok; ok = (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__1)|(1<<NuggetParserT__12)|(1<<NuggetParserT__13)|(1<<NuggetParserT__14)|(1<<NuggetParserT__15)|(1<<NuggetParserT__16)|(1<<NuggetParserT__17)|(1<<NuggetParserT__18)|(1<<NuggetParserT__19)|(1<<NuggetParserT__20)|(1<<NuggetParserT__21)|(1<<NuggetParserT__22)|(1<<NuggetParserT__23))) != 0) {
-		p.SetState(53)
+	for ok := true; ok; ok = (((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__1)|(1<<NuggetParserT__13)|(1<<NuggetParserT__14)|(1<<NuggetParserT__15)|(1<<NuggetParserT__16)|(1<<NuggetParserT__17)|(1<<NuggetParserT__18)|(1<<NuggetParserT__19)|(1<<NuggetParserT__20)|(1<<NuggetParserT__21)|(1<<NuggetParserT__22)|(1<<NuggetParserT__23)|(1<<NuggetParserT__24)|(1<<NuggetParserT__25))) != 0) {
+		p.SetState(55)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == NuggetParserT__1 {
 			{
-				p.SetState(52)
+				p.SetState(54)
 				p.Match(NuggetParserT__1)
 			}
 
 		}
 		{
-			p.SetState(55)
+			p.SetState(57)
 			p.Nugget_type()
 		}
 
-		p.SetState(58)
+		p.SetState(60)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(60)
+		p.SetState(62)
 		p.Match(NuggetParserT__2)
 	}
-	p.SetState(62)
+	p.SetState(64)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == NuggetParserLISTOP {
 		{
-			p.SetState(61)
+			p.SetState(63)
 			p.Match(NuggetParserLISTOP)
 		}
 
@@ -918,38 +933,38 @@ func (p *NuggetParser) Assign() (localctx IAssignContext) {
 		}
 	}()
 
-	p.SetState(84)
+	p.SetState(86)
 	p.GetErrorHandler().Sync(p)
 	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 9, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(64)
+			p.SetState(66)
 			p.Match(NuggetParserID)
 		}
 		{
-			p.SetState(65)
+			p.SetState(67)
 			p.Match(NuggetParserT__3)
 		}
 		{
-			p.SetState(66)
+			p.SetState(68)
 			p.Match(NuggetParserSTRING)
 		}
-		p.SetState(71)
+		p.SetState(73)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == NuggetParserT__4 {
 			{
-				p.SetState(67)
+				p.SetState(69)
 				p.Match(NuggetParserT__4)
 			}
 			{
-				p.SetState(68)
+				p.SetState(70)
 				p.Nugget_action()
 			}
 
-			p.SetState(73)
+			p.SetState(75)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 		}
@@ -957,32 +972,32 @@ func (p *NuggetParser) Assign() (localctx IAssignContext) {
 	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(74)
-			p.Match(NuggetParserID)
-		}
-		{
-			p.SetState(75)
-			p.Match(NuggetParserT__3)
-		}
-		{
 			p.SetState(76)
 			p.Match(NuggetParserID)
 		}
-		p.SetState(81)
+		{
+			p.SetState(77)
+			p.Match(NuggetParserT__3)
+		}
+		{
+			p.SetState(78)
+			p.Match(NuggetParserID)
+		}
+		p.SetState(83)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == NuggetParserT__4 {
 			{
-				p.SetState(77)
+				p.SetState(79)
 				p.Match(NuggetParserT__4)
 			}
 			{
-				p.SetState(78)
+				p.SetState(80)
 				p.Nugget_action()
 			}
 
-			p.SetState(83)
+			p.SetState(85)
 			p.GetErrorHandler().Sync(p)
 			_la = p.GetTokenStream().LA(1)
 		}
@@ -1086,19 +1101,19 @@ func (p *NuggetParser) Operation_on_singleton() (localctx IOperation_on_singleto
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(86)
+		p.SetState(88)
 		p.Singleton_op()
 	}
 	{
-		p.SetState(87)
+		p.SetState(89)
 		p.Match(NuggetParserT__5)
 	}
 	{
-		p.SetState(88)
+		p.SetState(90)
 		p.Match(NuggetParserID)
 	}
 	{
-		p.SetState(89)
+		p.SetState(91)
 		p.Match(NuggetParserT__6)
 	}
 
@@ -1184,10 +1199,10 @@ func (p *NuggetParser) Singleton_op() (localctx ISingleton_opContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(91)
+	p.SetState(93)
 	_la = p.GetTokenStream().LA(1)
 
-	if !(((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__7)|(1<<NuggetParserT__8)|(1<<NuggetParserT__9)|(1<<NuggetParserT__10)|(1<<NuggetParserT__11))) != 0) {
+	if !(((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__7)|(1<<NuggetParserT__8)|(1<<NuggetParserT__9)|(1<<NuggetParserT__10)|(1<<NuggetParserT__11)|(1<<NuggetParserT__12))) != 0) {
 		p.GetErrorHandler().RecoverInline(p)
 	} else {
 		p.GetErrorHandler().ReportMatch(p)
@@ -1281,7 +1296,7 @@ func (p *NuggetParser) Singleton_var() (localctx ISingleton_varContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(93)
+		p.SetState(95)
 		p.Match(NuggetParserID)
 	}
 
@@ -1367,10 +1382,10 @@ func (p *NuggetParser) Nugget_type() (localctx INugget_typeContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(95)
+	p.SetState(97)
 	_la = p.GetTokenStream().LA(1)
 
-	if !(((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__12)|(1<<NuggetParserT__13)|(1<<NuggetParserT__14)|(1<<NuggetParserT__15)|(1<<NuggetParserT__16)|(1<<NuggetParserT__17)|(1<<NuggetParserT__18)|(1<<NuggetParserT__19)|(1<<NuggetParserT__20)|(1<<NuggetParserT__21)|(1<<NuggetParserT__22)|(1<<NuggetParserT__23))) != 0) {
+	if !(((_la)&-(0x1f+1)) == 0 && ((1<<uint(_la))&((1<<NuggetParserT__13)|(1<<NuggetParserT__14)|(1<<NuggetParserT__15)|(1<<NuggetParserT__16)|(1<<NuggetParserT__17)|(1<<NuggetParserT__18)|(1<<NuggetParserT__19)|(1<<NuggetParserT__20)|(1<<NuggetParserT__21)|(1<<NuggetParserT__22)|(1<<NuggetParserT__23)|(1<<NuggetParserT__24)|(1<<NuggetParserT__25))) != 0) {
 		p.GetErrorHandler().RecoverInline(p)
 	} else {
 		p.GetErrorHandler().ReportMatch(p)
@@ -1470,7 +1485,7 @@ func (p *NuggetParser) Nugget_action() (localctx INugget_actionContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(97)
+		p.SetState(99)
 		p.Action_word()
 	}
 
@@ -1549,6 +1564,10 @@ func (s *Action_wordContext) ID() antlr.TerminalNode {
 	return s.GetToken(NuggetParserID, 0)
 }
 
+func (s *Action_wordContext) STRING() antlr.TerminalNode {
+	return s.GetToken(NuggetParserSTRING, 0)
+}
+
 func (s *Action_wordContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -1589,90 +1608,108 @@ func (p *NuggetParser) Action_word() (localctx IAction_wordContext) {
 		}
 	}()
 
-	p.SetState(112)
+	p.SetState(117)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
-	case NuggetParserT__33:
+	case NuggetParserT__38:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(99)
+			p.SetState(101)
 			p.Filter()
 		}
 
-	case NuggetParserT__24:
+	case NuggetParserT__26:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(100)
-			p.Match(NuggetParserT__24)
-		}
-		{
-			p.SetState(101)
-			p.AsType()
-		}
-
-	case NuggetParserT__25:
-		p.EnterOuterAlt(localctx, 3)
-		{
 			p.SetState(102)
-			p.Match(NuggetParserT__25)
+			p.Match(NuggetParserT__26)
 		}
 		{
 			p.SetState(103)
-			p.ByField()
-		}
-
-	case NuggetParserT__13:
-		p.EnterOuterAlt(localctx, 4)
-		{
-			p.SetState(104)
-			p.Match(NuggetParserT__13)
-		}
-
-	case NuggetParserT__14:
-		p.EnterOuterAlt(localctx, 5)
-		{
-			p.SetState(105)
-			p.Match(NuggetParserT__14)
-		}
-
-	case NuggetParserT__26:
-		p.EnterOuterAlt(localctx, 6)
-		{
-			p.SetState(106)
-			p.Match(NuggetParserT__26)
+			p.AsType()
 		}
 
 	case NuggetParserT__27:
-		p.EnterOuterAlt(localctx, 7)
+		p.EnterOuterAlt(localctx, 3)
+		{
+			p.SetState(104)
+			p.Match(NuggetParserT__27)
+		}
+		{
+			p.SetState(105)
+			p.ByField()
+		}
+
+	case NuggetParserT__14:
+		p.EnterOuterAlt(localctx, 4)
+		{
+			p.SetState(106)
+			p.Match(NuggetParserT__14)
+		}
+
+	case NuggetParserT__15:
+		p.EnterOuterAlt(localctx, 5)
 		{
 			p.SetState(107)
-			p.Match(NuggetParserT__27)
+			p.Match(NuggetParserT__15)
 		}
 
 	case NuggetParserT__28:
-		p.EnterOuterAlt(localctx, 8)
+		p.EnterOuterAlt(localctx, 6)
 		{
 			p.SetState(108)
 			p.Match(NuggetParserT__28)
 		}
 
 	case NuggetParserT__29:
-		p.EnterOuterAlt(localctx, 9)
+		p.EnterOuterAlt(localctx, 7)
 		{
 			p.SetState(109)
 			p.Match(NuggetParserT__29)
 		}
+
+	case NuggetParserT__30:
+		p.EnterOuterAlt(localctx, 8)
 		{
 			p.SetState(110)
+			p.Match(NuggetParserT__30)
+		}
+
+	case NuggetParserT__31:
+		p.EnterOuterAlt(localctx, 9)
+		{
+			p.SetState(111)
+			p.Match(NuggetParserT__31)
+		}
+		{
+			p.SetState(112)
 			p.Match(NuggetParserID)
 		}
 
-	case NuggetParserT__30:
+	case NuggetParserT__32:
 		p.EnterOuterAlt(localctx, 10)
 		{
-			p.SetState(111)
-			p.Match(NuggetParserT__30)
+			p.SetState(113)
+			p.Match(NuggetParserT__32)
+		}
+
+	case NuggetParserT__33:
+		p.EnterOuterAlt(localctx, 11)
+		{
+			p.SetState(114)
+			p.Match(NuggetParserT__33)
+		}
+		{
+			p.SetState(115)
+			p.Match(NuggetParserSTRING)
+		}
+
+	case NuggetParserT__34:
+		p.EnterOuterAlt(localctx, 12)
+		{
+			p.SetState(116)
+			p.Match(NuggetParserT__34)
 		}
 
 	default:
@@ -1730,6 +1767,16 @@ func (s *AsTypeContext) Nugget_type() INugget_typeContext {
 	return t.(INugget_typeContext)
 }
 
+func (s *AsTypeContext) ByteOffsetSize() IByteOffsetSizeContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*IByteOffsetSizeContext)(nil)).Elem(), 0)
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IByteOffsetSizeContext)
+}
+
 func (s *AsTypeContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -1753,6 +1800,7 @@ func (s *AsTypeContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *NuggetParser) AsType() (localctx IAsTypeContext) {
 	localctx = NewAsTypeContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 22, NuggetParserRULE_asType)
+	var _la int
 
 	defer func() {
 		p.ExitRule()
@@ -1772,12 +1820,23 @@ func (p *NuggetParser) AsType() (localctx IAsTypeContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(114)
-		p.Match(NuggetParserT__31)
+		p.SetState(119)
+		p.Match(NuggetParserT__35)
 	}
 	{
-		p.SetState(115)
+		p.SetState(120)
 		p.Nugget_type()
+	}
+	p.SetState(122)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == NuggetParserT__37 {
+		{
+			p.SetState(121)
+			p.ByteOffsetSize()
+		}
+
 	}
 
 	return localctx
@@ -1867,12 +1926,123 @@ func (p *NuggetParser) ByField() (localctx IByFieldContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(117)
-		p.Match(NuggetParserT__32)
+		p.SetState(124)
+		p.Match(NuggetParserT__36)
 	}
 	{
-		p.SetState(118)
+		p.SetState(125)
 		p.Match(NuggetParserID)
+	}
+
+	return localctx
+}
+
+// IByteOffsetSizeContext is an interface to support dynamic dispatch.
+type IByteOffsetSizeContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// IsByteOffsetSizeContext differentiates from other interfaces.
+	IsByteOffsetSizeContext()
+}
+
+type ByteOffsetSizeContext struct {
+	*antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyByteOffsetSizeContext() *ByteOffsetSizeContext {
+	var p = new(ByteOffsetSizeContext)
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	p.RuleIndex = NuggetParserRULE_byteOffsetSize
+	return p
+}
+
+func (*ByteOffsetSizeContext) IsByteOffsetSizeContext() {}
+
+func NewByteOffsetSizeContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ByteOffsetSizeContext {
+	var p = new(ByteOffsetSizeContext)
+
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = NuggetParserRULE_byteOffsetSize
+
+	return p
+}
+
+func (s *ByteOffsetSizeContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *ByteOffsetSizeContext) AllINT() []antlr.TerminalNode {
+	return s.GetTokens(NuggetParserINT)
+}
+
+func (s *ByteOffsetSizeContext) INT(i int) antlr.TerminalNode {
+	return s.GetToken(NuggetParserINT, i)
+}
+
+func (s *ByteOffsetSizeContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *ByteOffsetSizeContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *ByteOffsetSizeContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(NuggetListener); ok {
+		listenerT.EnterByteOffsetSize(s)
+	}
+}
+
+func (s *ByteOffsetSizeContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(NuggetListener); ok {
+		listenerT.ExitByteOffsetSize(s)
+	}
+}
+
+func (p *NuggetParser) ByteOffsetSize() (localctx IByteOffsetSizeContext) {
+	localctx = NewByteOffsetSizeContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 26, NuggetParserRULE_byteOffsetSize)
+
+	defer func() {
+		p.ExitRule()
+	}()
+
+	defer func() {
+		if err := recover(); err != nil {
+			if v, ok := err.(antlr.RecognitionException); ok {
+				localctx.SetException(v)
+				p.GetErrorHandler().ReportError(p, v)
+				p.GetErrorHandler().Recover(p, v)
+			} else {
+				panic(err)
+			}
+		}
+	}()
+
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(127)
+		p.Match(NuggetParserT__37)
+	}
+	{
+		p.SetState(128)
+		p.Match(NuggetParserINT)
+	}
+	{
+		p.SetState(129)
+		p.Match(NuggetParserT__1)
+	}
+	{
+		p.SetState(130)
+		p.Match(NuggetParserINT)
+	}
+	{
+		p.SetState(131)
+		p.Match(NuggetParserT__2)
 	}
 
 	return localctx
@@ -1961,7 +2131,7 @@ func (s *FilterContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *NuggetParser) Filter() (localctx IFilterContext) {
 	localctx = NewFilterContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 26, NuggetParserRULE_filter)
+	p.EnterRule(localctx, 28, NuggetParserRULE_filter)
 	var _la int
 
 	defer func() {
@@ -1982,28 +2152,28 @@ func (p *NuggetParser) Filter() (localctx IFilterContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(120)
-		p.Match(NuggetParserT__33)
+		p.SetState(133)
+		p.Match(NuggetParserT__38)
 	}
 	{
-		p.SetState(121)
+		p.SetState(134)
 		p.Filter_term()
 	}
-	p.SetState(126)
+	p.SetState(139)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == NuggetParserT__1 {
 		{
-			p.SetState(122)
+			p.SetState(135)
 			p.Match(NuggetParserT__1)
 		}
 		{
-			p.SetState(123)
+			p.SetState(136)
 			p.Filter_term()
 		}
 
-		p.SetState(128)
+		p.SetState(141)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -2083,7 +2253,7 @@ func (s *Filter_termContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *NuggetParser) Filter_term() (localctx IFilter_termContext) {
 	localctx = NewFilter_termContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 28, NuggetParserRULE_filter_term)
+	p.EnterRule(localctx, 30, NuggetParserRULE_filter_term)
 
 	defer func() {
 		p.ExitRule()
@@ -2103,15 +2273,15 @@ func (p *NuggetParser) Filter_term() (localctx IFilter_termContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(129)
+		p.SetState(142)
 		p.Match(NuggetParserID)
 	}
 	{
-		p.SetState(130)
+		p.SetState(143)
 		p.Match(NuggetParserCOMPOP)
 	}
 	{
-		p.SetState(131)
+		p.SetState(144)
 		p.Match(NuggetParserSTRING)
 	}
 

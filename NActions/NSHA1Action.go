@@ -40,12 +40,12 @@ func (na *SHA1Action) SetDependency(action BaseAction) {
 
 func (na *SHA1Action) Execute() {
 	if na.dependsOn != nil {
-		fmt.Println("sha1 has a dependency which hasn't been met..")
+		//fmt.Println("sha1 has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute sha1..")
+	//fmt.Println("going to execute sha1..")
 
 	if na.dependsOn == nil {
 		fmt.Println("Error! Was not able to compute SHA1 because dependency is nil")
@@ -57,12 +57,12 @@ func (na *SHA1Action) Execute() {
 		//we have a file to operate on
 		var files []NTypes.FileInfo
 		files = operateOn.([]NTypes.FileInfo)
-		for index,file := range files {
+		for _,file := range files {
 			hasher := sha1.New()
 			fn := GetAFilename(file)
 			hasher.Write([]byte(fn))
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
-			println("index: ", index, " file: ", file.Filenames, " sha1: ", myhash)
+			//println("index: ", index, " file: ", file.Filenames, " sha1: ", myhash)
 			na.results = append(na.results, NTypes.SHA1{myhash})
 		}
 	}

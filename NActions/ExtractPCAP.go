@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-//don't export this type so that we can force users of it to use the 'New' method, thereby initializing values
 type ExtractPCAP struct {
 	executed  bool
 	dependsOn BaseAction
@@ -44,13 +43,13 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 	//get bpfs and apply them
 	var myBPF string
 	for _, f := range na.filters {
-		fmt.Println("Found a filter: ", f)
+		//fmt.Println("Found a filter: ", f)
 		switch f.Field {
 		case "packetfilter":
 			if f.Op == "==" {
 				myBPF = f.Value
 				myBPF = strings.Trim(myBPF, "\"")
-				fmt.Println("Set the bnf filter value to: ", myBPF )
+				//fmt.Println("Set the bnf filter value to: " + myBPF)
 			} else {
 				fmt.Println("Error: BNF only supports equality at the moment.")
 			}
@@ -58,19 +57,20 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
 		}
 	}
-
+	fmt.Println("pcap ocation: " + na.PCAPLocation)
 	na.handle, err = pcap.OpenOffline(na.PCAPLocation)
 	if err != nil {
-		panic(err)
+		fmt.Println("Error reading pcap file: " , err)
+		//panic(err)
 	}
 	err = na.handle.SetBPFFilter(myBPF)
 	if err != nil {
+		fmt.Println("Error setting BPF: " , err)
 		panic(err)
 	}
 
 	packetSource := gopacket.NewPacketSource(na.handle, na.handle.LinkType())
 
-	// asynchronously read the packet source
 	for p := range packetSource.Packets() {
 		na.Packets = append(na.Packets, NTypes.NPacket{p})
 	}
@@ -87,12 +87,5 @@ func (na *ExtractPCAP) GetResults() interface{}{
 }
 
 func (na *ExtractPCAP) SetFilters(filters []NTypes.Filter) {
-	//TODO: investigate if resetting executed status will be a problem:
-	//na.executed = false
 	na.filters = filters
 }
-
-// want to make filter an action
-
-// so that when we do 'x = var | filter x = "y"
-// the action 'filter..' will pull in the results from executing 'var', then try and apply the filter, then return the results and store into 'x'
