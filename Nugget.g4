@@ -7,7 +7,7 @@ grammar Nugget;
 prog: (         define_assign |
        operation_on_singleton |
          singleton_var )*
-        EOF
+       EOF
 ;
 
 define_assign:   define |
@@ -61,7 +61,7 @@ action_word:
 	'union'    ID     |
 	'pslist'          |
 	'grep'     STRING |
-	'NUGGETGENERATORPLACEHOLDER'
+	'%%%'
 ;
 
 asType: 'as' nugget_type (byteOffsetSize)?;
@@ -82,5 +82,4 @@ STRING: '"' ('""'|~'"')* '"';
 WS : [ \t\r\n]+ -> skip;
 NL : '\r'? '\n';
 
-LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
