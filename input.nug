@@ -127,17 +127,17 @@
 MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
 MyFiles = MyNTFSImage | filter filename==".*.JPG"
 MyHashes = MyFiles | md5
-MyHashes
+//MyHashes
 
 KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
 Matched = MyHashes | union KnownKittyHashes
-Matched
-printx(Matched)
+//Matched
+//printx(Matched)
 
-//MyNewNTFS = "file: raw" | extract as ntfs
-//MyEmailFiles = MyNewNTFS | filter filename==".*.dbx"
-//MyEmailFiles
-//print(MyEmailFiles)
+MyNewNTFS = "file: raw" | extract as ntfs
+MyEmailFiles = MyNewNTFS | filter filename==".*.dbx"
+MyEmailFiles
+print(MyEmailFiles)
 //printx(MyEmailFiles)
 //raw(MyEmailFiles)
 
