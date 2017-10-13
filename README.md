@@ -20,7 +20,7 @@ go build nugtest.go
 
 Using
 ------------
-After either building from source or downloading binaries:
+After either building from source or [downloading binaries](https://github.com/cdstelly/nugget/releases):
 
 ```
 [arch@arch nugget]$ ./nugtest -h
