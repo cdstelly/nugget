@@ -413,7 +413,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			fmt.Println("operation not recognized..")
 		}
 	} else {
-		fmt.Println("var not recognized:", theVar)
+		fmt.Println("Variable not recognized: ", theVar)
 	}
 }
 
@@ -425,7 +425,7 @@ func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext
 	byteOffset,err := strconv.Atoi(ctx.INT(0).GetText())
 	clusterSize, err := strconv.Atoi(ctx.INT(1).GetText())
 	if err != nil {
-		fmt.Println("Error parsing byte offset:" , err)
+		fmt.Println("Error parsing byte offset: " , err)
 	}
 	setValue(ctx, NTypes.OffsetInfo{byteOffset,clusterSize})
 }
