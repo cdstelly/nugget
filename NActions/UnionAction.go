@@ -55,6 +55,8 @@ func (na *UnionAction) Execute() {
 				}
 			}
 		}
+
+		//todo add unions for all types, but do it at the type level 
 	}
 
 	na.results = resultSet
