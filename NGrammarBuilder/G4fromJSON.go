@@ -10,7 +10,7 @@ import (
 	"fmt"
 )
 
-//this is unweildy and needs to improve
+//this is quite unweildy and needs to improve
 //goal is to standardize the way we add new tools or functions to the nugget specification
 //this will be really neat since we're using a grammar based appraoch to this DSL
 // idea will be to fill out a json file, run this file, and have it appropriatly populate the G4 (antlr grammer) file
