@@ -10,6 +10,7 @@ import (
 	"fmt"
 )
 
+//todo generate go rpc file for use on docker container
 //this is quite unweildy and needs to improve
 //goal is to standardize the way we add new tools or functions to the nugget specification
 //this will be really neat since we're using a grammar based appraoch to this DSL
