@@ -9,6 +9,4 @@ type BaseAction interface {
 	Execute()
 	GetResults() interface{}
 	SetFilters([]NTypes.Filter)
-
-	// ExternalPassesFilterCheck([]NTypes.Filter) bool idea with this would be to cull results from things it depends on, saving execution cycles
 }
