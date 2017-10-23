@@ -39,6 +39,7 @@ func (na *SortAction) Execute() {
 	//fmt.Println("going to execute sort..")
 
 	operateOn := na.dependsOn.GetResults()
+	//todo add string type comparison 
 	if _, ok := operateOn.([]NTypes.FileInfo); ok {
 		var files []NTypes.FileInfo
 		files = operateOn.([]NTypes.FileInfo)
