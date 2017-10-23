@@ -1,0 +1,70 @@
+package main
+
+import (
+	"fmt"
+	"net/rpc"
+	"net"
+	"log"
+	"net/http"
+	"strconv"
+	"os/exec"
+	"bytes"
+	b64 "encoding/base64"
+	"os"
+	"io/ioutil"
+)
+
+
+type NugArg struct {
+	TheData []byte
+}
+
+type NugKEYWORD struct {
+	SavedData []byte
+	PathToImage string
+}
+
+func (nd *NugKEYWORD) GetDataLen(dataArg *NugArg, reply *string) error {
+	*reply = strconv.Itoa(len(nd.SavedData))
+	return nil
+}
+
+func (nd *NugKEYWORD) LoadData(dataArg *NugArg, reply *string) error {
+	nd.SavedData = dataArg.TheData
+
+    //todo write to file
+	nd.PathToImage = "/space/localFilename"
+
+	*reply = "done"
+	return nil
+}
+
+func (nd *NugKEYWORD) ExecImageInfo(dataArg *NugArg, reply *string) error {
+	//todo: log the hash of the tool used? at least get version information
+
+	pathToTool := "/usr/bin/fsstat"
+	cmd := exec.Command(pathToTool, "-parameterA", "argumentForA", "-parameterB", "arguementForB")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+
+	err := cmd.Run()
+	fmt.Println(out.String())  // local debug output
+	*reply = out.String()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
+}
+
+func main() {
+	fmt.Println("started")
+	nugrpc := new(NugKEYWORD)
+	rpc.Register(nugrpc)
+	rpc.HandleHTTP()
+	l, e := net.Listen("tcp", ":9999")
+	if e != nil {
+		log.Fatal("listen error: ", e)
+	}
+	http.Serve(l,nil) //won't pass here without an error
+}
