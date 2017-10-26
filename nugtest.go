@@ -76,7 +76,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
-		//handle unions
+	//handle greps? remove
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Grep); ok {
 		action_verb = "grep"
 	//handle unions

@@ -127,7 +127,8 @@
 MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
 MyFiles = MyNTFSImage | filter filename==".*.JPG"
 MyHashes = MyFiles | md5
-//MyHashes
+MyHashes
+MyHashes.digest
 
 KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
 Matched = MyHashes | union KnownKittyHashes
@@ -150,3 +151,4 @@ print(MyEmailFiles)
 //othermemdump = "thememory2.mddramimage" | extract as memory
 //otherpslist = othermemdump | pslist
 //printx(otherpslist)
+
