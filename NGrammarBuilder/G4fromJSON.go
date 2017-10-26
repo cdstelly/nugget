@@ -54,7 +54,7 @@ func main() {
 		stringToEnter = stringToEnter + "'" + nje.Name + "'" + "|" + "\r\n\t"
 	}
 	//stringToEnter = strings.TrimSuffix(stringToEnter, "|")
-	stringToEnter += "'NUGGETGENERATORPLACEHOLDER'"
+	stringToEnter += "'%%%'"
 	//fmt.Println("ste",stringToEnter)
 	// insert the text into the g4 file
 	rewriteG4(stringToEnter)
@@ -73,7 +73,7 @@ func executeAntlrBuild() {
 }
 
 func rewriteG4(replaceWith string) {
-	from := "'NUGGETGENERATORPLACEHOLDER'"
+	from := "'%%%'"
 	read, err := ioutil.ReadFile(G4Path)
 	if err != nil {
 		log.Fatal(err)

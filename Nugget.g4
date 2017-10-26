@@ -60,7 +60,6 @@ action_word:
 	'diskinfo'        |
 	'union'    ID     |
 	'pslist'          |
-	'grep'     STRING |
 	'%%%'
 ;
 

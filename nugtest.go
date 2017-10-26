@@ -76,9 +76,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
-	//handle greps? remove
-	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Grep); ok {
-		action_verb = "grep"
 	//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		action_verb = "union"
@@ -124,9 +121,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.MD5Action{}
 	case "diskinfo":
 		theAction = &NActions.DiskInfoAction{}
-	case "grep":
-		grepType := getValue(ctx.Action_word()).(NTypes.Grep)
-		theAction = &NActions.GrepAction{Expression: grepType.Expression}
 	case "union":
 		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
@@ -344,8 +338,6 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	} else if ctx.ID() != nil {
 		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
 	//handle grep
-	} else if ctx.STRING() !=  nil {
-		setValue(ctx, NTypes.Grep{Expression:ctx.STRING().GetText()})
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
