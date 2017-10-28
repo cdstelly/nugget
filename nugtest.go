@@ -11,6 +11,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -373,8 +374,14 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 	if op, ok := getValue(ctx.Singleton_op()).(string);ok {
 		operation = op
 	}
-
 	theVar := ctx.ID().GetText()
+	var subfield string
+	if strings.Contains(theVar,".") {
+		root := strings.Split(theVar,".")[0]
+		subfield = strings.Split(theVar,".")[1]
+		theVar = root
+	}
+
 	if val, ok := registers[theVar].(NActions.BaseAction); ok {
 		switch operation {
 		case "type":
@@ -384,13 +391,36 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		case "typex":
 			fmt.Println(reflect.TypeOf(val.GetResults()))
 		case "printx":
-			if strings, ok := val.GetResults().([]string); ok {
-				for _, singleLine := range strings {
+			myResults := val.GetResults()
+			fmt.Println(subfield)
+			fmt.Println(reflect.TypeOf(myResults))
+
+
+			t := reflect.TypeOf(myResults)
+			for i := 0; i < t.NumField(); i++ {
+				ft := t.Field(i).Type
+				if ft.Kind() == reflect.Ptr {
+					ft = ft.Elem()
+				}
+//				fmt.Println(ft.Field(0).Name)
+				fmt.Sprintf("percent v: %v\n", ft)
+			}
+
+			st := reflect.ValueOf(myResults)
+			typeOfTE := st.Type()
+			for i := 0; i < st.NumField(); i++ {
+				f := st.Field(i)
+				fmt.Printf("%d: %s %s\n", i,
+					typeOfTE.Field(i).Name, f.Type())
+			}
+/*
+			if allstrings, ok := val.GetResults().([]string); ok {
+				for _, singleLine := range allstrings {
 					fmt.Println(singleLine)
 				}
 			} else {
 				fmt.Println(val.GetResults())
-			}
+			}*/
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
 				for _, fi := range files {
