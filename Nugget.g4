@@ -60,7 +60,6 @@ action_word:
 	'diskinfo'        |
 	'union'    ID     |
 	'pslist'          |
-	'grep'     STRING |
 	'%%%'
 ;
 
@@ -76,7 +75,7 @@ COMPOP: ('>' | '<' | '>=' | '<=' | '==');
 LISTOP: '[]';
 
 INT : [0-9]+;
-ID : [a-zA-Z]+;
+ID : [a-zA-Z]+ ('.' [a-zA-Z]+)?;
 STRING: '"' ('""'|~'"')* '"';
 
 WS : [ \t\r\n]+ -> skip;

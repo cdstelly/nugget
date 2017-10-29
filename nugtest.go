@@ -11,6 +11,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -76,9 +77,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
-		//handle unions
-	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Grep); ok {
-		action_verb = "grep"
 	//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		action_verb = "union"
@@ -124,9 +122,6 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.MD5Action{}
 	case "diskinfo":
 		theAction = &NActions.DiskInfoAction{}
-	case "grep":
-		grepType := getValue(ctx.Action_word()).(NTypes.Grep)
-		theAction = &NActions.GrepAction{Expression: grepType.Expression}
 	case "union":
 		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
@@ -344,8 +339,6 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	} else if ctx.ID() != nil {
 		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
 	//handle grep
-	} else if ctx.STRING() !=  nil {
-		setValue(ctx, NTypes.Grep{Expression:ctx.STRING().GetText()})
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
@@ -381,8 +374,14 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 	if op, ok := getValue(ctx.Singleton_op()).(string);ok {
 		operation = op
 	}
-
 	theVar := ctx.ID().GetText()
+	var subfield string
+	if strings.Contains(theVar,".") {
+		root := strings.Split(theVar,".")[0]
+		subfield = strings.Split(theVar,".")[1]
+		theVar = root
+	}
+
 	if val, ok := registers[theVar].(NActions.BaseAction); ok {
 		switch operation {
 		case "type":
@@ -392,13 +391,36 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		case "typex":
 			fmt.Println(reflect.TypeOf(val.GetResults()))
 		case "printx":
-			if strings, ok := val.GetResults().([]string); ok {
-				for _, singleLine := range strings {
+			myResults := val.GetResults()
+			fmt.Println(subfield)
+			fmt.Println(reflect.TypeOf(myResults))
+
+
+			t := reflect.TypeOf(myResults)
+			for i := 0; i < t.NumField(); i++ {
+				ft := t.Field(i).Type
+				if ft.Kind() == reflect.Ptr {
+					ft = ft.Elem()
+				}
+//				fmt.Println(ft.Field(0).Name)
+				fmt.Sprintf("percent v: %v\n", ft)
+			}
+
+			st := reflect.ValueOf(myResults)
+			typeOfTE := st.Type()
+			for i := 0; i < st.NumField(); i++ {
+				f := st.Field(i)
+				fmt.Printf("%d: %s %s\n", i,
+					typeOfTE.Field(i).Name, f.Type())
+			}
+/*
+			if allstrings, ok := val.GetResults().([]string); ok {
+				for _, singleLine := range allstrings {
 					fmt.Println(singleLine)
 				}
 			} else {
 				fmt.Println(val.GetResults())
-			}
+			}*/
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
 				for _, fi := range files {
