@@ -1,22 +1,23 @@
 package main
 
 import (
+	"./NActions"
+	"./NTypes"
+	"./nug"
 	"bufio"
 	"flag"
 	"fmt"
-	"os"
-	"./NTypes"
-	"./NActions"
-	"./nug"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
 var (
-	pathToInput string
-	registers map[string]interface{}
+	interactiveMode bool
+	pathToInput     string
+	registers       map[string]interface{}
 
 	nodeMap map[antlr.ParseTree]interface{}
 
@@ -25,6 +26,7 @@ var (
 
 func init() {
 	flag.StringVar(&pathToInput, "input", "input.nug", "Path to input")
+	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
 	flag.Parse()
 	registers = make(map[string]interface{})
 
@@ -70,19 +72,19 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
 		action_verb = "filter"
-    //handle extracts
+		//handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		action_verb = "extract"
 		//fmt.Println("it's an extract")
-	//handle sorts
+		//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		action_verb = "sort"
-	//handle unions
+		//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		action_verb = "union"
-    //handle everything else
+		//handle everything else
 	} else {
-		if av,ok := getValue(ctx.Action_word()).(string); ok {
+		if av, ok := getValue(ctx.Action_word()).(string); ok {
 			action_verb = av
 		} else {
 			fmt.Println("error - wasn't able to determine action type")
@@ -96,7 +98,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		theAction = &NActions.FilterAction{}
 	case "sort":
 		thisSortField := getValue(ctx.Action_word()).(NTypes.Sort)
-		theAction = &NActions.SortAction{SortField:thisSortField.Field}
+		theAction = &NActions.SortAction{SortField: thisSortField.Field}
 	case "extract":
 		extractType := getValue(ctx.Action_word()).(NTypes.Extract)
 		if extractType.AsType == "pcap" {
@@ -106,9 +108,9 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		} else if extractType.AsType == "md5hashes" {
 			theAction = &NActions.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha1hashes" {
-			theAction = &NActions.ExtractList{ListType: "sha1",ListLocation: extractType.PathToExtract}
+			theAction = &NActions.ExtractList{ListType: "sha1", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha256hashes" {
-			theAction = &NActions.ExtractList{ListType: "sha256",ListLocation: extractType.PathToExtract}
+			theAction = &NActions.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "memory" {
 			theAction = &NActions.ExtractMemory{}
 		} else {
@@ -177,7 +179,7 @@ func (s *TreeShapeListener) ExitDefine(ctx *parser.DefineContext) {
 			} else {
 				registers[identifier] = NTypes.SHA1{}
 			}
-		case "md5"://TODO: investigate impact of 'natural types' such as string - see if we should wrap in an NType
+		case "md5": //TODO: investigate impact of 'natural types' such as string - see if we should wrap in an NType
 			if isList {
 				registers[identifier] = []string{}
 			} else {
@@ -228,7 +230,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	actions := ctx.AllNugget_action()
 	//setup actions if necessary
 	var builtActions []NActions.BaseAction
-	for _,action := range actions {
+	for _, action := range actions {
 		rawAction := getValue(action)
 		//if it's an extract action, we need to look behind and get some more info (like filepath and type)
 		//fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
@@ -287,10 +289,10 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 
 func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 	var allFiltersForAction []NTypes.Filter
-	for i,_ := range ctx.AllFilter_term() {
+	for i, _ := range ctx.AllFilter_term() {
 		myf := getValue(ctx.Filter_term(i))
 		if dep, ok := myf.(NTypes.Filter); ok {
-			allFiltersForAction = append(allFiltersForAction , dep)
+			allFiltersForAction = append(allFiltersForAction, dep)
 		}
 	}
 	setValue(ctx, allFiltersForAction)
@@ -311,57 +313,57 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		myT := getValue(ctx.AsType())
 		//fmt.Println("got: ", myT)
 		if myT == "pcap" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"} )
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"})
 		} else if myT == "ntfs" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"} )
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"})
 		} else if myT == "listof-md5" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\md5hashes.txt", AsType: "md5hashes"} )
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\md5hashes.txt", AsType: "md5hashes"})
 		} else if myT == "listof-sha1" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"} )
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"})
 		} else if myT == "listof-sha256" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"} )
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"})
 		} else if myT == "memory" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"} )
+			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"})
 		} else {
 			fmt.Println("error on type extraction")
 		}
-	//handle filters
+		//handle filters
 	} else if ctx.Filter() != nil {
 		setValue(ctx, getValue(ctx.Filter()))
-	//handle sorts
+		//handle sorts
 	} else if ctx.ByField() != nil {
 		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
 			//fmt.Println("sort string: ", val)
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
-	//handle union
+		//handle union
 	} else if ctx.ID() != nil {
 		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
-	//handle grep
+		//handle grep
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
 }
 
 func (s *TreeShapeListener) ExitFilter_term(ctx *parser.Filter_termContext) {
-	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op:ctx.COMPOP().GetText(), Value:ctx.STRING().GetText()})
+	setValue(ctx, NTypes.Filter{Field: ctx.ID().GetText(), Op: ctx.COMPOP().GetText(), Value: ctx.STRING().GetText()})
 }
 
 func (s *TreeShapeListener) ExitByField(ctx *parser.ByFieldContext) {
-	setValue(ctx,ctx.ID().GetText())
+	setValue(ctx, ctx.ID().GetText())
 }
 
 func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) {
 	theVar := ctx.ID().GetText()
 	if v, ok := registers[theVar]; ok {
 		//fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
-		if ba,ok := v.(NActions.BaseAction); ok {
-			fmt.Println("Results for var ",theVar, ": ", ba.GetResults())
+		if ba, ok := v.(NActions.BaseAction); ok {
+			fmt.Println("Results for var ", theVar, ": ", ba.GetResults())
 			//ba.GetResults()
 			//fmt.Println("cutting off results for now..")
 		} else {
-			fmt.Println("couldn't execute var : ", theVar	, "because it is not of baseAction type")
+			fmt.Println("couldn't execute var : ", theVar, "because it is not of baseAction type")
 		}
 	} else {
 		fmt.Println("Variable not recongized:" + theVar)
@@ -371,14 +373,14 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var operation string
-	if op, ok := getValue(ctx.Singleton_op()).(string);ok {
+	if op, ok := getValue(ctx.Singleton_op()).(string); ok {
 		operation = op
 	}
 	theVar := ctx.ID().GetText()
 	var subfield string
-	if strings.Contains(theVar,".") {
-		root := strings.Split(theVar,".")[0]
-		subfield = strings.Split(theVar,".")[1]
+	if strings.Contains(theVar, ".") {
+		root := strings.Split(theVar, ".")[0]
+		subfield = strings.Split(theVar, ".")[1]
 		theVar = root
 	}
 
@@ -395,14 +397,13 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			fmt.Println(subfield)
 			fmt.Println(reflect.TypeOf(myResults))
 
-
 			t := reflect.TypeOf(myResults)
 			for i := 0; i < t.NumField(); i++ {
 				ft := t.Field(i).Type
 				if ft.Kind() == reflect.Ptr {
 					ft = ft.Elem()
 				}
-//				fmt.Println(ft.Field(0).Name)
+				//				fmt.Println(ft.Field(0).Name)
 				fmt.Sprintf("percent v: %v\n", ft)
 			}
 
@@ -413,14 +414,14 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 				fmt.Printf("%d: %s %s\n", i,
 					typeOfTE.Field(i).Name, f.Type())
 			}
-/*
-			if allstrings, ok := val.GetResults().([]string); ok {
-				for _, singleLine := range allstrings {
-					fmt.Println(singleLine)
-				}
-			} else {
-				fmt.Println(val.GetResults())
-			}*/
+			/*
+				if allstrings, ok := val.GetResults().([]string); ok {
+					for _, singleLine := range allstrings {
+						fmt.Println(singleLine)
+					}
+				} else {
+					fmt.Println(val.GetResults())
+				}*/
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
 				for _, fi := range files {
@@ -444,32 +445,72 @@ func (s *TreeShapeListener) ExitSingleton_op(ctx *parser.Singleton_opContext) {
 }
 
 func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext) {
-	byteOffset,err := strconv.Atoi(ctx.INT(0).GetText())
+	byteOffset, err := strconv.Atoi(ctx.INT(0).GetText())
 	clusterSize, err := strconv.Atoi(ctx.INT(1).GetText())
 	if err != nil {
-		fmt.Println("Error parsing byte offset: " , err)
+		fmt.Println("Error parsing byte offset: ", err)
 	}
-	setValue(ctx, NTypes.OffsetInfo{byteOffset,clusterSize})
+	setValue(ctx, NTypes.OffsetInfo{byteOffset, clusterSize})
+}
+
+func TabOrNewline(r rune) bool {
+	return r == '\t' || r == '\n'
 }
 
 func main() {
-	file, err := os.Open(pathToInput)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		if scanner.Text() == "" { continue }
-		fmt.Printf("nugget> %s\n", scanner.Text())
-		input := antlr.NewInputStream(scanner.Text())
-		lexer := parser.NewNuggetLexer(input)
-		tokenstream := antlr.NewCommonTokenStream(lexer, 0)
-		tokenparser := parser.NewNuggetParser(tokenstream)
-		tokenparser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-		tokenparser.BuildParseTrees = true
-		tree := tokenparser.Prog()
-		antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
-		fmt.Println()
+	const placeOfInterest = '\t'
+
+	fmt.Printf("plain string: ")
+	fmt.Printf("%s", placeOfInterest)
+	fmt.Printf("\n")
+
+	fmt.Printf("quoted string: ")
+	fmt.Printf("%+q", placeOfInterest)
+	fmt.Printf("\n")
+
+	fmt.Printf("hex bytes: ")
+
+	fmt.Printf("%x ", placeOfInterest)
+
+	fmt.Printf("\n")
+
+	if interactiveMode {
+		reader := bufio.NewReader(os.Stdin)
+
+		fmt.Print("nugget> ")
+
+		var myByte []byte
+		myByte = make([]byte, 1)
+
+		text, err := reader.Read(myByte)
+
+		if err != nil {
+			fmt.Println("Input error: ", err)
+		}
+
+		fmt.Println(text)
+
+	} else {
+		file, err := os.Open(pathToInput)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			if scanner.Text() == "" {
+				continue
+			}
+			fmt.Printf("nugget> %s\n", scanner.Text())
+			input := antlr.NewInputStream(scanner.Text())
+			lexer := parser.NewNuggetLexer(input)
+			tokenstream := antlr.NewCommonTokenStream(lexer, 0)
+			tokenparser := parser.NewNuggetParser(tokenstream)
+			tokenparser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+			tokenparser.BuildParseTrees = true
+			tree := tokenparser.Prog()
+			antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+			fmt.Println()
+		}
 	}
 }
