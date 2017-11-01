@@ -414,14 +414,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 				fmt.Printf("%d: %s %s\n", i,
 					typeOfTE.Field(i).Name, f.Type())
 			}
-			/*
-				if allstrings, ok := val.GetResults().([]string); ok {
-					for _, singleLine := range allstrings {
-						fmt.Println(singleLine)
-					}
-				} else {
-					fmt.Println(val.GetResults())
-				}*/
+
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
 				for _, fi := range files {
