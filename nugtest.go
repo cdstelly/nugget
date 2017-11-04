@@ -14,6 +14,9 @@ import (
 	"strings"
 )
 
+// going to need to rethink how to store results.
+// if we want to support something like 'x = select pdfs'.. then say 'x add md5, sha1', then say 'print x'
+
 var (
 	interactiveMode bool
 	pathToInput     string
@@ -394,25 +397,31 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			fmt.Println(reflect.TypeOf(val.GetResults()))
 		case "printx":
 			myResults := val.GetResults()
-			fmt.Println(subfield)
-			fmt.Println(reflect.TypeOf(myResults))
 
-			t := reflect.TypeOf(myResults)
-			for i := 0; i < t.NumField(); i++ {
-				ft := t.Field(i).Type
-				if ft.Kind() == reflect.Ptr {
-					ft = ft.Elem()
-				}
-				//				fmt.Println(ft.Field(0).Name)
-				fmt.Sprintf("percent v: %v\n", ft)
-			}
+			var field reflect.Value
+			var fieldList []string
 
 			st := reflect.ValueOf(myResults)
 			typeOfTE := st.Type()
+
+			fieldFound := false
+			//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
 			for i := 0; i < st.NumField(); i++ {
-				f := st.Field(i)
-				fmt.Printf("%d: %s %s\n", i,
-					typeOfTE.Field(i).Name, f.Type())
+				fieldList = append(fieldList, typeOfTE.Field(i).Name)
+
+				field = st.Field(i)
+				//fmt.Printf("%d: %s %s\n", i, typeOfTE.Field(i).Name, field.Type())
+				//fmt.Printf("subfield: %s\n", subfield)
+
+				if subfield == typeOfTE.Field(i).Name {
+					fieldFound = true
+					field = st.Field(i)
+				}
+			}
+			if fieldFound {
+				fmt.Println("The subfield: " + subfield + " has value: \n" + field.String())
+			} else {
+				fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 			}
 
 		case "raw":
