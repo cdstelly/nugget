@@ -14,6 +14,9 @@ import (
 	"strings"
 )
 
+// going to need to rethink how to store results.
+// if we want to support something like 'x = select pdfs'.. then say 'x add md5, sha1', then say 'print x'
+
 var (
 	interactiveMode bool
 	pathToInput     string

@@ -155,3 +155,5 @@ MyEmailFiles = MyNewNTFS | filter filename==".*.dbx"
 //otherpslist = othermemdump | pslist
 //printx(otherpslist)
 
+//x = select pdfs
+//y = x add md5, sha1
