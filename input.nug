@@ -102,7 +102,7 @@
 
 mymemdump = "thememory.mddramimage" | extract as memory
 mypslist = mymemdump | pslist
-//printx(mypslist)
+printx(mypslist)
 printx(mypslist.digest)
 
 //any way to loop through multiple?

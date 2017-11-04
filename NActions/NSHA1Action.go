@@ -16,13 +16,6 @@ type SHA1Action struct {
 	results []NTypes.SHA1
 }
 
-func NewSHA1Action(dep BaseAction) SHA1Action {
-	n := SHA1Action{}
-	n.dependsOn = dep
-	n.executed = false
-	return n
-}
-
 func (na *SHA1Action) BeenExecuted() bool {
 	return na.executed
 }
