@@ -64,14 +64,7 @@ func (na *ExtractList) loadFromHTTP(url string) {
 	}
 }
 
-func (na *ExtractList) Execute() {
-
-	typeOfLocation := strings.Split(na.ListLocation, ":")[0]
-	if typeOfLocation == "file" {
-
-	} else if typeOfLocation == "url" {
-
-	}
+func (na *ExtractList) LoadFromFile() {
 	theLines, err := readLines(na.ListLocation)
 	if err != nil {
 		fmt.Println("Error!", err)
@@ -92,6 +85,16 @@ func (na *ExtractList) Execute() {
 				na.ListContent = append(na.ListContent, lin)
 			}
 		}
+	}
+}
+
+func (na *ExtractList) Execute() {
+	typeOfLocation := strings.Split(na.ListLocation, ":")[0]
+	actualLocation := strings.Split(na.ListLocation, ":")[1]
+	if typeOfLocation == "file" {
+		na.LoadFromFile()
+	} else if typeOfLocation == "url" {
+		na.loadFromHTTP(actualLocation)
 	}
 	na.executed = true
 }
