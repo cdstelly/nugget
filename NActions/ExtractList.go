@@ -3,20 +3,23 @@ package NActions
 import (
 	"../NTypes"
 
-	"os"
 	"bufio"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
 	"regexp"
+	"strings"
 )
 
 type ExtractList struct {
 	executed  bool
 	dependsOn BaseAction
-	filters []NTypes.Filter
+	filters   []NTypes.Filter
 
 	ListLocation string
-	ListType string
-	ListContent []string
+	ListType     string
+	ListContent  []string
 }
 
 func (na *ExtractList) BeenExecuted() bool {
@@ -31,18 +34,23 @@ func (na *ExtractList) SetDependency(action BaseAction) {
 	na.dependsOn = action
 }
 
-func (na *ExtractList) Execute() {
-
-	theLines, err := readLines(na.ListLocation)
+func (na *ExtractList) loadFromHTTP(url string) {
+	response, err := http.Get(url)
 	if err != nil {
-		fmt.Println("Error!", err)
+		log.Fatal(err)
 	}
 
-	for _, lin := range theLines {
+	var lines []string
+	scanner := bufio.NewScanner(response.Body)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	for _, lin := range lines {
 		switch na.ListType {
 		case "md5":
 			if isValidMD5(lin) {
-				na.ListContent = append(na.ListContent,lin)
+				na.ListContent = append(na.ListContent, lin)
 			}
 		case "sha1":
 			if isValidSHA1(lin) {
@@ -54,6 +62,40 @@ func (na *ExtractList) Execute() {
 			}
 		}
 	}
+}
+
+func (na *ExtractList) LoadFromFile() {
+	theLines, err := readLines(na.ListLocation)
+	if err != nil {
+		fmt.Println("Error!", err)
+	}
+
+	for _, lin := range theLines {
+		switch na.ListType {
+		case "md5":
+			if isValidMD5(lin) {
+				na.ListContent = append(na.ListContent, lin)
+			}
+		case "sha1":
+			if isValidSHA1(lin) {
+				na.ListContent = append(na.ListContent, lin)
+			}
+		case "sha256":
+			if isValidSHA256(lin) {
+				na.ListContent = append(na.ListContent, lin)
+			}
+		}
+	}
+}
+
+func (na *ExtractList) Execute() {
+	typeOfLocation := strings.Split(na.ListLocation, ":")[0]
+	actualLocation := strings.Split(na.ListLocation, ":")[1]
+	if typeOfLocation == "file" {
+		na.LoadFromFile()
+	} else if typeOfLocation == "url" {
+		na.loadFromHTTP(actualLocation)
+	}
 	na.executed = true
 }
 
@@ -64,7 +106,6 @@ func isValidMD5(in string) bool {
 	}
 	return regex.MatchString(in)
 }
-
 
 func isValidSHA1(in string) bool {
 	regex, err := regexp.Compile("[a-fA-F0-9]{40}")
@@ -82,7 +123,6 @@ func isValidSHA256(in string) bool {
 	return regex.MatchString(in)
 }
 
-
 func readLines(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -98,8 +138,7 @@ func readLines(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-
-func (na *ExtractList) GetResults() interface{}{
+func (na *ExtractList) GetResults() interface{} {
 	if na.executed == false {
 		na.Execute()
 	}
