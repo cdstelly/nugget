@@ -398,32 +398,35 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		case "printx":
 			myResults := val.GetResults()
 
-			var field reflect.Value
-			var fieldList []string
+			if len(subfield) > 0 {
+				var field reflect.Value
+				var fieldList []string
 
-			st := reflect.ValueOf(myResults)
-			typeOfTE := st.Type()
+				st := reflect.ValueOf(myResults)
+				typeOfTE := st.Type()
 
-			fieldFound := false
-			//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
-			for i := 0; i < st.NumField(); i++ {
-				fieldList = append(fieldList, typeOfTE.Field(i).Name)
+				fieldFound := false
+				//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
+				for i := 0; i < st.NumField(); i++ {
+					fieldList = append(fieldList, typeOfTE.Field(i).Name)
 
-				field = st.Field(i)
-				//fmt.Printf("%d: %s %s\n", i, typeOfTE.Field(i).Name, field.Type())
-				//fmt.Printf("subfield: %s\n", subfield)
-
-				if subfield == typeOfTE.Field(i).Name {
-					fieldFound = true
 					field = st.Field(i)
-				}
-			}
-			if fieldFound {
-				fmt.Println("The subfield: " + subfield + " has value: \n" + field.String())
-			} else {
-				fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
-			}
+					//fmt.Printf("%d: %s %s\n", i, typeOfTE.Field(i).Name, field.Type())
+					//fmt.Printf("subfield: %s\n", subfield)
 
+					if subfield == typeOfTE.Field(i).Name {
+						fieldFound = true
+						field = st.Field(i)
+					}
+				}
+				if fieldFound {
+					fmt.Println("The subfield: " + subfield + " has value: \n" + field.String())
+				} else {
+					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
+				}
+			} else {
+				fmt.Println(myResults)
+			}
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
 				for _, fi := range files {
