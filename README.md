@@ -23,7 +23,7 @@ Using
 After either building from source or [downloading binaries](https://github.com/cdstelly/nugget/releases):
 
 ```
-[arch@arch nugget]$ ./nugtest -h
+$ ./nugtest -h
 Usage of ./nugtest:
   -input string
     	Path to input (default "input.nug")
