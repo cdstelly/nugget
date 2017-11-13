@@ -11,7 +11,7 @@ type HTMLAction struct {
 	dependsOn BaseAction
 	filters []NTypes.Filter
 
-	results []NTypes.HTML
+	results []NTypes.HTTP
 }
 
 func (na *HTMLAction) BeenExecuted() bool {
