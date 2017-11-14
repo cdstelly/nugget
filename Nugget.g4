@@ -24,7 +24,7 @@ assign: ID '=' STRING ('|' nugget_action)* |
         ID '=' ID ('|' nugget_action)*
 ;
 
-operation_on_singleton: singleton_op '(' ID ')';
+operation_on_singleton: singleton_op  ID ;
 
 singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx' | 'raw');
 
@@ -41,6 +41,7 @@ nugget_type:
       'exifinfo'   |
       'datetime'   |
       'memory'     |
+      'http'       |
       'listof-md5' |
       'listof-sha1'|
       'listof-sha256'

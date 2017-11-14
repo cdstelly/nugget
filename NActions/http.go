@@ -11,9 +11,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"reflect"
 )
 
-type HTMLAction struct {
+type HTTPAction struct {
 	executed  bool
 	dependsOn BaseAction
 	filters   []NTypes.Filter
@@ -21,29 +22,22 @@ type HTMLAction struct {
 	results []NTypes.HTTP
 }
 
-func (na *HTMLAction) BeenExecuted() bool {
+func (na *HTTPAction) BeenExecuted() bool {
 	return na.executed
 }
 
-func (na *HTMLAction) DependencySatisfied() bool {
+func (na *HTTPAction) DependencySatisfied() bool {
 	if na.dependsOn == nil {
 		return true
 	}
 	return na.dependsOn.BeenExecuted()
 }
 
-func (na *HTMLAction) SetDependency(action BaseAction) {
+func (na *HTTPAction) SetDependency(action BaseAction) {
 	na.dependsOn = action
 }
 
-func (na *HTMLAction) Execute() {
-	if na.dependsOn != nil {
-		//fmt.Println("md5 has a dependency which hasn't been met..")
-		if na.dependsOn.BeenExecuted() == false {
-
-			na.dependsOn.Execute()
-		}
-	}
+func (na *HTTPAction) Execute() {
 
 	// Set up assembly
 	streamFactory := &httpStreamFactory{}
@@ -51,7 +45,9 @@ func (na *HTMLAction) Execute() {
 	assembler := tcpassembly.NewAssembler(streamPool)
 
 	operateOn := na.dependsOn.GetResults()
+	//i think what's happening is we're passing the 'action' to operateon, not the results of the action.
 	if _, ok := operateOn.([]NTypes.NPacket); ok {
+		fmt.Println("digesting packets")
 		var packets []NTypes.NPacket
 		packets = operateOn.([]NTypes.NPacket)
 
@@ -69,21 +65,23 @@ func (na *HTMLAction) Execute() {
 			}
 			tcp := pkt.TransportLayer().(*layers.TCP)
 			assembler.AssembleWithTimestamp(pkt.NetworkLayer().NetworkFlow(), tcp, pkt.Metadata().Timestamp)
+			fmt.Println(tcp.Payload)
 
 		}
-
+	} else {
+		fmt.Println("incorect type, found ", reflect.TypeOf(operateOn))
 	}
 	na.executed = true
 }
 
-func (na *HTMLAction) GetResults() interface{} {
+func (na *HTTPAction) GetResults() interface{} {
 	if !na.BeenExecuted() {
 		na.Execute()
 	}
 	return na.results
 }
 
-func (na *HTMLAction) SetFilters(filters []NTypes.Filter) {
+func (na *HTTPAction) SetFilters(filters []NTypes.Filter) {
 	//TODO: investigate if resetting executed status will be a problem:
 	na.executed = false
 	na.filters = filters

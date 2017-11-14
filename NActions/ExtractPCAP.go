@@ -7,6 +7,7 @@ import (
 	"github.com/google/gopacket"
 	"fmt"
 	"strings"
+	"reflect"
 )
 
 type ExtractPCAP struct {
@@ -57,7 +58,7 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
 		}
 	}
-	fmt.Println("pcap ocation: " + na.PCAPLocation)
+	fmt.Println("pcap location: " + na.PCAPLocation)
 	na.handle, err = pcap.OpenOffline(na.PCAPLocation)
 	if err != nil {
 		fmt.Println("Error reading pcap file: " , err)
@@ -75,14 +76,16 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 		na.Packets = append(na.Packets, NTypes.NPacket{p})
 	}
 	na.executed = true
-	fmt.Println(len(na.Packets))
 	return na.Packets
 }
 
 func (na *ExtractPCAP) GetResults() interface{}{
 	if na.executed == false {
 		na.Execute()
+		fmt.Println("executing extractpcap's get results")
 	}
+
+	fmt.Println(len(na.Packets) ," ", reflect.TypeOf(na.Packets))
 	return na.Packets
 }
 
