@@ -125,13 +125,13 @@
 //printx(GetRequests)
 
 
-//MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
-//MyFiles = MyNTFSImage | filter filename==".*.JPG"
-//MyHashes = MyFiles | md5
-//MyHashes
+MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
+MyFiles = MyNTFSImage | filter filename==".*.JPG"
+MyHashes = MyFiles | md5
+MyHashes
 //type(MyHashes)
 //typex(MyHashes)
-//printx(MyHashes.digest)
+printx(MyHashes.digest)
 
 KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
 Matched = MyHashes | union KnownKittyHashes
@@ -163,4 +163,4 @@ rawhttp = networktraffic | filter packetfilter == "tcp and dst port 80 and http"
 
 //printx rawhttp
 httpa = rawhttp | extract as http
-printx httpa
+printx httpa.Host

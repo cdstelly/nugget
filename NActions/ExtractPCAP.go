@@ -7,7 +7,6 @@ import (
 	"github.com/google/gopacket"
 	"fmt"
 	"strings"
-	"reflect"
 )
 
 type ExtractPCAP struct {
@@ -38,7 +37,7 @@ func (na *ExtractPCAP) Execute() {
 }
 
 func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
-	fmt.Println("getting packets")
+	//fmt.Println("getting packets")
 	var err error
 
 	//get bpfs and apply them
@@ -80,13 +79,10 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 }
 
 func (na *ExtractPCAP) GetResults() interface{}{
-	fmt.Println("executing extractpcap's get results")
-
 	if na.executed == false {
 		na.Execute()
 	}
-
-	fmt.Println(len(na.Packets) ," ", reflect.TypeOf(na.Packets))
+	//fmt.Println(len(na.Packets) ," ", reflect.TypeOf(na.Packets))
 	return na.Packets
 }
 

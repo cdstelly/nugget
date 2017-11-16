@@ -403,6 +403,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			myResults := val.GetResults()
 
 			if len(subfield) > 0 {
+				fmt.Println("the subfield: " + subfield)
 				var field reflect.Value
 				var fieldList []string
 
@@ -429,7 +430,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 				}
 			} else {
-				fmt.Println("test: ", val, reflect.TypeOf(val))
 //				fmt.Println(myResults)
 			}
 		case "raw":
