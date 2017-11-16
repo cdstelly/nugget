@@ -5,28 +5,14 @@ import (
 	"fmt"
 )
 
-type HTTPHeaders struct {
-	Method string
-	Host string
-	UserAgent string
-	//Accept string
-	//AcceptLanguage string
-	//AcceptEncoding string
-	//AcceptCharset string
-	//KeepAlive string
-	//Connection string
-	Referer string
-	Cookie string
-}
 
 type HTTP struct {
-	Headers HTTPHeaders
 	Host string
-	Data string
+	Data []byte
 }
 
 func (m HTTP) String() string {
-	return string(m.Host + m.Data)
+	return string(m.Host)
 }
 
 func (m HTTP) JSON() string {

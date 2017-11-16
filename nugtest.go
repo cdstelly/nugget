@@ -116,7 +116,9 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 			theAction = &NActions.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "memory" {
 			theAction = &NActions.ExtractMemory{}
-		} else {
+		} else if extractType.AsType == "http" {
+			theAction = &NActions.HTTPAction{}
+		}  else {
 			fmt.Println("Error parsing given type: ", extractType.AsType)
 		}
 	case "sha1":
@@ -141,7 +143,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	case "pslist":
 		theAction = &NActions.ProcessListAction{}
 	default:
-		fmt.Println("action was not found: ", action_verb) //parser should prevent us from getting here..
+		fmt.Println("action was not found")
 	}
 
 	if action_verb != "filter" {
@@ -327,6 +329,8 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"})
 		} else if myT == "memory" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"})
+		} else if myT == "http" {
+			setValue(ctx, NTypes.Extract{AsType: "http"})
 		} else {
 			fmt.Println("error on type extraction")
 		}
@@ -425,7 +429,8 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 				}
 			} else {
-				fmt.Println(myResults)
+				fmt.Println("test: ", val, reflect.TypeOf(val))
+//				fmt.Println(myResults)
 			}
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
@@ -457,27 +462,7 @@ func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext
 	}
 	setValue(ctx, NTypes.OffsetInfo{byteOffset, clusterSize})
 }
-
-func TabOrNewline(r rune) bool {
-	return r == '\t' || r == '\n'
-}
-
 func main() {
-	const placeOfInterest = '\t'
-
-	fmt.Printf("plain string: ")
-	fmt.Printf("%s", placeOfInterest)
-	fmt.Printf("\n")
-
-	fmt.Printf("quoted string: ")
-	fmt.Printf("%+q", placeOfInterest)
-	fmt.Printf("\n")
-
-	fmt.Printf("hex bytes: ")
-
-	fmt.Printf("%x ", placeOfInterest)
-
-	fmt.Printf("\n")
 
 	if interactiveMode {
 		reader := bufio.NewReader(os.Stdin)
