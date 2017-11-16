@@ -9,9 +9,9 @@ import (
 	"github.com/google/gopacket/tcpassembly"
 	"github.com/google/gopacket/tcpassembly/tcpreader"
 	"io"
-	"log"
 	"net/http"
 	"reflect"
+	"log"
 )
 
 type HTTPAction struct {
@@ -38,14 +38,12 @@ func (na *HTTPAction) SetDependency(action BaseAction) {
 }
 
 func (na *HTTPAction) Execute() {
-
 	// Set up assembly
 	streamFactory := &httpStreamFactory{}
 	streamPool := tcpassembly.NewStreamPool(streamFactory)
 	assembler := tcpassembly.NewAssembler(streamPool)
 
 	operateOn := na.dependsOn.GetResults()
-	//i think what's happening is we're passing the 'action' to operateon, not the results of the action.
 	if _, ok := operateOn.([]NTypes.NPacket); ok {
 		fmt.Println("digesting packets")
 		var packets []NTypes.NPacket
@@ -53,7 +51,6 @@ func (na *HTTPAction) Execute() {
 
 		for _, packet := range packets {
 			pkt := packet.Pkt
-
 			unusablePrinted := false
 			if pkt.NetworkLayer() == nil || pkt.TransportLayer() == nil || pkt.TransportLayer().LayerType() != layers.LayerTypeTCP {
 				//log.Println("Unusable packet")
@@ -65,7 +62,7 @@ func (na *HTTPAction) Execute() {
 			}
 			tcp := pkt.TransportLayer().(*layers.TCP)
 			assembler.AssembleWithTimestamp(pkt.NetworkLayer().NetworkFlow(), tcp, pkt.Metadata().Timestamp)
-			fmt.Println(tcp.Payload)
+			//fmt.Println(tcp.Payload)
 
 		}
 	} else {
@@ -117,11 +114,13 @@ func (h *httpStream) run() {
 			// We must read until we see an EOF... very important!
 			return
 		} else if err != nil {
-			//log.Println("Error reading stream", h.net, h.transport, ":", err)
+			//todo investigate how errors can occur - verify we're sending good streams and that dividing into individual packets isn't breaking the reassembly process
+			log.Println("Error reading stream", h.net, h.transport, ":", err)
+			continue
 		} else {
-			bodyBytes := tcpreader.DiscardBytesToEOF(req.Body)
+			//bodyBytes := tcpreader.DiscardBytesToEOF(req.Body)
 			req.Body.Close()
-			log.Println("Received request from stream", h.net, h.transport, ":", req, "with", bodyBytes, "bytes in request body")
+			//log.Println("Received request from stream", h.net, h.transport, ":", req, "with", bodyBytes, "bytes in request body")
 		}
 		fmt.Println("HTTP Request host: " + req.Host)
 	}

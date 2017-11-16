@@ -160,5 +160,7 @@ Matched = MyHashes | union KnownKittyHashes
 
 networktraffic = "samplepcap.pcap" | extract as pcap
 rawhttp = networktraffic | filter packetfilter == "tcp and dst port 80 and http"
+
+//printx rawhttp
 httpa = rawhttp | extract as http
 printx httpa

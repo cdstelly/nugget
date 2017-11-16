@@ -429,7 +429,8 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 				}
 			} else {
-				fmt.Println(myResults)
+				fmt.Println("test: ", val, reflect.TypeOf(val))
+//				fmt.Println(myResults)
 			}
 		case "raw":
 			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
@@ -462,21 +463,6 @@ func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext
 	setValue(ctx, NTypes.OffsetInfo{byteOffset, clusterSize})
 }
 func main() {
-	const placeOfInterest = '\t'
-
-	fmt.Printf("plain string: ")
-	fmt.Printf("%s", placeOfInterest)
-	fmt.Printf("\n")
-
-	fmt.Printf("quoted string: ")
-	fmt.Printf("%+q", placeOfInterest)
-	fmt.Printf("\n")
-
-	fmt.Printf("hex bytes: ")
-
-	fmt.Printf("%x ", placeOfInterest)
-
-	fmt.Printf("\n")
 
 	if interactiveMode {
 		reader := bufio.NewReader(os.Stdin)

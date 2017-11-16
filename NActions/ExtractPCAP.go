@@ -80,9 +80,10 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 }
 
 func (na *ExtractPCAP) GetResults() interface{}{
+	fmt.Println("executing extractpcap's get results")
+
 	if na.executed == false {
 		na.Execute()
-		fmt.Println("executing extractpcap's get results")
 	}
 
 	fmt.Println(len(na.Packets) ," ", reflect.TypeOf(na.Packets))
