@@ -401,6 +401,10 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			fmt.Println(reflect.TypeOf(val.GetResults()))
 		case "printx":
 			myResults := val.GetResults()
+			fmt.Println("\nthetype: " , reflect.TypeOf(myResults))
+			fmt.Println("...")
+
+
 
 			if len(subfield) > 0 {
 				fmt.Println("the subfield: " + subfield)
@@ -410,24 +414,31 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 				st := reflect.ValueOf(myResults)
 				typeOfTE := st.Type()
 
-				fieldFound := false
-				//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
-				for i := 0; i < st.NumField(); i++ {
-					fieldList = append(fieldList, typeOfTE.Field(i).Name)
+				reflectType := reflect.TypeOf(myResults)
+				switch reflectType.Kind() {
+				case reflect.Slice:
 
-					field = st.Field(i)
-					//fmt.Printf("%d: %s %s\n", i, typeOfTE.Field(i).Name, field.Type())
-					//fmt.Printf("subfield: %s\n", subfield)
+					//how to deal with lists ([]http, []npacket.. etc)
+				default:
+					fieldFound := false
+					//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
+					for i := 0; i < st.NumField(); i++ {
+						fieldList = append(fieldList, typeOfTE.Field(i).Name)
 
-					if subfield == typeOfTE.Field(i).Name {
-						fieldFound = true
 						field = st.Field(i)
+						//fmt.Printf("%d: %s %s\n", i, typeOfTE.Field(i).Name, field.Type())
+						//fmt.Printf("subfield: %s\n", subfield)
+
+						if subfield == typeOfTE.Field(i).Name {
+							fieldFound = true
+							field = st.Field(i)
+						}
 					}
-				}
-				if fieldFound {
-					fmt.Println("The subfield: " + subfield + " has value: \n" + field.String())
-				} else {
-					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
+					if fieldFound {
+						fmt.Println("The subfield: " + subfield + " has value: \n" + field.String())
+					} else {
+						fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
+					}
 				}
 			} else {
 //				fmt.Println(myResults)
