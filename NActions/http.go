@@ -19,7 +19,7 @@ type HTTPAction struct {
 	dependsOn BaseAction
 	filters   []NTypes.Filter
 
-	results []NTypes.HTTP
+	Results []NTypes.HTTP
 }
 
 func (na *HTTPAction) BeenExecuted() bool {
@@ -37,21 +37,21 @@ func (na *HTTPAction) SetDependency(action BaseAction) {
 	na.dependsOn = action
 }
 
-func (na *HTTPAction) Execute() {
-	// Set up assembly
+func (thisAction *HTTPAction) Execute() {
+	// Set up assembly streams, reference: https://godoc.org/github.com/google/gopacket/tcpassembly
 	streamFactory := &httpStreamFactory{}
 	streamPool := tcpassembly.NewStreamPool(streamFactory)
 	assembler := tcpassembly.NewAssembler(streamPool)
 
-	operateOn := na.dependsOn.GetResults()
+	operateOn := thisAction.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.NPacket); ok {
 		fmt.Println("digesting packets")
 		var packets []NTypes.NPacket
 		packets = operateOn.([]NTypes.NPacket)
 
+		unusablePrinted := false
 		for _, packet := range packets {
 			pkt := packet.Pkt
-			unusablePrinted := false
 			if pkt.NetworkLayer() == nil || pkt.TransportLayer() == nil || pkt.TransportLayer().LayerType() != layers.LayerTypeTCP {
 				//log.Println("Unusable packet")
 				if unusablePrinted == false {
@@ -63,19 +63,22 @@ func (na *HTTPAction) Execute() {
 			tcp := pkt.TransportLayer().(*layers.TCP)
 			assembler.AssembleWithTimestamp(pkt.NetworkLayer().NetworkFlow(), tcp, pkt.Metadata().Timestamp)
 			//fmt.Println(tcp.Payload)
-
 		}
+		for _,r := range myrequests {
+			thisAction.Results = append(thisAction.Results, nuggetHTTPFromRequest(r))
+		}
+//		fmt.Println("done len:" , len(myrequests))
 	} else {
 		fmt.Println("incorect type, found ", reflect.TypeOf(operateOn))
 	}
-	na.executed = true
+	thisAction.executed = true
 }
 
 func (na *HTTPAction) GetResults() interface{} {
 	if !na.BeenExecuted() {
 		na.Execute()
 	}
-	return na.results
+	return na.Results
 }
 
 func (na *HTTPAction) SetFilters(filters []NTypes.Filter) {
@@ -93,7 +96,7 @@ type httpStream struct {
 	net, transport gopacket.Flow
 	r              tcpreader.ReaderStream
 }
-
+var myrequests []http.Request  //todo find best way to pass in reference to instance's results variable
 func (h *httpStreamFactory) New(net, transport gopacket.Flow) tcpassembly.Stream {
 	hstream := &httpStream{
 		net:       net,
@@ -106,6 +109,13 @@ func (h *httpStreamFactory) New(net, transport gopacket.Flow) tcpassembly.Stream
 	return &hstream.r
 }
 
+func nuggetHTTPFromRequest(r http.Request) NTypes.HTTP {
+	var httpHolder NTypes.HTTP
+	httpHolder.Host = r.Host
+	r.Body.Read(httpHolder.Data)
+	return httpHolder
+}
+
 func (h *httpStream) run() {
 	buf := bufio.NewReader(&h.r)
 	for {
@@ -114,14 +124,14 @@ func (h *httpStream) run() {
 			// We must read until we see an EOF... very important!
 			return
 		} else if err != nil {
-			//todo investigate how errors can occur - verify we're sending good streams and that dividing into individual packets isn't breaking the reassembly process
+			//todo investigate how errors can occur, invalid data for example
 			log.Println("Error reading stream", h.net, h.transport, ":", err)
 			continue
 		} else {
-			//bodyBytes := tcpreader.DiscardBytesToEOF(req.Body)
 			req.Body.Close()
-			//log.Println("Received request from stream", h.net, h.transport, ":", req, "with", bodyBytes, "bytes in request body")
+			//fmt.Println("request header: ", req.Host)
+			myrequests = append(myrequests,*req)
 		}
-		fmt.Println("HTTP Request host: " + req.Host)
+		//fmt.Println("HTTP Request host: " + req.Host)
 	}
 }
