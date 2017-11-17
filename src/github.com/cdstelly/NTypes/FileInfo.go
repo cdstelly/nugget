@@ -30,6 +30,13 @@ func (fi FileInfo) String() string {
 	return string(fi.GetFileData())
 }
 
+func (fi *FileInfo) GetFilename() string {
+	if len(fi.Filenames) == 0 {
+		return ""
+	}
+	return fi.Filenames[len(fi.Filenames)-1]
+}
+
 func getFileFromTSK(inode string) []byte {
 	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
 	if err != nil {

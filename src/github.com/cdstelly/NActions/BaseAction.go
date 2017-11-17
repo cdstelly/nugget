@@ -1,6 +1,6 @@
 package NActions
 
-import "../NTypes"
+import "github.com/cdstelly/NTypes"
 
 type BaseAction interface {
 	BeenExecuted() bool

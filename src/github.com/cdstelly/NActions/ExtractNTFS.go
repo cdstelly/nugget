@@ -6,7 +6,7 @@ import (
 	"strings"
 	"strconv"
 	"time"
-	"../NTypes"
+	"github.com/cdstelly/NTypes"
 	"fmt"
 
 	"net/rpc"

@@ -1,7 +1,7 @@
 package NActions
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/NTypes"
 
 	"bufio"
 	"fmt"
