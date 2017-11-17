@@ -492,7 +492,7 @@ func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext
 	setValue(ctx, NTypes.OffsetInfo{byteOffset, clusterSize})
 }
 func main() {
-
+	fmt.Println("Welcome to nugget version 0.1a")
 	if interactiveMode {
 		reader := bufio.NewReader(os.Stdin)
 
