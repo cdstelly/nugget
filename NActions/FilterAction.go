@@ -3,7 +3,6 @@ package NActions
 
 import (
 	"../NTypes"
-	"fmt"
 )
 
 type FilterAction struct {
@@ -34,7 +33,7 @@ func (na *FilterAction) Execute() {
 	//fmt.Println("going to execute filteraction..")
 	// var myTempResults interface{}
 	if na.dependsOn != nil {
-		fmt.Println("filteraction has a dependency which hasn't been met..")
+		//fmt.Println("filteraction has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.SetFilters(na.filters)
 			na.results = na.dependsOn.GetResults()

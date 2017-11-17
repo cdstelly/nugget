@@ -100,10 +100,6 @@
 //matches = myfilehashes | union knownhashes
 //printx(matches)
 
-//mymemdump = "thememory.mddramimage" | extract as memory
-//mypslist = mymemdump | pslist
-//printx(mypslist)
-//printx(mypslist.Processes)
 
 //any way to loop through multiple?
 // howbout do memdmp1 | pslist and union w/ memdmp2
@@ -125,16 +121,8 @@
 //printx(GetRequests)
 
 
-//MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
-//MyFiles = MyNTFSImage | filter filename==".*.JPG"
-//MyHashes = MyFiles | md5
-//MyHashes
-//type(MyHashes)
-//typex(MyHashes)
-//printx(MyHashes.digest)
-
-KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
-Matched = MyHashes | union KnownKittyHashes
+//KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
+//Matched = MyHashes | union KnownKittyHashes
 //Matched
 //printx(Matched)
 
@@ -158,9 +146,24 @@ Matched = MyHashes | union KnownKittyHashes
 //x = select pdfs
 //y = x add md5, sha1
 
+//MyNTFSImage = "file:  .raw" | extract as ntfs[63,512]
+//MyFiles = MyNTFSImage | filter filename==".*.JPG"
+//MyHashes = MyFiles | md5
+//MyHashes
+//type(MyHashes)
+//typex(MyHashes)
+//printx MyHashes.digest
+
+
+mymemdump = "thememory.mddramimage" | extract as memory
+mypslist = mymemdump | pslist
+typex mypslist
+printx mypslist
+printx mypslist.Processes
+
 networktraffic = "samplepcap.pcap" | extract as pcap
 rawhttp = networktraffic | filter packetfilter == "tcp and dst port 80 and http"
 
 //printx rawhttp
 httpa = rawhttp | extract as http
-printx httpa
+print httpa.Host

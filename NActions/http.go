@@ -11,7 +11,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
-	"log"
+
 )
 
 type HTTPAction struct {
@@ -45,7 +45,6 @@ func (thisAction *HTTPAction) Execute() {
 
 	operateOn := thisAction.dependsOn.GetResults()
 	if _, ok := operateOn.([]NTypes.NPacket); ok {
-		fmt.Println("digesting packets")
 		var packets []NTypes.NPacket
 		packets = operateOn.([]NTypes.NPacket)
 
@@ -111,8 +110,11 @@ func (h *httpStreamFactory) New(net, transport gopacket.Flow) tcpassembly.Stream
 
 func nuggetHTTPFromRequest(r http.Request) NTypes.HTTP {
 	var httpHolder NTypes.HTTP
+	fmt.Println("host being set to: ", r.Host)
 	httpHolder.Host = r.Host
 	r.Body.Read(httpHolder.Data)
+	httpHolder.Method = r.Method
+	httpHolder.RawRequest = r
 	return httpHolder
 }
 
@@ -125,7 +127,7 @@ func (h *httpStream) run() {
 			return
 		} else if err != nil {
 			//todo investigate how errors can occur, invalid data for example
-			log.Println("Error reading stream", h.net, h.transport, ":", err)
+			//log.Println("Error reading stream", h.net, h.transport, ":", err)
 			continue
 		} else {
 			req.Body.Close()
