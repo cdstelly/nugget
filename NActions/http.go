@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+
 )
 
 type HTTPAction struct {
@@ -109,6 +110,7 @@ func (h *httpStreamFactory) New(net, transport gopacket.Flow) tcpassembly.Stream
 
 func nuggetHTTPFromRequest(r http.Request) NTypes.HTTP {
 	var httpHolder NTypes.HTTP
+	fmt.Println("host being set to: ", r.Host)
 	httpHolder.Host = r.Host
 	r.Body.Read(httpHolder.Data)
 	httpHolder.Method = r.Method

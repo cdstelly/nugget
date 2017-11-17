@@ -15,6 +15,7 @@ type HTTP struct {
 	RawRequest http.Request
 }
 
+
 func (m HTTP) String() string {
 	return string(m.Host)
 }

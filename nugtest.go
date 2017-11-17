@@ -393,49 +393,67 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 
 	if val, ok := registers[theVar].(NActions.BaseAction); ok {
 		switch operation {
-		case "type":
-			fmt.Println(reflect.TypeOf(val))
-		case "print":
-			fmt.Println(val)
 		case "typex":
-			fmt.Println(reflect.TypeOf(val.GetResults()))
+			fmt.Println(reflect.TypeOf(val))
 		case "printx":
+			fmt.Println(val)
+		case "type":
+			fmt.Println(reflect.TypeOf(val.GetResults()))
+		case "print":
 			myResults := val.GetResults()
-			fmt.Println("\nthetype: " , reflect.TypeOf(myResults))
-			fmt.Println("...")
-
-
 
 			if len(subfield) > 0 {
 				fmt.Println("the subfield: " + subfield)
-				var field reflect.Value
 				var fieldList []string
 
 				st := reflect.ValueOf(myResults)
-				typeOfTE := st.Type()
 
 				reflectType := reflect.TypeOf(myResults)
+				fmt.Println("reflect type: " , reflectType.Kind())
 				switch reflectType.Kind() {
 				case reflect.Slice:
 
-					//how to deal with lists ([]http, []npacket.. etc)
+					//how to deal with lists' subfield ([]http, []npacket.. etc)
+					//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
+					//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
+
+					for i:=0; i<st.Len();i++ {
+						//st[i].interface will now satisfy the basetype
+						instanceFromList := st.Index(i).Interface()
+						if t, ok := instanceFromList.(NTypes.BaseType); ok {
+							value := reflect.ValueOf(t)
+							typeOfValue := value.Type()
+							fieldFound := false
+							var finalField reflect.Value
+							for i := 0; i < value.NumField(); i++ {
+								if subfield == typeOfValue.Field(i).Name {
+									fieldFound = true
+									finalField = value.Field(i)
+								}
+							}
+							if fieldFound {
+								//fmt.Println("The subfield: " + subfield + " has value: \n" , finalField.String())
+								fmt.Println(finalField.String())
+							} else {
+								fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
+							}
+						}
+					}
 				default:
+					typeOfTE := st.Type()
 					fieldFound := false
+					var finalField reflect.Value
 					//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
 					for i := 0; i < st.NumField(); i++ {
 						fieldList = append(fieldList, typeOfTE.Field(i).Name)
 
-						field = st.Field(i)
-						//fmt.Printf("%d: %s %s\n", i, typeOfTE.Field(i).Name, field.Type())
-						//fmt.Printf("subfield: %s\n", subfield)
-
 						if subfield == typeOfTE.Field(i).Name {
 							fieldFound = true
-							field = st.Field(i)
+							finalField = st.Field(i)
 						}
 					}
 					if fieldFound {
-						fmt.Println("The subfield: " + subfield + " has value: \n" + field.String())
+						fmt.Println("The subfield: " + subfield + " has value: \n" + finalField.String())
 					} else {
 						fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 					}
