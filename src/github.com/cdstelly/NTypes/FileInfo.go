@@ -75,6 +75,7 @@ func (fi *FileInfo) GetFileData() []byte {
 
 func (fi *FileInfo) SetFileData(data []byte) {
 	fi.reconstructedData = data
+	fi.beenReconstructed = true
 }
 
 func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
