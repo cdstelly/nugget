@@ -2,7 +2,7 @@ package NActions
 
 import "fmt"
 import (
-	"../NTypes"
+	"github.com/cdstelly/NTypes"
 	"crypto/sha256"
 )
 

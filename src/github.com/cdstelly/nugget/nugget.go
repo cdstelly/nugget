@@ -1,17 +1,17 @@
 package main
 
 import (
-	"./NActions"
-	"./NTypes"
-	"./nug"
+	"github.com/cdstelly/NActions"
+	"github.com/cdstelly/NTypes"
+	"github.com/cdstelly/nug"
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
 // going to need to rethink how to store results.
