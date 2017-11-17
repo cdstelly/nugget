@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/cdstelly/NActions"
 	"github.com/cdstelly/NTypes"
-	"github.com/cdstelly/nug"
+	"github.com/cdstelly/parser"
 	"bufio"
 	"flag"
 	"fmt"
