@@ -4,14 +4,12 @@ import (
 	"testing"
 	"github.com/cdstelly/NActions"
 	"github.com/cdstelly/NTypes"
-	"fmt"
 	"strings"
 )
 
 
 func TestPerformHashing(t *testing.T) {
 
-	fmt.Println("testing...")
 	var f NTypes.FileInfo
 	f.SetFileData([]byte("abc"))
 	files := []NTypes.FileInfo{f}
