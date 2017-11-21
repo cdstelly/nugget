@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-
 func TestPerformHashing(t *testing.T) {
 
 	var f NTypes.FileInfo
