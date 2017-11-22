@@ -1,12 +1,10 @@
 Nugget
 ===================
 
-Nugget is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. 
+_Nugget_ is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. 
 
 Building
 ----------
-Nugget does not (currently) conform to the Go standard of buildling (i.e., keeping all code under ./src/github.com/cdstelly/code). 
-
 To build from source: 
 ```
 git clone https://github.com/cdstelly/nugget.git
@@ -23,8 +21,8 @@ Using
 After either building from source or [downloading binaries](https://github.com/cdstelly/nugget/releases):
 
 ```
-$ ./nugtest -h
-Usage of ./nugtest:
+$ ./nugget -h
+Usage of ./nugget:
   -input string
     	Path to input (default "input.nug")
 ```
@@ -34,12 +32,12 @@ Examples
 
 ```
 nugget> myhashes = "file.dd" | extract  as ntfs | filter filename == "*.pdf",ctime>"01/01/01" | md5
-nugget> print(myhashes)
+nugget> print myhashes.digest
     [{c10c4d40735cc699bd16d4d18c2c6b09} {cc285f386f167c2206dd9ff6546dcd0a} ... }]
 
 nugget> mypcap = "G:\school\sample.pcap" | extract as pcap
 nugget> myhttp = mypcap | filter packetfilter == "tcp and port 80 and http"
-nugget> print(myhttp)
+nugget> print myhttp 
     [ GET /site=0000127709/mnum=0000162763/genr=1/logs=0/mdtm=1077726643/bins=1 HTTP/1.1
     User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0) Opera 7.11  [en]
     Host: opera2-servedby.advertising.com
@@ -52,6 +50,7 @@ nugget> print(myhttp)
 
 Expanding
 --------------
+_Nugget_ provides a mechanism which allows non-technical users to add functionality by generating templated code and inserting specified keywords _into its own grammar_. See [grammar builder](https://github.com/cdstelly/nugget/tree/master/src/github.com/cdstelly/NGrammarBuilder).
 
 Bugs
 ---------------
