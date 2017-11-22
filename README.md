@@ -50,7 +50,7 @@ nugget> print myhttp
 
 Expanding
 --------------
-_Nugget_ provides a mechanism which allows non-technical users to add functionality by generating templated code and inserting specified keywords _into its own grammar_. See [grammar builder](https://github.com/cdstelly/nugget/tree/master/src/github.com/cdstelly/NGrammarBuilder).
+_Nugget_ provides a mechanism which allows non-technical users add functionality by generating templated code and inserting specified keywords _into its own grammar_. See [grammar builder](https://github.com/cdstelly/nugget/tree/master/src/github.com/cdstelly/NGrammarBuilder).
 
 Bugs
 ---------------
