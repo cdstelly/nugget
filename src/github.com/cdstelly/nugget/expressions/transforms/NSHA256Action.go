@@ -1,8 +1,8 @@
-package NActions
+package expressions
 
 import "fmt"
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 	"crypto/sha256"
 )
 
@@ -45,7 +45,7 @@ func (na *SHA256Action) Execute() {
 		files = operateOn.([]NTypes.FileInfo)
 		for _,file := range files {
 			hasher := sha256.New()
-			fn := GetAFilename(file)
+			fn := file.GetFilename()
 			hasher.Write([]byte(fn))
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
 			//println("index: ", index, " file: ", file.Filenames, " md5: ", myhash)

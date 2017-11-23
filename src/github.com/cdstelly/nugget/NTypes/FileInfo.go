@@ -78,6 +78,13 @@ func (fi *FileInfo) SetFileData(data []byte) {
 	fi.beenReconstructed = true
 }
 
+func (fi *FileInfo) GetAFilename() string {
+	if len(fi.Filenames) == 0 {
+		return "null"
+	}
+	return fi.Filenames[len(fi.Filenames)-1]
+}
+
 func (fi *FileInfo) DoesPassFilter(theFilters []Filter) bool {
 	passes := true
 	for _,filter := range theFilters {

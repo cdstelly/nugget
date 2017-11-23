@@ -1,17 +1,18 @@
-package NActions
+package extractors
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 
 	"github.com/google/gopacket/pcap"
 	"github.com/google/gopacket"
 	"fmt"
 	"strings"
+	"github.com/cdstelly/nugget/expressions/transforms"
 )
 
 type ExtractPCAP struct {
 	executed  bool
-	dependsOn BaseAction
+	dependsOn expressions.BaseAction
 	filters []NTypes.Filter
 
 	PCAPLocation string
@@ -27,7 +28,7 @@ func (na *ExtractPCAP) DependencySatisfied() bool {
 	return true //extractions don't depend on any other actions to execute
 }
 
-func (na *ExtractPCAP) SetDependency(action BaseAction) {
+func (na *ExtractPCAP) SetDependency(action expressions.BaseAction) {
 	na.dependsOn = action
 }
 

@@ -1,8 +1,8 @@
-package NActions
+package expressions
 
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 )
 
 type FilterAction struct {
