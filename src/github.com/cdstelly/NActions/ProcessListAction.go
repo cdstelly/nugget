@@ -1,7 +1,7 @@
 package NActions
 
 import (
-	"github.com/cdstelly/NTypes"
+	"../NTypes"
 	"net/rpc"
 	"log"
 )

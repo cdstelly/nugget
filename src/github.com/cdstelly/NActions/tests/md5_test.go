@@ -2,8 +2,8 @@ package NActions
 
 import (
 	"testing"
-	"github.com/cdstelly/NActions"
-	"github.com/cdstelly/NTypes"
+	"../NActions"
+	"../NTypes"
 	"strings"
 )
 

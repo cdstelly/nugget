@@ -1,7 +1,7 @@
 package NActions
 
 import (
-	"github.com/cdstelly/NTypes"
+	"../NTypes"
 
 	"github.com/google/gopacket/pcap"
 	"github.com/google/gopacket"

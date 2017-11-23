@@ -2,7 +2,7 @@ package NActions
 
 
 import (
-	"github.com/cdstelly/NTypes"
+	"../NTypes"
 )
 
 type FilterAction struct {

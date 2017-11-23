@@ -1,7 +1,7 @@
 package NActions
 
 import (
-	"github.com/cdstelly/NTypes"
+	"../NTypes"
 	"fmt"
 	"crypto/sha1"
 )

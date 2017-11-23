@@ -3,7 +3,7 @@ package NTypes
 import "testing"
 import (
 	"fmt"
-	"github.com/cdstelly/NTypes"
+	"../NTypes"
 )
 
 func TestFileInfo (t *testing.T) {

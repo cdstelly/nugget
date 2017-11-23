@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/cdstelly/NActions"
-	"github.com/cdstelly/NTypes"
-	"github.com/cdstelly/parser"
+	"../NActions"
+	"../NTypes"
+	"../parser"
 	"bufio"
 	"flag"
 	"fmt"
