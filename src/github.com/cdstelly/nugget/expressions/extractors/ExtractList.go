@@ -1,7 +1,7 @@
-package NActions
+package extractors
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 
 	"bufio"
 	"fmt"
@@ -10,11 +10,12 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"github.com/cdstelly/nugget/expressions/transforms"
 )
 
 type ExtractList struct {
 	executed  bool
-	dependsOn BaseAction
+	dependsOn expressions.BaseAction
 	filters   []NTypes.Filter
 
 	ListLocation string
@@ -30,7 +31,7 @@ func (na *ExtractList) DependencySatisfied() bool {
 	return true //extractions don't depend on any other actions to execute
 }
 
-func (na *ExtractList) SetDependency(action BaseAction) {
+func (na *ExtractList) SetDependency(action expressions.BaseAction) {
 	na.dependsOn = action
 }
 

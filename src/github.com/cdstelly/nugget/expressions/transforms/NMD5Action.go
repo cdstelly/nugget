@@ -1,8 +1,8 @@
-package NActions
+package expressions
 
 import "fmt"
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 	"crypto/md5"
 )
 

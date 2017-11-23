@@ -1,12 +1,13 @@
-package NActions
+package extractors
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
+	"github.com/cdstelly/nugget/expressions/transforms"
 )
 
 type NExtractGetRequests struct {
 	executed  bool
-	dependsOn BaseAction
+	dependsOn expressions.BaseAction
 	filters []NTypes.Filter
 
 	results []string
@@ -23,7 +24,7 @@ func (na *NExtractGetRequests) DependencySatisfied() bool {
 	return na.dependsOn.BeenExecuted()
 }
 
-func (na *NExtractGetRequests) SetDependency(action BaseAction) {
+func (na *NExtractGetRequests) SetDependency(action expressions.BaseAction) {
 	na.dependsOn = action
 }
 func (na *NExtractGetRequests) Execute() {

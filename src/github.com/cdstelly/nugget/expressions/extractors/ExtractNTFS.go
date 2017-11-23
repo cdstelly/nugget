@@ -1,4 +1,4 @@
-package NActions
+package extractors
 
 import (
 	"os"
@@ -6,16 +6,17 @@ import (
 	"strings"
 	"strconv"
 	"time"
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 	"fmt"
 
 	"net/rpc"
 	"log"
+	"github.com/cdstelly/nugget/expressions/transforms"
 )
 
 type ExtractNTFS struct {
 	executed  bool
-	dependsOn BaseAction
+	dependsOn expressions.BaseAction
 	filters []NTypes.Filter
 
 	NTFSImageMetadataLocation string
@@ -35,7 +36,7 @@ func (na *ExtractNTFS) DependencySatisfied() bool {
 	return true //extractions don't depend on any other actions to execute
 }
 
-func (na *ExtractNTFS) SetDependency(action BaseAction) {
+func (na *ExtractNTFS) SetDependency(action expressions.BaseAction) {
 	na.dependsOn = action
 }
 

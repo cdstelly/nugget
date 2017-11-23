@@ -1,7 +1,7 @@
-package NActions
+package expressions
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 	"bufio"
 	"fmt"
 	"github.com/google/gopacket"

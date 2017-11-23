@@ -1,7 +1,7 @@
-package NActions
+package expressions
 
 import (
-	"../NTypes"
+	"github.com/cdstelly/nugget/NTypes"
 	"fmt"
 	"crypto/sha1"
 )
@@ -52,7 +52,7 @@ func (na *SHA1Action) Execute() {
 		files = operateOn.([]NTypes.FileInfo)
 		for _,file := range files {
 			hasher := sha1.New()
-			fn := GetAFilename(file)
+			fn := file.GetFilename()
 			hasher.Write([]byte(fn))
 			myhash := fmt.Sprintf("%x", hasher.Sum(nil))
 			//println("index: ", index, " file: ", file.Filenames, " sha1: ", myhash)

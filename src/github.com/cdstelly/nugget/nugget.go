@@ -1,8 +1,9 @@
 package main
 
 import (
-	"../NActions"
-	"../NTypes"
+	"github.com/cdstelly/nugget/expressions/transforms"
+	"github.com/cdstelly/nugget/expressions/extractors"
+	"github.com/cdstelly/nugget/NTypes"
 	"../parser"
 	"bufio"
 	"flag"
@@ -94,54 +95,54 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		}
 	}
 
-	var theAction NActions.BaseAction
+	var theAction expressions.BaseAction
 	switch action_verb {
 	case "filter":
 		//don't need to do anything here - will assign filters to actions in just a second
-		theAction = &NActions.FilterAction{}
+		theAction = &expressions.FilterAction{}
 	case "sort":
 		thisSortField := getValue(ctx.Action_word()).(NTypes.Sort)
-		theAction = &NActions.SortAction{SortField: thisSortField.Field}
+		theAction = &expressions.SortAction{SortField: thisSortField.Field}
 	case "extract":
 		extractType := getValue(ctx.Action_word()).(NTypes.Extract)
 		if extractType.AsType == "pcap" {
-			theAction = &NActions.ExtractPCAP{}
+			theAction = &extractors.ExtractPCAP{}
 		} else if extractType.AsType == "ntfs" {
-			theAction = &NActions.ExtractNTFS{}
+			theAction = &extractors.ExtractNTFS{}
 		} else if extractType.AsType == "md5hashes" {
-			theAction = &NActions.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
+			theAction = &extractors.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha1hashes" {
-			theAction = &NActions.ExtractList{ListType: "sha1", ListLocation: extractType.PathToExtract}
+			theAction = &extractors.ExtractList{ListType: "sha1", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha256hashes" {
-			theAction = &NActions.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
+			theAction = &extractors.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "memory" {
-			theAction = &NActions.ExtractMemory{}
+			theAction = &extractors.ExtractMemory{}
 		} else if extractType.AsType == "http" {
-			theAction = &NActions.HTTPAction{}
+			theAction = &expressions.HTTPAction{}
 		}  else {
 			fmt.Println("Error parsing given type: ", extractType.AsType)
 		}
 	case "sha1":
-		theAction = &NActions.SHA1Action{}
+		theAction = &expressions.SHA1Action{}
 	case "sha256":
-		theAction = &NActions.SHA256Action{}
+		theAction = &expressions.SHA256Action{}
 	case "md5":
-		theAction = &NActions.MD5Action{}
+		theAction = &expressions.MD5Action{}
 	case "diskinfo":
-		theAction = &NActions.DiskInfoAction{}
+		theAction = &expressions.DiskInfoAction{}
 	case "union":
 		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
 		var theListFromVar []string
-		if val, ok := registers[unionType.AgainstVarName].(NActions.BaseAction); ok {
+		if val, ok := registers[unionType.AgainstVarName].(expressions.BaseAction); ok {
 			fmt.Println(val.GetResults())
 			theListFromVar = val.GetResults().([]string)
 		} else {
 			fmt.Println("Error! Was not able to find var: ", unionType.AgainstVarName)
 		}
-		theAction = &NActions.UnionAction{VariableList: theListFromVar}
+		theAction = &expressions.UnionAction{VariableList: theListFromVar}
 	case "pslist":
-		theAction = &NActions.ProcessListAction{}
+		theAction = &expressions.ProcessListAction{}
 	default:
 		fmt.Println("action was not found")
 	}
@@ -234,25 +235,25 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 
 	actions := ctx.AllNugget_action()
 	//setup actions if necessary
-	var builtActions []NActions.BaseAction
+	var builtActions []expressions.BaseAction
 	for _, action := range actions {
 		rawAction := getValue(action)
 		//if it's an extract action, we need to look behind and get some more info (like filepath and type)
 		//fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
 
-		if extractAction, ok := rawAction.(*NActions.ExtractNTFS); ok {
+		if extractAction, ok := rawAction.(*extractors.ExtractNTFS); ok {
 			//todo: get real values not dummy ones
 			extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
 			extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
 		}
-		if extractAction, ok := rawAction.(*NActions.ExtractPCAP); ok {
+		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			//todo: get real values not dummy ones
 			//extractAction.PCAPLocation = "G:\\school\\sample.pcap"
 			//extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-11-19-09_54.pcap"
 
 			extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-12-09-11_59.pcap"
 		}
-		if act, ok := rawAction.(NActions.BaseAction); ok {
+		if act, ok := rawAction.(expressions.BaseAction); ok {
 			builtActions = append(builtActions, act)
 		}
 	}
@@ -267,9 +268,9 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 	for index, builtAction := range builtActions {
 		if index+1 < len(builtActions) {
 			//fmt.Println("action at index: ", index, "is ", reflect.TypeOf(builtAction)," : ", builtAction, " and depends on: ", builtActions[index+1])
-			var depAction NActions.BaseAction
+			var depAction expressions.BaseAction
 			depAction = builtActions[index+1]
-			builtAction.(NActions.BaseAction).SetDependency(depAction)
+			builtAction.(expressions.BaseAction).SetDependency(depAction)
 		} else {
 			//fmt.Println("action at index: ", index,"is ", reflect.TypeOf(builtAction)," : ", builtAction, " and has no dependency. Setting dep to the var")
 			if len(ctx.AllID()) > 1 {
@@ -278,9 +279,9 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 				// is it an existing var?
 				if _, ok := registers[depVar]; ok {
 					//if it's an action..
-					if dep, ok := registers[depVar].(NActions.BaseAction); ok {
+					if dep, ok := registers[depVar].(expressions.BaseAction); ok {
 						//fmt.Println("the dependency for this action will be variable: ", nVar)
-						builtAction.(NActions.BaseAction).SetDependency(dep)
+						builtAction.(expressions.BaseAction).SetDependency(dep)
 					}
 				} else {
 					fmt.Println("Error: Var '", depVar, "' not recognized.")
@@ -365,7 +366,7 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	theVar := ctx.ID().GetText()
 	if v, ok := registers[theVar]; ok {
 		//fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
-		if ba, ok := v.(NActions.BaseAction); ok {
+		if ba, ok := v.(expressions.BaseAction); ok {
 			fmt.Println("Results for var ", theVar, ": ", ba.GetResults())
 			//ba.GetResults()
 			//fmt.Println("cutting off results for now..")
@@ -391,7 +392,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		theVar = root
 	}
 
-	if val, ok := registers[theVar].(NActions.BaseAction); ok {
+	if val, ok := registers[theVar].(expressions.BaseAction); ok {
 		switch operation {
 		case "typex":
 			fmt.Println(reflect.TypeOf(val))
