@@ -4,7 +4,7 @@ import (
 	"github.com/cdstelly/nugget/expressions/transforms"
 	"github.com/cdstelly/nugget/expressions/extractors"
 	"github.com/cdstelly/nugget/NTypes"
-	"../parser"
+	"github.com/cdstelly/nugget/parser"
 	"bufio"
 	"flag"
 	"fmt"
