@@ -7,34 +7,49 @@ import (
 	"log"
 )
 
-func TestParseMD5Input(t *testing.T) {
-	log.Print("Testing MD5 input parsing")
-	input :=
-		`
-		filehashes = "file.dd" | extract  as ntfs | md5
-		filehashes
-		`
-	_, nerr := GetTreeForInput(input)
-	if nerr != nil {
-		t.Fail()
+type nuggetTest struct {
+	Description string
+	Expression string
+}
+
+var tests = []nuggetTest {
+  { "SHA 1", `filehashes = "file.dd" | extract  as ntfs | sha1
+filehashes`} ,
+
+ { "MD5 hash", `filehashes = "file.dd" | extract  as ntfs | md5
+		filehashes`} }
+
+
+func TestSyntax(t *testing.T) {
+	log.Print("Testing syntax only")
+
+	for _, test := range tests {
+
+		tree, nerr := GetTreeForInput(test.Expression)
+		if nerr != nil {
+			t.Error(
+				"For", test.Description,
+				"failed to process: ", test.Expression,
+				"returning: ", tree.GetText())
+		}
 	}
 }
 
 
-func TestExecuteMD5Input (t *testing.T) {
+func TestExecute (t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping test in short mode")
 	}
-	log.Print("Testing MD5 input execution")
-	input :=
-		`
-		filehashes = "file.dd" | extract  as ntfs | md5
-		filehashes
-		`
-	tree, nerr := GetTreeForInput(input)
-	if nerr != nil {
-		t.Fail()
+	log.Println("Testing syntax AND execution of input")
+	for _, test := range tests {
+		tree, nerr := GetTreeForInput(test.Expression)
+		antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+		fmt.Println()
+		if nerr != nil {
+			t.Error(
+				"For", test.Description,
+				"failed to process: ", test.Expression,
+				"returning: ", tree.GetText())
+		}
 	}
-	antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
-	fmt.Println()
 }
