@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"errors"
 )
 
 // going to need to rethink how to store results.
@@ -59,6 +60,7 @@ func setValue(ctx antlr.ParseTree, value interface{}) {
 func getValue(n antlr.ParseTree) interface{} {
 	return nodeMap[n]
 }
+
 
 type TreeShapeListener struct {
 	*parser.BaseNuggetListener
@@ -492,6 +494,23 @@ func (s *TreeShapeListener) ExitByteOffsetSize(ctx *parser.ByteOffsetSizeContext
 	}
 	setValue(ctx, NTypes.OffsetInfo{byteOffset, clusterSize})
 }
+
+func GetTreeForInput(input string) (parser.IProgContext, error) {
+	antlrInputStream := antlr.NewInputStream(input)
+	lexer := parser.NewNuggetLexer(antlrInputStream)
+	tokenstream := antlr.NewCommonTokenStream(lexer, 0)
+	tokenparser := parser.NewNuggetParser(tokenstream)
+	tokenparser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	tokenparser.BuildParseTrees = true
+	tree := tokenparser.Prog()
+
+	if tree.GetText() == "" {
+		return nil, errors.New("tree is empty")
+	}
+
+	return tree, nil
+}
+
 func main() {
 	fmt.Println("Welcome to nugget version 0.1a")
 	if interactiveMode {
@@ -522,15 +541,11 @@ func main() {
 				continue
 			}
 			fmt.Printf("nugget> %s\n", scanner.Text())
-			input := antlr.NewInputStream(scanner.Text())
-			lexer := parser.NewNuggetLexer(input)
-			tokenstream := antlr.NewCommonTokenStream(lexer, 0)
-			tokenparser := parser.NewNuggetParser(tokenstream)
-			tokenparser.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-			tokenparser.BuildParseTrees = true
-			tree := tokenparser.Prog()
-			antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
-			fmt.Println()
+			tree, nerr := GetTreeForInput(scanner.Text())
+			if nerr != nil {
+				antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+				fmt.Println()
+			}
 		}
 	}
 }
