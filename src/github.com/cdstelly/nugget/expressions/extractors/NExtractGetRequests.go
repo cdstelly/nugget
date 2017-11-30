@@ -27,6 +27,7 @@ func (na *NExtractGetRequests) DependencySatisfied() bool {
 func (na *NExtractGetRequests) SetDependency(action expressions.BaseAction) {
 	na.dependsOn = action
 }
+//todo: this looks devilishly incomplete..
 func (na *NExtractGetRequests) Execute() {
 	if na.dependsOn != nil {
 		//fmt.Println("getGetReqs has a dependency which hasn't been met..")
@@ -40,10 +41,7 @@ func (na *NExtractGetRequests) Execute() {
 
 	if _, ok := operateOn.([]NTypes.NPacket); ok {
 
-
-
 	}
-
 	na.executed = true
 }
 
