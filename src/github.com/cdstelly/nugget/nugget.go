@@ -30,9 +30,15 @@ var (
 )
 
 func init() {
-	flag.StringVar(&pathToInput, "input", "input.nug", "Path to input")
+
+	flag.StringVar(&pathToInput, "input", "", "Path to input")
 	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
 	flag.Parse()
+
+	if !flagCheck(){
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
 	registers = make(map[string]interface{})
 
 	//nodemap can be used to share data across constructs, just store it here whenever and retrieve based on ctx
@@ -41,6 +47,15 @@ func init() {
 	//hold a string->nugType values
 	typeRegistry = make(map[string]reflect.Type)
 	setupTypeRegstry()
+}
+
+func flagCheck() bool {
+	if pathToInput == "" {
+		if !interactiveMode {
+			return false
+		}
+	}
+	return true
 }
 
 //todo: finish typeregistry so we can clean up typing code
@@ -513,11 +528,14 @@ func GetTreeForInput(input string) (parser.IProgContext, error) {
 
 func main() {
 	fmt.Println("Welcome to nugget version 0.1a")
+	flagCheck()
+
 	if interactiveMode {
 		reader := bufio.NewReader(os.Stdin)
 
 		fmt.Print("nugget> ")
 
+		//todo: figure out the best way to implement the tab complete
 		var myByte []byte
 		myByte = make([]byte, 1)
 
