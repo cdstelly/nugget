@@ -2,8 +2,8 @@ package NActions
 
 import (
 	"testing"
-	"../NActions"
-	"../NTypes"
+	"github.com/cdstelly/nugget/expressions/transforms"
+ "github.com/cdstelly/nugget/NTypes"
 	"strings"
 )
 
@@ -13,7 +13,7 @@ func TestPerformHashing(t *testing.T) {
 	f.SetFileData([]byte("abc"))
 	files := []NTypes.FileInfo{f}
 
-	var ma NActions.MD5Action
+	var ma expressions.MD5Action
 	ma.OperateOn = files
 	result := "900150983CD24FB0D6963F7D28E17F72"
 
