@@ -1,6 +1,9 @@
 package NTypes
 
-import "fmt"
+import (
+	"fmt"
+	"encoding/json"
+)
 
 type Union struct {
 	Results []string
@@ -13,4 +16,12 @@ func (m Union) String() string {
 		ret += fmt.Sprintf("%s\n", s)
 	}
 	return ret
+}
+
+func (m Union) JSON() string {
+	jsonEncoding, err := json.Marshal(m)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	return string(jsonEncoding)
 }
