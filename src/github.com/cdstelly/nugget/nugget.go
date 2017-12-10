@@ -408,20 +408,21 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 				myResults := val.GetResults()
 
 				if len(subfield) > 0 {
-					fmt.Println("the subfield: " + subfield)
+					//fmt.Println("the subfield: " + subfield)
 					var fieldList []string
 
 					st := reflect.ValueOf(myResults)
 
 					reflectType := reflect.TypeOf(myResults)
 					//fmt.Println("reflect type: " , reflectType.Kind())
+					//todo - printing multiple things at once
+					//		with this structure, may require not streaming results and instead caching results and printing at once
 					switch reflectType.Kind() {
 					case reflect.Slice:
 
 						//how to deal with lists' subfield ([]http, []npacket.. etc)
 						//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
 						//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
-
 						for i:=0; i<st.Len();i++ {
 							//st[i].interface will now satisfy the basetype
 							instanceFromList := st.Index(i).Interface()

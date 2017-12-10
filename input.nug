@@ -168,7 +168,7 @@ rawhttp = networktraffic | filter packetfilter == "tcp and dst port 80 and http"
 httpa = rawhttp | extract as http
 print httpa.Host
 
-print httpa.Host
+//print httpa.Host
 
 
-print httpa.Host, httpb.Host
+print httpa.Host, httpa.Host
