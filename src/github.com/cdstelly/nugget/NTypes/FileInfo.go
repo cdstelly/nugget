@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"regexp"
+	"encoding/json"
 )
 
 type FileInfo struct {
@@ -28,6 +29,14 @@ type FileInfo struct {
 
 func (fi FileInfo) String() string {
 	return string(fi.GetFileData())
+}
+
+func (m FileInfo) JSON() string {
+	jsonEncoding, err := json.Marshal(m)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	return string(jsonEncoding)
 }
 
 func (fi *FileInfo) GetFilename() string {
