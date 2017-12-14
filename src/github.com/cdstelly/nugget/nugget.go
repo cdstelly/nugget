@@ -395,104 +395,112 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	}
 }
 
+//how to deal with multipule field prints?
+
+// array of array of strings that are buffered up? keep in mind that we will eventually pass to scarf handler
+
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var operation string
 	if op, ok := getValue(ctx.Singleton_op()).(string); ok {
 		operation = op
 	}
-	theVar := ctx.ID().GetText()
-	var subfield string
-	if strings.Contains(theVar, ".") {
-		root := strings.Split(theVar, ".")[0]
-		subfield = strings.Split(theVar, ".")[1]
-		theVar = root
-	}
+	for _, id := range ctx.AllID() {
+		givenVar := id.GetText()
 
-	if val, ok := registers[theVar].(expressions.BaseAction); ok {
-		switch operation {
-		case "typex":
-			fmt.Println(reflect.TypeOf(val))
-		case "printx":
-			fmt.Println(val)
-		case "type":
-			fmt.Println(reflect.TypeOf(val.GetResults()))
-		case "print":
-			myResults := val.GetResults()
+		var subfield string
+		//does it contain a subfield?
+		if strings.Contains(givenVar, ".") {
+			root := strings.Split(givenVar, ".")[0]
+			subfield = strings.Split(givenVar, ".")[1]
+			givenVar = root
+		}
 
-			if len(subfield) > 0 {
-				fmt.Println("the subfield: " + subfield)
-				var fieldList []string
+		if val, ok := registers[givenVar].(expressions.BaseAction); ok {
+			switch operation {
+			case "typex":
+				fmt.Println(reflect.TypeOf(val))
+			case "printx":
+				fmt.Println(val)
+			case "type":
+				fmt.Println(reflect.TypeOf(val.GetResults()))
+			case "print":
+				myResults := val.GetResults()
 
-				st := reflect.ValueOf(myResults)
+				if len(subfield) > 0 {
+					//fmt.Println("the subfield: " + subfield)
+					var fieldList []string
 
-				reflectType := reflect.TypeOf(myResults)
-				fmt.Println("reflect type: " , reflectType.Kind())
-				switch reflectType.Kind() {
-				case reflect.Slice:
+					st := reflect.ValueOf(myResults)
 
-					//how to deal with lists' subfield ([]http, []npacket.. etc)
-					//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
-					//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
+					reflectType := reflect.TypeOf(myResults)
+					//fmt.Println("reflect type: " , reflectType.Kind())
+					//todo - printing multiple things at once
+					//		with this structure, may require not streaming results and instead caching results and printing at once
+					switch reflectType.Kind() {
+					case reflect.Slice:
 
-					for i:=0; i<st.Len();i++ {
-						//st[i].interface will now satisfy the basetype
-						instanceFromList := st.Index(i).Interface()
-						if t, ok := instanceFromList.(NTypes.BaseType); ok {
-							value := reflect.ValueOf(t)
-							typeOfValue := value.Type()
-							fieldFound := false
-							var finalField reflect.Value
-							for i := 0; i < value.NumField(); i++ {
-								if subfield == typeOfValue.Field(i).Name {
-									fieldFound = true
-									finalField = value.Field(i)
+						//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
+						//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
+						for i:=0; i<st.Len();i++ {
+							//st[i].interface will now satisfy the basetype
+							instanceFromList := st.Index(i).Interface()
+							if t, ok := instanceFromList.(NTypes.BaseType); ok {
+								value := reflect.ValueOf(t)
+								typeOfValue := value.Type()
+								fieldFound := false
+								var finalField reflect.Value
+								for i := 0; i < value.NumField(); i++ {
+									if subfield == typeOfValue.Field(i).Name {
+										fieldFound = true
+										finalField = value.Field(i)
+									}
+								}
+								if fieldFound {
+									//fmt.Println("The subfield: " + subfield + " has value: \n" , finalField.String())
+									fmt.Println(finalField.String())
+								} else {
+									fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
 								}
 							}
-							if fieldFound {
-								//fmt.Println("The subfield: " + subfield + " has value: \n" , finalField.String())
-								fmt.Println(finalField.String())
-							} else {
-								fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
+						}
+					default:
+						typeOfTE := st.Type()
+						fieldFound := false
+						var finalField reflect.Value
+						//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
+						for i := 0; i < st.NumField(); i++ {
+							fieldList = append(fieldList, typeOfTE.Field(i).Name)
+
+							if subfield == typeOfTE.Field(i).Name {
+								fieldFound = true
+								finalField = st.Field(i)
 							}
 						}
-					}
-				default:
-					typeOfTE := st.Type()
-					fieldFound := false
-					var finalField reflect.Value
-					//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
-					for i := 0; i < st.NumField(); i++ {
-						fieldList = append(fieldList, typeOfTE.Field(i).Name)
-
-						if subfield == typeOfTE.Field(i).Name {
-							fieldFound = true
-							finalField = st.Field(i)
+						if fieldFound {
+							fmt.Println("The subfield: " + subfield + " has value: \n" + finalField.String())
+						} else {
+							fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 						}
 					}
-					if fieldFound {
-						fmt.Println("The subfield: " + subfield + " has value: \n" + finalField.String())
-					} else {
-						fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
+				} else {
+					fmt.Println(myResults)
+				}
+			case "raw":
+				if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
+					for _, fi := range files {
+						fmt.Println(fi)
 					}
+				} else {
+					fmt.Println(val.GetResults())
 				}
-			} else {
-//				fmt.Println(myResults)
+			case "size":
+				fmt.Println("len not implemented yet")
+			default:
+				fmt.Println("operation not recognized..")
 			}
-		case "raw":
-			if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
-				for _, fi := range files {
-					fmt.Println(fi)
-				}
-			} else {
-				fmt.Println(val.GetResults())
-			}
-		case "size":
-			fmt.Println("len not implemented yet")
-		default:
-			fmt.Println("operation not recognized..")
+		} else {
+			fmt.Println("Variable not recognized: ", givenVar)
 		}
-	} else {
-		fmt.Println("Variable not recognized: ", theVar)
 	}
 }
 
@@ -559,7 +567,7 @@ func main() {
 			}
 			fmt.Printf("nugget> %s\n", scanner.Text())
 			tree, nerr := GetTreeForInput(scanner.Text())
-			if nerr != nil {
+			if nerr == nil {
 				antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
 				fmt.Println()
 			}

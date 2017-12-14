@@ -6,7 +6,7 @@ grammar Nugget;
 
 prog: (         define_assign |
        operation_on_singleton |
-         singleton_var )*
+                singleton_var )*
        EOF
 ;
 
@@ -21,10 +21,10 @@ define_tuple: ID 'tuple[' (','? nugget_type)+ ']' LISTOP?;
 
 
 assign: ID '=' STRING ('|' nugget_action)* |
-        ID '=' ID ('|' nugget_action)*
+        ID '=' ID     ('|' nugget_action)*
 ;
 
-operation_on_singleton: singleton_op  ID ;
+operation_on_singleton: singleton_op  ID (',' ID)?;
 
 singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx' | 'raw');
 
