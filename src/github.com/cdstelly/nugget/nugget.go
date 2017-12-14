@@ -30,9 +30,15 @@ var (
 )
 
 func init() {
-	flag.StringVar(&pathToInput, "input", "input.nug", "Path to input")
+
+	flag.StringVar(&pathToInput, "input", "", "Path to input")
 	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
 	flag.Parse()
+
+	if !flagCheck(){
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
 	registers = make(map[string]interface{})
 
 	//nodemap can be used to share data across constructs, just store it here whenever and retrieve based on ctx
@@ -41,6 +47,15 @@ func init() {
 	//hold a string->nugType values
 	typeRegistry = make(map[string]reflect.Type)
 	setupTypeRegstry()
+}
+
+func flagCheck() bool {
+	if pathToInput == "" {
+		if !interactiveMode {
+			return false
+		}
+	}
+	return true
 }
 
 //todo: finish typeregistry so we can clean up typing code
@@ -228,7 +243,6 @@ func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 		v := reflect.New(typeRegistry[t.GetText()])
 		theTuples = append(theTuples, v)
 	}
-
 	registers[identifier] = theTuples
 }
 
@@ -381,22 +395,27 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	}
 }
 
+//how to deal with multipule field prints?
+
+// array of array of strings that are buffered up? keep in mind that we will eventually pass to scarf handler
+
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var operation string
 	if op, ok := getValue(ctx.Singleton_op()).(string); ok {
 		operation = op
 	}
 	for _, id := range ctx.AllID() {
-		theVar := id.GetText()
+		givenVar := id.GetText()
 
 		var subfield string
-		if strings.Contains(theVar, ".") {
-			root := strings.Split(theVar, ".")[0]
-			subfield = strings.Split(theVar, ".")[1]
-			theVar = root
+		//does it contain a subfield?
+		if strings.Contains(givenVar, ".") {
+			root := strings.Split(givenVar, ".")[0]
+			subfield = strings.Split(givenVar, ".")[1]
+			givenVar = root
 		}
 
-		if val, ok := registers[theVar].(expressions.BaseAction); ok {
+		if val, ok := registers[givenVar].(expressions.BaseAction); ok {
 			switch operation {
 			case "typex":
 				fmt.Println(reflect.TypeOf(val))
@@ -420,7 +439,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 					switch reflectType.Kind() {
 					case reflect.Slice:
 
-						//how to deal with lists' subfield ([]http, []npacket.. etc)
 						//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
 						//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
 						for i:=0; i<st.Len();i++ {
@@ -465,7 +483,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 						}
 					}
 				} else {
-					//				fmt.Println(myResults)
+					fmt.Println(myResults)
 				}
 			case "raw":
 				if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
@@ -481,7 +499,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 				fmt.Println("operation not recognized..")
 			}
 		} else {
-			fmt.Println("Variable not recognized: ", theVar)
+			fmt.Println("Variable not recognized: ", givenVar)
 		}
 	}
 }
@@ -517,11 +535,14 @@ func GetTreeForInput(input string) (parser.IProgContext, error) {
 
 func main() {
 	fmt.Println("Welcome to nugget version 0.1a")
+	flagCheck()
+
 	if interactiveMode {
 		reader := bufio.NewReader(os.Stdin)
 
 		fmt.Print("nugget> ")
 
+		//todo: figure out the best way to implement the tab complete
 		var myByte []byte
 		myByte = make([]byte, 1)
 
