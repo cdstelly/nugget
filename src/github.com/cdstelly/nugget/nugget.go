@@ -243,7 +243,6 @@ func (s *TreeShapeListener) ExitDefine_tuple(ctx *parser.Define_tupleContext) {
 		v := reflect.New(typeRegistry[t.GetText()])
 		theTuples = append(theTuples, v)
 	}
-
 	registers[identifier] = theTuples
 }
 
