@@ -358,7 +358,7 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	} else if ctx.ByField() != nil {
 		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
-			//fmt.Println("sort string: ", val)
+			//fmt.Println("sort string: ", val)-
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
 		//handle union
@@ -395,9 +395,18 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	}
 }
 
-//how to deal with multipule field prints?
+//how to deal with multiple field prints?
+// keep in mind that we will eventually pass to scarf handler
+// also consider the 'add md5' syntax
+//right now it's a map string->interface, map[string]interface{}
+//resultsTable
+//[
+	//x.hash, x.filename, x.datemodified
+//]
 
-// array of array of strings that are buffered up? keep in mind that we will eventually pass to scarf handler
+//for each term,add to a list
+//print each entry with each field...
+
 
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var operation string
@@ -429,7 +438,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 				if len(subfield) > 0 {
 					//fmt.Println("the subfield: " + subfield)
 					var fieldList []string
-
 					st := reflect.ValueOf(myResults)
 
 					reflectType := reflect.TypeOf(myResults)
@@ -438,7 +446,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 					//		with this structure, may require not streaming results and instead caching results and printing at once
 					switch reflectType.Kind() {
 					case reflect.Slice:
-
 						//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
 						//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
 						for i:=0; i<st.Len();i++ {
