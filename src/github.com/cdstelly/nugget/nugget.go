@@ -11,9 +11,10 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"strings"
+//	"strings"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"errors"
+	"strings"
 )
 
 // going to need to rethink how to store results.
@@ -358,7 +359,7 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	} else if ctx.ByField() != nil {
 		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
-			//fmt.Println("sort string: ", val)
+			//fmt.Println("sort string: ", val)-
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
 		//handle union
@@ -395,112 +396,183 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	}
 }
 
-//how to deal with multipule field prints?
+//how to deal with multiple field prints?
+// keep in mind that we will eventually pass to scarf handler
+// also consider the 'add md5' syntax
+//right now it's a map string->interface, map[string]interface{}
+//resultsTable
+//[
+	//x.hash, x.filename, x.datemodified
+//]
 
-// array of array of strings that are buffered up? keep in mind that we will eventually pass to scarf handler
+func ContainsSubfield(input string) bool {
+	return strings.Contains(input, ".")
+}
 
+func GetSubfield(input string) string{
+	return strings.Split(input, ".")[1]
+}
+
+//Use reflection to obtain the data stored in the given subfield
+//There are two basic cases to handle - whether or not the given action yields a set of results or a single result
+func GetResultsOfSubfield(rootAction expressions.BaseAction, subfield string) []string {
+	var ResultsOfSubfield []string
+	resultsOfActionExecution := rootAction.GetResults()
+	//fmt.Println("the subfield: " + subfield)
+	var fieldList []string
+	st := reflect.ValueOf(resultsOfActionExecution)
+	reflectType := reflect.TypeOf(resultsOfActionExecution)
+	switch reflectType.Kind() {
+	case reflect.Slice:
+		//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
+		//iterate through everything, 'convert' it to basetype, reflect on the subfield, print the subfield
+		for i := 0; i < st.Len(); i++ {
+			//st[i].interface will now satisfy the basetype
+			instanceFromList := st.Index(i).Interface()
+			if t, ok := instanceFromList.(NTypes.BaseType); ok {
+				value := reflect.ValueOf(t)
+				typeOfValue := value.Type()
+				fieldFound := false
+				var finalField reflect.Value
+				for i := 0; i < value.NumField(); i++ {
+					if subfield == typeOfValue.Field(i).Name {
+						fieldFound = true
+						finalField = value.Field(i)
+					}
+				}
+				if fieldFound {
+					//fmt.Println("The subfield: " + subfield + " has value: \n" , finalField.String())
+					fmt.Println(finalField.String())
+					ResultsOfSubfield = append(ResultsOfSubfield, finalField.String())
+				} else {
+					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
+				}
+			}
+		}
+	default:
+		typeOfTE := st.Type()
+		fieldFound := false
+		var finalField reflect.Value
+		//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
+		for i := 0; i < st.NumField(); i++ {
+			fieldList = append(fieldList, typeOfTE.Field(i).Name)
+			if subfield == typeOfTE.Field(i).Name {
+				fieldFound = true
+				finalField = st.Field(i)
+			}
+		}
+		if fieldFound {
+			//fmt.Println("The subfield: " + subfield + " has value: \n" + finalField.String())
+			ResultsOfSubfield = append(ResultsOfSubfield, finalField.String())
+		} else {
+			fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
+		}
+	}
+	//fmt.Println("subfield value: ", ResultsOfSubfield)
+	return ResultsOfSubfield
+}
+
+func fieldRootsMatch(fields []string) bool {
+	if len(fields) <= 1 {
+		return true
+	}
+
+	firstRootTerm := fields[0]
+	if ContainsSubfield(firstRootTerm) {
+		firstRootTerm = strings.Split(firstRootTerm, ".")[0]
+	}
+
+	for _, f := range fields {
+		if ContainsSubfield(f) {
+			root := strings.Split(f, ".")[0]
+			if root != firstRootTerm {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func GetResultsForActionWithSpecificFields(Action expressions.BaseAction, fields []string) [][]string {
+	var MappedResults [][]string
+	MappedResults = make([][]string, len(fields)) // MappedResults is []([]string)
+
+	//check that each field has the same root value
+	if fieldRootsMatch(fields) == true {
+		//continue processing
+		for idx, f := range fields {
+			if ContainsSubfield(f) {
+				MappedResults[idx] = GetResultsOfSubfield(Action, GetSubfield(f))
+			} else {
+				rawStringOfResults := fmt.Sprintf("%v", Action.GetResults())
+				sliceOfResults := strings.Split(rawStringOfResults, " ")
+				MappedResults[idx] = sliceOfResults
+			}
+			//fmt.Println("len: ", len(MappedResults[f]), " type: ", reflect.TypeOf(MappedResults[f]))
+		}
+	} else {
+		fmt.Println("Error - field roots must match")
+		return nil
+	}
+	return MappedResults
+}
+
+//for each term,add to a list
+//print each entry with each field...
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
+	var fieldsToPrint []string
 	var operation string
+	var BaseVariable string
+
 	if op, ok := getValue(ctx.Singleton_op()).(string); ok {
 		operation = op
 	}
 	for _, id := range ctx.AllID() {
 		givenVar := id.GetText()
+		fieldsToPrint = append(fieldsToPrint, givenVar)
+	}
 
-		var subfield string
-		//does it contain a subfield?
-		if strings.Contains(givenVar, ".") {
-			root := strings.Split(givenVar, ".")[0]
-			subfield = strings.Split(givenVar, ".")[1]
-			givenVar = root
+
+	//fmt.Println("Going to do:", operation, "on ", fieldsToPrint)
+
+	BaseVariable = strings.Split(ctx.ID(0).GetText(),".")[0]
+	var ActionForEvaluation expressions.BaseAction
+	if val, ok := registers[BaseVariable].(expressions.BaseAction); ok {
+		ActionForEvaluation = val
+	} else {
+		fmt.Println("Error: Variable not recognized: ", BaseVariable)
+		return
+	}
+
+
+	switch operation {
+	case "type":
+		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
+	case "print":
+		resultSliceOfSlices := GetResultsForActionWithSpecificFields(ActionForEvaluation, fieldsToPrint)
+		fmt.Println(resultSliceOfSlices)
+
+		maxIndex := len(resultSliceOfSlices[0])
+		for indexCounter:=0; indexCounter < maxIndex; indexCounter++ {
+			row := ""
+			for fieldCounter:=0; fieldCounter<len(resultSliceOfSlices);fieldCounter++ {
+				row = row + resultSliceOfSlices[fieldCounter][indexCounter] + " "
+			}
+			row = strings.TrimRight(row," ")
+			fmt.Println(row)
 		}
 
-		if val, ok := registers[givenVar].(expressions.BaseAction); ok {
-			switch operation {
-			case "typex":
-				fmt.Println(reflect.TypeOf(val))
-			case "printx":
-				fmt.Println(val)
-			case "type":
-				fmt.Println(reflect.TypeOf(val.GetResults()))
-			case "print":
-				myResults := val.GetResults()
-
-				if len(subfield) > 0 {
-					//fmt.Println("the subfield: " + subfield)
-					var fieldList []string
-
-					st := reflect.ValueOf(myResults)
-
-					reflectType := reflect.TypeOf(myResults)
-					//fmt.Println("reflect type: " , reflectType.Kind())
-					//todo - printing multiple things at once
-					//		with this structure, may require not streaming results and instead caching results and printing at once
-					switch reflectType.Kind() {
-					case reflect.Slice:
-
-						//todo there has to be some voodoo that streamlines this..look into reflecting on slices of interfaces
-						//iterate through everything, convert it to basetype, reflect on the subfield, print the subfield
-						for i:=0; i<st.Len();i++ {
-							//st[i].interface will now satisfy the basetype
-							instanceFromList := st.Index(i).Interface()
-							if t, ok := instanceFromList.(NTypes.BaseType); ok {
-								value := reflect.ValueOf(t)
-								typeOfValue := value.Type()
-								fieldFound := false
-								var finalField reflect.Value
-								for i := 0; i < value.NumField(); i++ {
-									if subfield == typeOfValue.Field(i).Name {
-										fieldFound = true
-										finalField = value.Field(i)
-									}
-								}
-								if fieldFound {
-									//fmt.Println("The subfield: " + subfield + " has value: \n" , finalField.String())
-									fmt.Println(finalField.String())
-								} else {
-									fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
-								}
-							}
-						}
-					default:
-						typeOfTE := st.Type()
-						fieldFound := false
-						var finalField reflect.Value
-						//Using reflection, iterate through all subfields of the type of the input. Compare to what we're given to printout.
-						for i := 0; i < st.NumField(); i++ {
-							fieldList = append(fieldList, typeOfTE.Field(i).Name)
-
-							if subfield == typeOfTE.Field(i).Name {
-								fieldFound = true
-								finalField = st.Field(i)
-							}
-						}
-						if fieldFound {
-							fmt.Println("The subfield: " + subfield + " has value: \n" + finalField.String())
-						} else {
-							fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
-						}
-					}
-				} else {
-					fmt.Println(myResults)
-				}
-			case "raw":
-				if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
-					for _, fi := range files {
-						fmt.Println(fi)
-					}
-				} else {
-					fmt.Println(val.GetResults())
-				}
-			case "size":
-				fmt.Println("len not implemented yet")
-			default:
-				fmt.Println("operation not recognized..")
+	case "raw":
+		if files, ok := ActionForEvaluation.GetResults().([]NTypes.FileInfo); ok {
+			for _, fi := range files {
+				fmt.Println(fi)
 			}
 		} else {
-			fmt.Println("Variable not recognized: ", givenVar)
+			fmt.Println(ActionForEvaluation.GetResults())
 		}
+	default:
+		fmt.Println("operation not recognized..")
+		return
 	}
 }
 

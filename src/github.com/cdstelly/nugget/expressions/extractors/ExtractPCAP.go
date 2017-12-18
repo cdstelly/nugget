@@ -58,7 +58,7 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
 		}
 	}
-	fmt.Println("pcap location: " + na.PCAPLocation)
+	//fmt.Println("pcap location: " + na.PCAPLocation)
 	na.handle, err = pcap.OpenOffline(na.PCAPLocation)
 	if err != nil {
 		fmt.Println("Error reading pcap file: " , err)
