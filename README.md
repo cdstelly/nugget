@@ -23,8 +23,15 @@ After either building from source or [downloading binaries](https://github.com/c
 ```
 $ ./nugget -h
 Usage of ./nugget:
+  -assembly_debug_log
+        If true, the github.com/google/gopacket/tcpassembly library will log verbose debugging information (at least one line per packet)
+  -assembly_memuse_log
+        If true, the github.com/google/gopacket/tcpassembly library will log information regarding its memory use every once in a while.
   -input string
-    	Path to input (default "input.nug")
+        Path to input
+  -interactive
+        Interactive mode
+
 ```
 
 Examples
