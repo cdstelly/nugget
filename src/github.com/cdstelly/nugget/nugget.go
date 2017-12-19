@@ -267,7 +267,6 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			//todo: get real values not dummy ones
 			//extractAction.PCAPLocation = "G:\\school\\sample.pcap"
 			//extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-11-19-09_54.pcap"
-
 			extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-12-09-11_59.pcap"
 		}
 		if act, ok := rawAction.(expressions.BaseAction); ok {
