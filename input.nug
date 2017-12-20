@@ -192,6 +192,7 @@ MyFiles = MyNTFSImage | filter ctime > "01/01/2017"
 MyHashes = MyFiles | md5
 print  MyHashes
 
+
 KnownKittyHashes = "knownHashes.txt" | extract as listof-md5
 Matched = MyHashes | union KnownKittyHashes
 Matched
