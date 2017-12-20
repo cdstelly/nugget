@@ -25,3 +25,4 @@ func (m Union) JSON() string {
 	}
 	return string(jsonEncoding)
 }
+//TODO: add type checking
