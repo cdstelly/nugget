@@ -329,6 +329,7 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
+//todo: move to a dynamic type.. get rid of 'my' syntax
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
