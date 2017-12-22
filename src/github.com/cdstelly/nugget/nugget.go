@@ -396,15 +396,6 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	}
 }
 
-//how to deal with multiple field prints?
-// keep in mind that we will eventually pass to scarf handler
-// also consider the 'add md5' syntax
-//right now it's a map string->interface, map[string]interface{}
-//resultsTable
-//[
-	//x.hash, x.filename, x.datemodified
-//]
-
 func ContainsSubfield(input string) bool {
 	return strings.Contains(input, ".")
 }
