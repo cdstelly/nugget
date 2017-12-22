@@ -333,21 +333,21 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
-		myT := getValue(ctx.AsType())
+		givenType := getValue(ctx.AsType())
 		//fmt.Println("got: ", myT)
-		if myT == "pcap" {
+		if givenType == "pcap" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"})
-		} else if myT == "ntfs" {
+		} else if givenType == "ntfs" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"})
-		} else if myT == "listof-md5" {
+		} else if givenType == "listof-md5" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\md5hashes.txt", AsType: "md5hashes"})
-		} else if myT == "listof-sha1" {
+		} else if givenType == "listof-sha1" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"})
-		} else if myT == "listof-sha256" {
+		} else if givenType == "listof-sha256" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"})
-		} else if myT == "memory" {
+		} else if givenType == "memory" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"})
-		} else if myT == "http" {
+		} else if givenType == "http" {
 			setValue(ctx, NTypes.Extract{AsType: "http"})
 		} else {
 			fmt.Println("error on type extraction")
