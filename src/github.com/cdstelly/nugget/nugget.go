@@ -459,7 +459,6 @@ func GetResultsOfSubfield(rootAction expressions.BaseAction, subfield string) []
 			fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 		}
 	}
-	//fmt.Println("subfield value: ", ResultsOfSubfield)
 	return ResultsOfSubfield
 }
 
