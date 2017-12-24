@@ -77,7 +77,6 @@ func getValue(n antlr.ParseTree) interface{} {
 	return nodeMap[n]
 }
 
-
 type TreeShapeListener struct {
 	*parser.BaseNuggetListener
 }
@@ -509,6 +508,7 @@ func GetResultsForActionWithSpecificFields(Action expressions.BaseAction, fields
 
 //for each term,add to a list
 //print each entry with each field...
+//todo: graceful error handling when getresults returns a connection failed
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var fieldsToPrint []string
 	var operation string
@@ -534,7 +534,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		return
 	}
 
-
 	switch operation {
 	case "type":
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
@@ -551,7 +550,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			row = strings.TrimRight(row," ")
 			fmt.Println(row)
 		}
-
 	case "raw":
 		if files, ok := ActionForEvaluation.GetResults().([]NTypes.FileInfo); ok {
 			for _, fi := range files {
