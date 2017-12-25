@@ -328,12 +328,10 @@ func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
-//todo: move to a dynamic type.. get rid of 'my' syntax
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
 		givenType := getValue(ctx.AsType())
-		//fmt.Println("got: ", myT)
 		if givenType == "pcap" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"})
 		} else if givenType == "ntfs" {
