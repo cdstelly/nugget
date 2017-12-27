@@ -83,33 +83,33 @@ func NewTreeShapeListener() *TreeShapeListener {
 
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
 	var myFilters []NTypes.Filter
-	var action_verb string
+	var actionVerb string
 
 	// handle filters
 	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
-		action_verb = "filter"
+		actionVerb = "filter"
 		//handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
-		action_verb = "extract"
+		actionVerb = "extract"
 		//fmt.Println("it's an extract")
 		//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
-		action_verb = "sort"
+		actionVerb = "sort"
 		//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
-		action_verb = "union"
+		actionVerb = "union"
 		//handle everything else
 	} else {
 		if av, ok := getValue(ctx.Action_word()).(string); ok {
-			action_verb = av
+			actionVerb = av
 		} else {
 			fmt.Println("error - wasn't able to determine action type")
 		}
 	}
 
 	var theAction expressions.BaseAction
-	switch action_verb {
+	switch actionVerb {
 	case "filter":
 		//don't need to do anything here - will assign filters to actions in just a second
 		theAction = &expressions.FilterAction{}
@@ -160,7 +160,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		fmt.Println("action was not found")
 	}
 
-	if action_verb != "filter" {
+	if actionVerb != "filter" {
 		theAction.SetFilters(myFilters)
 		setValue(ctx, theAction)
 	} else {
