@@ -320,7 +320,6 @@ func (s *TreeShapeListener) ExitNugget_type(ctx *parser.Nugget_typeContext) {
 }
 
 func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
-	//fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
