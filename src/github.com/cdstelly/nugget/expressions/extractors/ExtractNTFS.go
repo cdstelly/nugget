@@ -137,7 +137,7 @@ func getBodyFileFromTSK() string {
 	return reply
 }
 
-//consider trashing this - we should only use TSK. 
+//consider trashing this - we should only use TSK.
 func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 	file, err := os.Open(na.NTFSImageMetadataLocation)
 	if err != nil {
