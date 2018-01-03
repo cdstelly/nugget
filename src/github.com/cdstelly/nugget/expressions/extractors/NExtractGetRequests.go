@@ -35,12 +35,9 @@ func (na *NExtractGetRequests) Execute() {
 			na.dependsOn.Execute()
 		}
 	}
-	//fmt.Println("going to execute getGetReqs..")
-
 	operateOn := na.dependsOn.GetResults()
-
 	if _, ok := operateOn.([]NTypes.NPacket); ok {
-
+		//todo: ?!?! this file should be removed from main branch until it is used
 	}
 	na.executed = true
 }

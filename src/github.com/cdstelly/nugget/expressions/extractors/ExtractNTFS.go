@@ -137,7 +137,7 @@ func getBodyFileFromTSK() string {
 	return reply
 }
 
-
+//consider trashing this - we should only use TSK.
 func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 	file, err := os.Open(na.NTFSImageMetadataLocation)
 	if err != nil {
@@ -270,13 +270,8 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFS () []NTypes.FileInfo {
 			}
  		}
 	}
-
-//	fmt.Println("Nonfatal Error: ", errCount, " records were not parsed from NTFS MFT Record")
 	return allfiles
 }
-
-// moved to fileinfo type
-// func (na *ExtractNTFS) DoesFilePassFilters(fi NTypes.FileInfo) bool {
 
 // In case a file has multiple names, return the last one. Usually, the 8.3 name is at the 0 index and a 'regular' filename is at index 1
 func GetAFilename(f NTypes.FileInfo) string {

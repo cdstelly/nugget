@@ -12,7 +12,7 @@ type HTTP struct {
 	Method string
 	Length int
 	Data []byte
-	RawRequest http.Request
+	RawRequest http.Request  //investigate if we can expose go's http methods
 }
 
 

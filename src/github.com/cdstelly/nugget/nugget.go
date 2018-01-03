@@ -11,14 +11,10 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-//	"strings"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"errors"
 	"strings"
 )
-
-// going to need to rethink how to store results.
-// if we want to support something like 'x = select pdfs'.. then say 'x add md5, sha1', then say 'print x'
 
 var (
 	interactiveMode bool
@@ -77,7 +73,6 @@ func getValue(n antlr.ParseTree) interface{} {
 	return nodeMap[n]
 }
 
-
 type TreeShapeListener struct {
 	*parser.BaseNuggetListener
 }
@@ -88,33 +83,33 @@ func NewTreeShapeListener() *TreeShapeListener {
 
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
 	var myFilters []NTypes.Filter
-	var action_verb string
+	var actionVerb string
 
 	// handle filters
 	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
-		action_verb = "filter"
+		actionVerb = "filter"
 		//handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
-		action_verb = "extract"
+		actionVerb = "extract"
 		//fmt.Println("it's an extract")
 		//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
-		action_verb = "sort"
+		actionVerb = "sort"
 		//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
-		action_verb = "union"
+		actionVerb = "union"
 		//handle everything else
 	} else {
 		if av, ok := getValue(ctx.Action_word()).(string); ok {
-			action_verb = av
+			actionVerb = av
 		} else {
 			fmt.Println("error - wasn't able to determine action type")
 		}
 	}
 
 	var theAction expressions.BaseAction
-	switch action_verb {
+	switch actionVerb {
 	case "filter":
 		//don't need to do anything here - will assign filters to actions in just a second
 		theAction = &expressions.FilterAction{}
@@ -165,7 +160,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		fmt.Println("action was not found")
 	}
 
-	if action_verb != "filter" {
+	if actionVerb != "filter" {
 		theAction.SetFilters(myFilters)
 		setValue(ctx, theAction)
 	} else {
@@ -267,7 +262,6 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			//todo: get real values not dummy ones
 			//extractAction.PCAPLocation = "G:\\school\\sample.pcap"
 			//extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-11-19-09_54.pcap"
-
 			extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-12-09-11_59.pcap"
 		}
 		if act, ok := rawAction.(expressions.BaseAction); ok {
@@ -326,28 +320,26 @@ func (s *TreeShapeListener) ExitNugget_type(ctx *parser.Nugget_typeContext) {
 }
 
 func (s *TreeShapeListener) ExitAsType(ctx *parser.AsTypeContext) {
-	//fmt.Println("setting exit as type to: ", getValue(ctx.Nugget_type()))
 	setValue(ctx, getValue(ctx.Nugget_type()))
 }
 
 func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	//handle extractions
 	if ctx.AsType() != nil {
-		myT := getValue(ctx.AsType())
-		//fmt.Println("got: ", myT)
-		if myT == "pcap" {
+		givenType := getValue(ctx.AsType())
+		if givenType == "pcap" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"})
-		} else if myT == "ntfs" {
+		} else if givenType == "ntfs" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"})
-		} else if myT == "listof-md5" {
+		} else if givenType == "listof-md5" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\md5hashes.txt", AsType: "md5hashes"})
-		} else if myT == "listof-sha1" {
+		} else if givenType == "listof-sha1" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"})
-		} else if myT == "listof-sha256" {
+		} else if givenType == "listof-sha256" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"})
-		} else if myT == "memory" {
+		} else if givenType == "memory" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"})
-		} else if myT == "http" {
+		} else if givenType == "http" {
 			setValue(ctx, NTypes.Extract{AsType: "http"})
 		} else {
 			fmt.Println("error on type extraction")
@@ -395,15 +387,6 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 		os.Exit(1)
 	}
 }
-
-//how to deal with multiple field prints?
-// keep in mind that we will eventually pass to scarf handler
-// also consider the 'add md5' syntax
-//right now it's a map string->interface, map[string]interface{}
-//resultsTable
-//[
-	//x.hash, x.filename, x.datemodified
-//]
 
 func ContainsSubfield(input string) bool {
 	return strings.Contains(input, ".")
@@ -468,7 +451,6 @@ func GetResultsOfSubfield(rootAction expressions.BaseAction, subfield string) []
 			fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \nPossibilites: %s", subfield, typeOfTE.String(), fieldList)
 		}
 	}
-	//fmt.Println("subfield value: ", ResultsOfSubfield)
 	return ResultsOfSubfield
 }
 
@@ -519,6 +501,7 @@ func GetResultsForActionWithSpecificFields(Action expressions.BaseAction, fields
 
 //for each term,add to a list
 //print each entry with each field...
+//todo: graceful error handling when getresults returns a connection failed
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var fieldsToPrint []string
 	var operation string
@@ -544,7 +527,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		return
 	}
 
-
 	switch operation {
 	case "type":
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
@@ -561,7 +543,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			row = strings.TrimRight(row," ")
 			fmt.Println(row)
 		}
-
 	case "raw":
 		if files, ok := ActionForEvaluation.GetResults().([]NTypes.FileInfo); ok {
 			for _, fi := range files {
