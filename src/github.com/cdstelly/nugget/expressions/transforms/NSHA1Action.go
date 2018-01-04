@@ -33,12 +33,10 @@ func (na *SHA1Action) SetDependency(action BaseAction) {
 
 func (na *SHA1Action) Execute() {
 	if na.dependsOn != nil {
-		//fmt.Println("sha1 has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()
 		}
 	}
-	//fmt.Println("going to execute sha1..")
 
 	if na.dependsOn == nil {
 		fmt.Println("Error! Was not able to compute SHA1 because dependency is nil")
