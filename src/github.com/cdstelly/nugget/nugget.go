@@ -14,6 +14,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"errors"
 	"strings"
+	"os/signal"
 )
 
 var (
@@ -24,6 +25,7 @@ var (
 	nodeMap map[antlr.ParseTree]interface{}
 
 	typeRegistry map[string]reflect.Type
+	interruptCounter int
 )
 
 func init() {
@@ -44,6 +46,9 @@ func init() {
 	//hold a string->nugType values
 	typeRegistry = make(map[string]reflect.Type)
 	setupTypeRegstry()
+
+	CatchTerm()
+	interruptCounter = 0
 }
 
 func flagCheck() bool {
@@ -384,7 +389,7 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 		}
 	} else {
 		fmt.Println("Variable not recongized:" + theVar)
-		os.Exit(1)
+		// os.Exit(1)
 	}
 }
 
@@ -591,21 +596,26 @@ func main() {
 	flagCheck()
 
 	if interactiveMode {
-		reader := bufio.NewReader(os.Stdin)
 
-		fmt.Print("nugget> ")
+		for {
+			reader := bufio.NewReader(os.Stdin)
 
-		//todo: figure out the best way to implement the tab complete
-		var myByte []byte
-		myByte = make([]byte, 1)
+			fmt.Print("nugget> ")
 
-		text, err := reader.Read(myByte)
+			//todo: figure out the best way to implement the tab complete
+			text, err := reader.ReadString('\n')
 
-		if err != nil {
-			fmt.Println("Input error: ", err)
+			if err != nil {
+				fmt.Println("Input error: ", err)
+			} else {
+				resetInterruptCounter()
+			}
+			tree, nerr := GetTreeForInput(text)
+			if nerr == nil {
+				antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+				fmt.Println()
+			}
 		}
-
-		fmt.Println(text)
 
 	} else {
 		file, err := os.Open(pathToInput)
@@ -626,4 +636,23 @@ func main() {
 			}
 		}
 	}
+}
+
+func CatchTerm() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func(){
+		for sig := range c {
+			fmt.Println(sig.String())
+			interruptCounter += 1
+			if interruptCounter >= 2 {
+				fmt.Println("[!] User exit")
+				os.Exit(1)
+			}
+		}
+	}()
+}
+
+func resetInterruptCounter() {
+	interruptCounter = 0
 }
