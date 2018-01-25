@@ -25,6 +25,7 @@ var (
 	nodeMap map[antlr.ParseTree]interface{}
 
 	typeRegistry map[string]reflect.Type
+	interruptCounter int
 )
 
 func init() {
@@ -47,6 +48,7 @@ func init() {
 	setupTypeRegstry()
 
 	CatchTerm()
+	interruptCounter = 0
 }
 
 func flagCheck() bool {
@@ -605,6 +607,8 @@ func main() {
 
 			if err != nil {
 				fmt.Println("Input error: ", err)
+			} else {
+				resetInterruptCounter()
 			}
 			tree, nerr := GetTreeForInput(text)
 			if nerr == nil {
@@ -640,6 +644,15 @@ func CatchTerm() {
 	go func(){
 		for sig := range c {
 			fmt.Println(sig.String())
+			interruptCounter += 1
+			if interruptCounter >= 2 {
+				fmt.Println("[!] User exit")
+				os.Exit(1)
+			}
 		}
 	}()
+}
+
+func resetInterruptCounter() {
+	interruptCounter = 0
 }
