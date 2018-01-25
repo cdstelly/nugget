@@ -5,15 +5,16 @@ _Nugget_ is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Doma
 
 Building
 ----------
+
+The current alpha build depends upon libpcap for network forensics,  have them installed. 
+
 To build from source: 
 ```
 git clone https://github.com/cdstelly/nugget.git
 cd nugget
 export GOPATH=`pwd`
-go get "github.com/antlr/antlr4/runtime/Go/antlr"
-go get "github.com/google/gopacket"
-go get "github.com/google/gopacket/pcap"
-go build nugtest.go
+go get ...
+go build github.com/cdstelly/nugget
 ```
 
 Using
