@@ -14,6 +14,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"errors"
 	"strings"
+	"os/signal"
 )
 
 var (
@@ -44,6 +45,8 @@ func init() {
 	//hold a string->nugType values
 	typeRegistry = make(map[string]reflect.Type)
 	setupTypeRegstry()
+
+	CatchTerm()
 }
 
 func flagCheck() bool {
@@ -629,4 +632,14 @@ func main() {
 			}
 		}
 	}
+}
+
+func CatchTerm() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func(){
+		for sig := range c {
+			fmt.Println(sig.String())
+		}
+	}()
 }
