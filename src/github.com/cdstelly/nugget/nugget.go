@@ -643,7 +643,7 @@ func CatchTerm() {
 	signal.Notify(c, os.Interrupt)
 	go func(){
 		for sig := range c {
-			fmt.Println(sig.String())
+			fmt.Println(sig.String() + " ctrl+c again to exit")
 			interruptCounter += 1
 			if interruptCounter >= 2 {
 				fmt.Println("[!] User exit")
