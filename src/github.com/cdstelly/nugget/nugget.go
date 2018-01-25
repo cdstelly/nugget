@@ -384,7 +384,7 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 		}
 	} else {
 		fmt.Println("Variable not recongized:" + theVar)
-		os.Exit(1)
+		// os.Exit(1)
 	}
 }
 
@@ -591,21 +591,24 @@ func main() {
 	flagCheck()
 
 	if interactiveMode {
-		reader := bufio.NewReader(os.Stdin)
 
-		fmt.Print("nugget> ")
+		for {
+			reader := bufio.NewReader(os.Stdin)
 
-		//todo: figure out the best way to implement the tab complete
-		var myByte []byte
-		myByte = make([]byte, 1)
+			fmt.Print("nugget> ")
 
-		text, err := reader.Read(myByte)
+			//todo: figure out the best way to implement the tab complete
+			text, err := reader.ReadString('\n')
 
-		if err != nil {
-			fmt.Println("Input error: ", err)
+			if err != nil {
+				fmt.Println("Input error: ", err)
+			}
+			tree, nerr := GetTreeForInput(text)
+			if nerr == nil {
+				antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+				fmt.Println()
+			}
 		}
-
-		fmt.Println(text)
 
 	} else {
 		file, err := os.Open(pathToInput)
