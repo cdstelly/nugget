@@ -1,5 +1,5 @@
 winimage = "G:\school\thewinimage.dd"
-files = winimage | extract files as ntfs
+files =winimage| extract files as ntfs
 pdfs = files | filter name==".*pdf"
 
 pdfs add md5
