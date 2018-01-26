@@ -61,7 +61,7 @@ func (na *ProcessListAction) SetFilters(filters []NTypes.Filter) {
 }
 
 func getPSListFromVOL() string {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2002")
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2002")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
@@ -78,7 +78,7 @@ func getPSListFromVOL() string {
 }
 
 func (na *ProcessListAction) uploadImageToVOL() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2002")
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2002")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
