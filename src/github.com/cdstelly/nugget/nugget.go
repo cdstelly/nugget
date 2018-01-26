@@ -261,12 +261,10 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		if extractAction, ok := rawAction.(*extractors.ExtractNTFS); ok {
 			url := ctx.STRING().GetText()
 			extractAction.NTFSImageDataLocation = strings.Trim(url,`"`)
-			fmt.Println(url)
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			url := ctx.STRING().GetText()
 			extractAction.PCAPLocation = strings.Trim(url,`"`)
-			fmt.Println(url)
 		}
 		if act, ok := rawAction.(expressions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -332,7 +330,6 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	if ctx.AsType() != nil {
 		givenType := getValue(ctx.AsType())
 		if givenType == "pcap" {
-			fmt.Println("qwerqwer")
 			setValue(ctx, NTypes.Extract{ AsType: "pcap"})
 		} else if givenType == "ntfs" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"})
