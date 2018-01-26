@@ -47,7 +47,7 @@ func (fi *FileInfo) GetFilename() string {
 }
 
 func getFileFromTSK(inode string) []byte {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
