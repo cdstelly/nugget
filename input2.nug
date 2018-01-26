@@ -1,8 +1,4 @@
-winimage = "G:\school\thewinimage.dd"
-files =winimage| extract files as ntfs
-pdfs = files | filter name==".*pdf"
+ imagehashes = "file.dd" | extract  as ntfs | filter filename == "*.jpg",ctime>"01/01/01" | sha1
 
-pdfs add md5
-print pdfs.Name pdfs.MD5
-
+ imagehashes
 
