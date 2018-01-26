@@ -42,17 +42,17 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 	var err error
 
 	//get bpfs and apply them
-	var myBPF string
+	var bpf string
 	for _, f := range na.filters {
 		//fmt.Println("Found a filter: ", f)
 		switch f.Field {
 		case "packetfilter":
 			if f.Op == "==" {
-				myBPF = f.Value
-				myBPF = strings.Trim(myBPF, "\"")
+				bpf = f.Value
+				bpf = strings.Trim(bpf, "\"")
 				//fmt.Println("Set the bnf filter value to: " + myBPF)
 			} else {
-				fmt.Println("Error: BNF only supports equality at the moment.")
+				fmt.Println("Error: BPF only supports equality at the moment.")
 			}
 		default:
 			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
@@ -64,7 +64,7 @@ func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
 		fmt.Println("Error reading pcap file: " , err)
 		//panic(err)
 	}
-	err = na.handle.SetBPFFilter(myBPF)
+	err = na.handle.SetBPFFilter(bpf)
 	if err != nil {
 		fmt.Println("Error setting BPF: " , err)
 		panic(err)

@@ -259,15 +259,14 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		//fmt.Println("action is ", reflect.TypeOf(rawAction )," : ", rawAction )
 
 		if extractAction, ok := rawAction.(*extractors.ExtractNTFS); ok {
-			//todo: get real values not dummy ones
-			extractAction.NTFSImageDataLocation = "G:\\school\\image\\jo.ntfs"
-			extractAction.NTFSImageMetadataLocation = "G:\\school\\jo.extract"
+			url := ctx.STRING().GetText()
+			extractAction.NTFSImageDataLocation = strings.Trim(url,`"`)
+			fmt.Println(url)
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
-			//todo: get real values not dummy ones
-			//extractAction.PCAPLocation = "G:\\school\\sample.pcap"
-			//extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-11-19-09_54.pcap"
-			extractAction.PCAPLocation = "G:\\school\\m57\\data\\net-2009-12-09-11_59.pcap"
+			url := ctx.STRING().GetText()
+			extractAction.PCAPLocation = strings.Trim(url,`"`)
+			fmt.Println(url)
 		}
 		if act, ok := rawAction.(expressions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -333,7 +332,8 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	if ctx.AsType() != nil {
 		givenType := getValue(ctx.AsType())
 		if givenType == "pcap" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sample.pcap", AsType: "pcap"})
+			fmt.Println("qwerqwer")
+			setValue(ctx, NTypes.Extract{ AsType: "pcap"})
 		} else if givenType == "ntfs" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"})
 		} else if givenType == "listof-md5" {
@@ -643,7 +643,7 @@ func CatchTerm() {
 	signal.Notify(c, os.Interrupt)
 	go func(){
 		for sig := range c {
-			fmt.Println(sig.String())
+			fmt.Println(sig.String() + " ctrl+c again to exit")
 			interruptCounter += 1
 			if interruptCounter >= 2 {
 				fmt.Println("[!] User exit")
