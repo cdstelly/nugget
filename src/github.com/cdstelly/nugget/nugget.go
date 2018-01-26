@@ -534,7 +534,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
 	case "print":
 		resultSliceOfSlices := GetResultsForActionWithSpecificFields(ActionForEvaluation, fieldsToPrint)
-		fmt.Println(resultSliceOfSlices)
+		//fmt.Println(resultSliceOfSlices)
 
 		maxIndex := len(resultSliceOfSlices[0])
 		for indexCounter:=0; indexCounter < maxIndex; indexCounter++ {
