@@ -20,6 +20,7 @@ import (
 var (
 	interactiveMode bool
 	pathToInput     string
+	runtimeServer   string
 	registers       map[string]interface{}
 
 	nodeMap map[antlr.ParseTree]interface{}
@@ -32,6 +33,7 @@ func init() {
 
 	flag.StringVar(&pathToInput, "input", "", "Path to input")
 	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
+	flag.StringVar(&runtimeServer, "runtimeIP", "127.0.0.1", "Network address of runtime server")
 	flag.Parse()
 
 	if !flagCheck(){
