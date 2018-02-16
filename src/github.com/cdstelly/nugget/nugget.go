@@ -128,7 +128,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		if extractType.AsType == "pcap" {
 			theAction = &extractors.ExtractPCAP{}
 		} else if extractType.AsType == "ntfs" {
-			theAction = &extractors.ExtractNTFS{}
+			theAction = &extractors.ExtractNTFS{Location: extractType.PathToExtract}
 		} else if extractType.AsType == "md5hashes" {
 			theAction = &extractors.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha1hashes" {
@@ -262,7 +262,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 
 		if extractAction, ok := rawAction.(*extractors.ExtractNTFS); ok {
 			url := ctx.STRING().GetText()
-			extractAction.NTFSImageDataLocation = strings.Trim(url,`"`)
+			extractAction.Location = strings.Trim(url,`"`)
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			url := ctx.STRING().GetText()
