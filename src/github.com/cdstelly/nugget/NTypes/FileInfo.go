@@ -28,7 +28,7 @@ type FileInfo struct {
 }
 
 func (fi FileInfo) String() string {
-	return string(fi.GetFileData())
+	return string(fi.GetFilename())
 }
 
 func (m FileInfo) JSON() string {
