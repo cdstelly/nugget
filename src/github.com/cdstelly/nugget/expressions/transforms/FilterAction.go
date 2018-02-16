@@ -3,6 +3,7 @@ package expressions
 
 import (
 	"github.com/cdstelly/nugget/NTypes"
+	"fmt"
 )
 
 type FilterAction struct {
@@ -30,21 +31,21 @@ func (na *FilterAction) SetDependency(action BaseAction) {
 
 //todo: dependsOn can be nil..
 func (na *FilterAction) Execute() {
-	//fmt.Println("going to execute filteraction..")
-	// var myTempResults interface{}
+	fmt.Println("going to execute filteraction..")
+	var myTempResults interface{}
 	if na.dependsOn != nil {
-		//fmt.Println("filteraction has a dependency which hasn't been met..")
+		fmt.Println("filteraction has a dependency which hasn't been met..")
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.SetFilters(na.filters)
 			na.results = na.dependsOn.GetResults()
-			//myTempResults = na.dependsOn.GetResults()
+			myTempResults = na.dependsOn.GetResults()
 		}
 	}
 
 	//apply the filters
 	//does the filter type make sense for the object type?'
 	//todo: make DoesPassFilters function a required base function, allow passing in a filter
-	/*
+
 	if files, ok := myTempResults.([]NTypes.FileInfo); ok {
 		var matchedFilter []NTypes.FileInfo
 		for _, file := range files {
@@ -55,7 +56,7 @@ func (na *FilterAction) Execute() {
 		na.results = matchedFilter
 	} else {
 		fmt.Println("error did not apply filter because filetype not automatically selected")
-	}*/
+	}
 	na.executed = true
 }
 

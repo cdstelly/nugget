@@ -88,7 +88,7 @@ func (na *DiskInfoAction) SetFilters(filters []NTypes.Filter) {
 
 
 func getImageInfoFromTSK() string {
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
@@ -105,7 +105,7 @@ func getImageInfoFromTSK() string {
 }
 
 func (na *DiskInfoAction) uploadImageToTSK() {
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
+	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}

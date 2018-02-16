@@ -32,6 +32,7 @@ func (na *SHA1Action) SetDependency(action BaseAction) {
 }
 
 func (na *SHA1Action) Execute() {
+	fmt.Println("Executing a SHA1")
 	if na.dependsOn != nil {
 		if na.dependsOn.BeenExecuted() == false {
 			na.dependsOn.Execute()

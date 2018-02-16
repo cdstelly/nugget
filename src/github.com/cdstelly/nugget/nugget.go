@@ -309,8 +309,8 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 	var allFiltersForAction []NTypes.Filter
 	for i, _ := range ctx.AllFilter_term() {
-		myf := getValue(ctx.Filter_term(i))
-		if dep, ok := myf.(NTypes.Filter); ok {
+		f := getValue(ctx.Filter_term(i))
+		if dep, ok := f.(NTypes.Filter); ok {
 			allFiltersForAction = append(allFiltersForAction, dep)
 		}
 	}
@@ -378,8 +378,8 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	if v, ok := registers[theVar]; ok {
 		//fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
 		if ba, ok := v.(expressions.BaseAction); ok {
-			fmt.Println("Results for var ", theVar, ": ", ba.GetResults())
-			//ba.GetResults()
+			//fmt.Println("Results for var ", theVar, ": ", ba.GetResults())
+			ba.GetResults()
 			//fmt.Println("cutting off results for now..")
 		} else {
 			fmt.Println("couldn't execute var : ", theVar, "because it is not of baseAction type")
@@ -534,7 +534,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
 	case "print":
 		resultSliceOfSlices := GetResultsForActionWithSpecificFields(ActionForEvaluation, fieldsToPrint)
-		fmt.Println(resultSliceOfSlices)
+		//fmt.Println(resultSliceOfSlices)
 
 		maxIndex := len(resultSliceOfSlices[0])
 		for indexCounter:=0; indexCounter < maxIndex; indexCounter++ {

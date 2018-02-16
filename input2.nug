@@ -1,4 +1,4 @@
- imagehashes = "file.dd" | extract  as ntfs | filter filename == "*.jpg",ctime>"01/01/01" | sha1
+imagehashes = "file.dd" | extract as ntfs | filter filename==".*gif" | sha1
 
- imagehashes
+print imagehashes
 
