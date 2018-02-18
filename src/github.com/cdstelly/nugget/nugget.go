@@ -20,6 +20,7 @@ import (
 var (
 	interactiveMode bool
 	pathToInput     string
+	runtimeServer   string
 	registers       map[string]interface{}
 
 	nodeMap map[antlr.ParseTree]interface{}
@@ -32,6 +33,7 @@ func init() {
 
 	flag.StringVar(&pathToInput, "input", "", "Path to input")
 	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
+	flag.StringVar(&runtimeServer, "runtimeIP", "127.0.0.1", "Network address of runtime server")
 	flag.Parse()
 
 	if !flagCheck(){
@@ -126,7 +128,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		if extractType.AsType == "pcap" {
 			theAction = &extractors.ExtractPCAP{}
 		} else if extractType.AsType == "ntfs" {
-			theAction = &extractors.ExtractNTFS{}
+			theAction = &extractors.ExtractNTFS{Location: extractType.PathToExtract}
 		} else if extractType.AsType == "md5hashes" {
 			theAction = &extractors.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha1hashes" {
@@ -260,7 +262,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 
 		if extractAction, ok := rawAction.(*extractors.ExtractNTFS); ok {
 			url := ctx.STRING().GetText()
-			extractAction.NTFSImageDataLocation = strings.Trim(url,`"`)
+			extractAction.Location = strings.Trim(url,`"`)
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			url := ctx.STRING().GetText()
@@ -309,8 +311,8 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 func (s *TreeShapeListener) ExitFilter(ctx *parser.FilterContext) {
 	var allFiltersForAction []NTypes.Filter
 	for i, _ := range ctx.AllFilter_term() {
-		myf := getValue(ctx.Filter_term(i))
-		if dep, ok := myf.(NTypes.Filter); ok {
+		f := getValue(ctx.Filter_term(i))
+		if dep, ok := f.(NTypes.Filter); ok {
 			allFiltersForAction = append(allFiltersForAction, dep)
 		}
 	}
@@ -378,8 +380,8 @@ func (s *TreeShapeListener) ExitSingleton_var(ctx *parser.Singleton_varContext) 
 	if v, ok := registers[theVar]; ok {
 		//fmt.Println(theVar, "[", reflect.TypeOf(v),"]:", v)
 		if ba, ok := v.(expressions.BaseAction); ok {
-			fmt.Println("Results for var ", theVar, ": ", ba.GetResults())
-			//ba.GetResults()
+			//fmt.Println("Results for var ", theVar, ": ", ba.GetResults())
+			ba.GetResults()
 			//fmt.Println("cutting off results for now..")
 		} else {
 			fmt.Println("couldn't execute var : ", theVar, "because it is not of baseAction type")
@@ -534,7 +536,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
 	case "print":
 		resultSliceOfSlices := GetResultsForActionWithSpecificFields(ActionForEvaluation, fieldsToPrint)
-		fmt.Println(resultSliceOfSlices)
+		//fmt.Println(resultSliceOfSlices)
 
 		maxIndex := len(resultSliceOfSlices[0])
 		for indexCounter:=0; indexCounter < maxIndex; indexCounter++ {

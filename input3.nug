@@ -7,3 +7,5 @@ networktraffic = "G:\school\sample.pcap" | extract as pcap
 rawhttp = networktraffic | filter packetfilter == "tcp and dst port 80 and http"
 httptraffic = rawhttp | extract as http
 print httptraffic.Host, httptraffic.Method, httptraffic.Length
+
+json httptraffic
