@@ -434,17 +434,17 @@ func GetResultsOfSubfield(rootAction expressions.BaseAction, subfield string) []
 					//fmt.Println("<  ", finalField, finalField.Kind())
 					var subfieldAsString string
 
-switch finalField.Kind() {
-case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-	//fmt.Println(">>>", strconv.FormatInt(finalField.Int(),10))
-	subfieldAsString = strconv.FormatInt(finalField.Int(),10)
-case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-	//	fmt.Println(">>>", strconv.FormatUint(finalField.Uint(),10))
-	subfieldAsString = strconv.FormatUint(finalField.Uint(),10)
-case reflect.String:
-	//fmt.Println(">>>", finalField.String())
-	subfieldAsString = finalField.String()
-}
+					switch finalField.Kind() {
+					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+						//fmt.Println(">>>", strconv.FormatInt(finalField.Int(),10))
+						subfieldAsString = strconv.FormatInt(finalField.Int(),10)
+					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+						//	fmt.Println(">>>", strconv.FormatUint(finalField.Uint(),10))
+						subfieldAsString = strconv.FormatUint(finalField.Uint(),10)
+					case reflect.String:
+						//fmt.Println(">>>", finalField.String())
+						subfieldAsString = finalField.String()
+					}
 					ResultsOfSubfield = append(ResultsOfSubfield, subfieldAsString)
 				} else {
 					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
@@ -618,6 +618,10 @@ func main() {
 
 			//todo: figure out the best way to implement the tab complete
 			text, err := reader.ReadString('\n')
+
+			if text == "exit" {
+				os.Exit(0)
+			}
 
 			if err != nil {
 				fmt.Println("Input error: ", err)
