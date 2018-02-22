@@ -50,7 +50,7 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFSwithTSK() []NTypes.FileInfo {
 	if na.beenUploaded == false {
 		na.UploadData()
 	}
-	bodyFileAsStr := getBodyFileFromTSK()
+	bodyFileAsStr := getBodyFileFromTSK(na.Location)
 	var files []NTypes.FileInfo
 	for _, entry := range strings.Split(bodyFileAsStr, "\n") {
 		if len(entry) > 10 {
@@ -119,14 +119,14 @@ func (na *ExtractNTFS) UploadData() {
 	na.beenUploaded = true
 }
 
-func getBodyFileFromTSK() string {
+func getBodyFileFromTSK(fileLocation string) string {
 	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
 
 	//load some data into tsk memory
-	args := &NTypes.NugArg{[]byte(""),""}
+	args := &NTypes.NugArg{[]byte(fileLocation),""}
 	var reply string
 	err = client.Call("NugTSK.GetBodyFile", args, &reply)
 	if err != nil {

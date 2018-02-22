@@ -5,7 +5,7 @@ print hashes
 
 
 
-files = "/ssd/nuggetdocker/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
+files = "/nuggetdocker/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
 filteredfiles = files | filter filename==".*.JPG",ctime>="2001/12/10"
 filteredhashes = filteredfiles | sha1
 print filteredfiles
