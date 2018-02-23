@@ -29,11 +29,9 @@ func (na *ExtractMemory) SetDependency(action expressions.BaseAction) {
 }
 
 func (na *ExtractMemory) Execute() {
-
 	if na.beenUploaded == false {
 		na.UploadData()
 	}
-
 	na.executed = true
 }
 
