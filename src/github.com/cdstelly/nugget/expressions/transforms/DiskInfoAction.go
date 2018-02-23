@@ -6,7 +6,7 @@ import (
 	"net/rpc"
 	"log"
 	"strings"
-	"fmt"
+//	"fmt"
 )
 
 type DiskInfoAction struct {
@@ -40,9 +40,10 @@ func (na *DiskInfoAction) Execute() {
 			na.dependsOn.Execute()
 		}
 	}
-	fmt.Println("going to execute disk image info..")
+	//fmt.Println("going to execute disk image info..")
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
+	//todo: uploadimage is not necessary since extractfs should occur before this
 	na.uploadImageToTSK()
 	diskImageInfo := getImageInfoFromTSK()
 	//fmt.Println(diskImageInfo)

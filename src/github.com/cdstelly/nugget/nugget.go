@@ -136,7 +136,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		} else if extractType.AsType == "sha256hashes" {
 			theAction = &extractors.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "memory" {
-			theAction = &extractors.ExtractMemory{}
+			theAction = &extractors.ExtractMemory{Location: extractType.PathToExtract}
 		} else if extractType.AsType == "http" {
 			theAction = &expressions.HTTPAction{}
 		}  else {
