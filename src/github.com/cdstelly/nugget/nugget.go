@@ -136,7 +136,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		} else if extractType.AsType == "sha256hashes" {
 			theAction = &extractors.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "memory" {
-			theAction = &extractors.ExtractMemory{}
+			theAction = &extractors.ExtractMemory{Location: extractType.PathToExtract}
 		} else if extractType.AsType == "http" {
 			theAction = &expressions.HTTPAction{}
 		}  else {
@@ -264,6 +264,10 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 			url := ctx.STRING().GetText()
 			extractAction.Location = strings.Trim(url,`"`)
 		}
+		if extractAction, ok := rawAction.(*extractors.ExtractMemory); ok {
+			url := ctx.STRING().GetText()
+			extractAction.Location = strings.Trim(url,`"`)
+		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			url := ctx.STRING().GetText()
 			extractAction.PCAPLocation = strings.Trim(url,`"`)
@@ -334,15 +338,15 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		if givenType == "pcap" {
 			setValue(ctx, NTypes.Extract{ AsType: "pcap"})
 		} else if givenType == "ntfs" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo.ntfs", AsType: "ntfs"})
+			setValue(ctx, NTypes.Extract{PathToExtract: "jo.ntfs", AsType: "ntfs"})
 		} else if givenType == "listof-md5" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\md5hashes.txt", AsType: "md5hashes"})
+			setValue(ctx, NTypes.Extract{PathToExtract: "md5hashes.txt", AsType: "md5hashes"})
 		} else if givenType == "listof-sha1" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha1hashes.txt", AsType: "sha1hashes"})
+			setValue(ctx, NTypes.Extract{PathToExtract: "sha1hashes.txt", AsType: "sha1hashes"})
 		} else if givenType == "listof-sha256" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\sha256hashes.txt", AsType: "sha256hashes"})
+			setValue(ctx, NTypes.Extract{PathToExtract: "sha256hashes.txt", AsType: "sha256hashes"})
 		} else if givenType == "memory" {
-			setValue(ctx, NTypes.Extract{PathToExtract: "G:\\school\\jo-2009-12-03.mddramimage.zip", AsType: "memory"})
+			setValue(ctx, NTypes.Extract{PathToExtract: "jo-2009-12-03.mddramimage.zip", AsType: "memory"})
 		} else if givenType == "http" {
 			setValue(ctx, NTypes.Extract{AsType: "http"})
 		} else {
@@ -434,17 +438,17 @@ func GetResultsOfSubfield(rootAction expressions.BaseAction, subfield string) []
 					//fmt.Println("<  ", finalField, finalField.Kind())
 					var subfieldAsString string
 
-switch finalField.Kind() {
-case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-	//fmt.Println(">>>", strconv.FormatInt(finalField.Int(),10))
-	subfieldAsString = strconv.FormatInt(finalField.Int(),10)
-case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-	//	fmt.Println(">>>", strconv.FormatUint(finalField.Uint(),10))
-	subfieldAsString = strconv.FormatUint(finalField.Uint(),10)
-case reflect.String:
-	//fmt.Println(">>>", finalField.String())
-	subfieldAsString = finalField.String()
-}
+					switch finalField.Kind() {
+					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+						//fmt.Println(">>>", strconv.FormatInt(finalField.Int(),10))
+						subfieldAsString = strconv.FormatInt(finalField.Int(),10)
+					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+						//	fmt.Println(">>>", strconv.FormatUint(finalField.Uint(),10))
+						subfieldAsString = strconv.FormatUint(finalField.Uint(),10)
+					case reflect.String:
+						//fmt.Println(">>>", finalField.String())
+						subfieldAsString = finalField.String()
+					}
 					ResultsOfSubfield = append(ResultsOfSubfield, subfieldAsString)
 				} else {
 					fmt.Printf("Error: subfield '%s' does not exist for type: '%s'. \n", subfield, typeOfValue.String())
@@ -618,6 +622,10 @@ func main() {
 
 			//todo: figure out the best way to implement the tab complete
 			text, err := reader.ReadString('\n')
+
+			if text == "exit" {
+				os.Exit(0)
+			}
 
 			if err != nil {
 				fmt.Println("Input error: ", err)

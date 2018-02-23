@@ -41,7 +41,7 @@ func (na *ProcessListAction) Execute() {
 	//fmt.Println("going to execute process list..")
 	//operateOn := na.dependsOn.GetResults()  //should be a raw disk image
 
-	na.uploadImageToVOL()
+	//na.uploadImageToVOL()
 	procList := getPSListFromVOL()
 	na.results = NTypes.ProcessList{Processes:procList}
 	na.executed = true
@@ -75,20 +75,4 @@ func getPSListFromVOL() string {
 	}
 	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
 	return reply
-}
-
-func (na *ProcessListAction) uploadImageToVOL() {
-	client, err := rpc.DialHTTP("tcp", "192.168.1.198:2002")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
-	//load some data into tsk memory
-	args := &NTypes.NugArg{[]byte("test"),""}
-	var reply string
-	err = client.Call("NugVol.LoadData", args, &reply)
-	if err != nil {
-		log.Fatal("tsk load error:", err)
-	}
-	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
-	na.beenUploaded = true
 }
