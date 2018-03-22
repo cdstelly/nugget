@@ -3,6 +3,16 @@ Nugget
 
 _Nugget_ is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. 
 
+Quickstart
+----------
+A docker container is provided which has sample forensic targets pre-loaded. Example Nugget queries are also included. To use:
+```
+docker pull cdstelly/nugget
+docker run cdstelly/nugget
+$ cd /nugget
+$ ./nugget -input input.nug
+```
+
 Building
 ----------
 
