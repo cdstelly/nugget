@@ -8,7 +8,7 @@ Quickstart
 A docker container is provided which has sample forensic targets pre-loaded. Example Nugget queries are also included. To use:
 ```
 docker pull cdstelly/nugget
-docker run cdstelly/nugget
+docker run -it cdstelly/nugget
 $ cd /nugget
 $ ./nugget -input input.nug
 ```
