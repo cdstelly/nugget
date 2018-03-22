@@ -1,7 +1,7 @@
 Nugget
 ===================
 
-_Nugget_ is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. 
+_Nugget_ is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. This is **alpha** software - expect bugs.
 
 Quickstart
 ----------
