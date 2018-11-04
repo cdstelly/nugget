@@ -1,20 +1,22 @@
 package main
 
 import (
-	"github.com/cdstelly/nugget/expressions/transforms"
-	"github.com/cdstelly/nugget/expressions/extractors"
-	"github.com/cdstelly/nugget/NTypes"
-	"github.com/cdstelly/nugget/parser"
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
+	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/cdstelly/nugget/NTypes"
+	"github.com/cdstelly/nugget/expressions/extractors"
+	"github.com/cdstelly/nugget/expressions/transforms"
+	"github.com/cdstelly/nugget/parser"
+	"log"
+	"net/rpc"
 	"os"
+	"os/signal"
 	"reflect"
 	"strconv"
-	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"errors"
 	"strings"
-	"os/signal"
 )
 
 var (
@@ -25,20 +27,22 @@ var (
 
 	nodeMap map[antlr.ParseTree]interface{}
 
-	typeRegistry map[string]reflect.Type
+	typeRegistry     map[string]reflect.Type
 	interruptCounter int
+
+	tskClient *rpc.Client
+	volClient *rpc.Client
 )
 
 func init() {
-
 	flag.StringVar(&pathToInput, "input", "", "Path to input")
 	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
 	flag.StringVar(&runtimeServer, "runtimeIP", "127.0.0.1", "Network address of runtime server")
 	flag.Parse()
 
-	if !flagCheck(){
+	if !flagCheck() {
 		flag.PrintDefaults()
-		os.Exit(1)
+		os.Exit(0)
 	}
 	registers = make(map[string]interface{})
 
@@ -128,7 +132,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		if extractType.AsType == "pcap" {
 			theAction = &extractors.ExtractPCAP{}
 		} else if extractType.AsType == "ntfs" {
-			theAction = &extractors.ExtractNTFS{Location: extractType.PathToExtract}
+			theAction = &extractors.ExtractNTFS{Location: extractType.PathToExtract, TskClient: tskClient}
 		} else if extractType.AsType == "md5hashes" {
 			theAction = &extractors.ExtractList{ListType: "md5", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "sha1hashes" {
@@ -136,10 +140,10 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 		} else if extractType.AsType == "sha256hashes" {
 			theAction = &extractors.ExtractList{ListType: "sha256", ListLocation: extractType.PathToExtract}
 		} else if extractType.AsType == "memory" {
-			theAction = &extractors.ExtractMemory{Location: extractType.PathToExtract}
+			theAction = &extractors.ExtractMemory{Location: extractType.PathToExtract, VolClient: volClient}
 		} else if extractType.AsType == "http" {
 			theAction = &expressions.HTTPAction{}
-		}  else {
+		} else {
 			fmt.Println("Error parsing given type: ", extractType.AsType)
 		}
 	case "sha1":
@@ -262,15 +266,15 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 
 		if extractAction, ok := rawAction.(*extractors.ExtractNTFS); ok {
 			url := ctx.STRING().GetText()
-			extractAction.Location = strings.Trim(url,`"`)
+			extractAction.Location = strings.Trim(url, `"`)
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractMemory); ok {
 			url := ctx.STRING().GetText()
-			extractAction.Location = strings.Trim(url,`"`)
+			extractAction.Location = strings.Trim(url, `"`)
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			url := ctx.STRING().GetText()
-			extractAction.PCAPLocation = strings.Trim(url,`"`)
+			extractAction.PCAPLocation = strings.Trim(url, `"`)
 		}
 		if act, ok := rawAction.(expressions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -336,7 +340,7 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 	if ctx.AsType() != nil {
 		givenType := getValue(ctx.AsType())
 		if givenType == "pcap" {
-			setValue(ctx, NTypes.Extract{ AsType: "pcap"})
+			setValue(ctx, NTypes.Extract{AsType: "pcap"})
 		} else if givenType == "ntfs" {
 			setValue(ctx, NTypes.Extract{PathToExtract: "jo.ntfs", AsType: "ntfs"})
 		} else if givenType == "listof-md5" {
@@ -400,7 +404,7 @@ func ContainsSubfield(input string) bool {
 	return strings.Contains(input, ".")
 }
 
-func GetSubfield(input string) string{
+func GetSubfield(input string) string {
 	return strings.Split(input, ".")[1]
 }
 
@@ -441,10 +445,10 @@ func GetResultsOfSubfield(rootAction expressions.BaseAction, subfield string) []
 					switch finalField.Kind() {
 					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 						//fmt.Println(">>>", strconv.FormatInt(finalField.Int(),10))
-						subfieldAsString = strconv.FormatInt(finalField.Int(),10)
+						subfieldAsString = strconv.FormatInt(finalField.Int(), 10)
 					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 						//	fmt.Println(">>>", strconv.FormatUint(finalField.Uint(),10))
-						subfieldAsString = strconv.FormatUint(finalField.Uint(),10)
+						subfieldAsString = strconv.FormatUint(finalField.Uint(), 10)
 					case reflect.String:
 						//fmt.Println(">>>", finalField.String())
 						subfieldAsString = finalField.String()
@@ -538,10 +542,9 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		fieldsToPrint = append(fieldsToPrint, givenVar)
 	}
 
-
 	//fmt.Println("Going to do:", operation, "on ", fieldsToPrint)
 
-	BaseVariable = strings.Split(ctx.ID(0).GetText(),".")[0]
+	BaseVariable = strings.Split(ctx.ID(0).GetText(), ".")[0]
 	var ActionForEvaluation expressions.BaseAction
 	if val, ok := registers[BaseVariable].(expressions.BaseAction); ok {
 		ActionForEvaluation = val
@@ -558,12 +561,12 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		//fmt.Println(resultSliceOfSlices)
 
 		maxIndex := len(resultSliceOfSlices[0])
-		for indexCounter:=0; indexCounter < maxIndex; indexCounter++ {
+		for indexCounter := 0; indexCounter < maxIndex; indexCounter++ {
 			row := ""
-			for fieldCounter:=0; fieldCounter<len(resultSliceOfSlices);fieldCounter++ {
+			for fieldCounter := 0; fieldCounter < len(resultSliceOfSlices); fieldCounter++ {
 				row = row + resultSliceOfSlices[fieldCounter][indexCounter] + " "
 			}
-			row = strings.TrimRight(row," ")
+			row = strings.TrimRight(row, " ")
 			fmt.Println(row)
 		}
 	case "raw":
@@ -612,6 +615,8 @@ func GetTreeForInput(input string) (parser.IProgContext, error) {
 func main() {
 	fmt.Println("Welcome to nugget version 0.1a")
 	flagCheck()
+
+	SetupRuntimeConnections()
 
 	if interactiveMode {
 
@@ -663,7 +668,7 @@ func main() {
 func CatchTerm() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
-	go func(){
+	go func() {
 		for sig := range c {
 			fmt.Println(sig.String() + " ctrl+c again to exit")
 			interruptCounter += 1
@@ -677,4 +682,28 @@ func CatchTerm() {
 
 func resetInterruptCounter() {
 	interruptCounter = 0
+}
+
+func SetupRuntimeConnections() {
+	log.Println("[-] Setting up runtime connections .. ")
+	//setup TSK
+	var runtimeConnErr error
+	tskClient, runtimeConnErr = rpc.DialHTTP("tcp", runtimeServer+":2001")
+	if runtimeConnErr != nil {
+		log.Fatal("dialing:", runtimeConnErr)
+	} else {
+		log.Println("[-] Connection to TSK established")
+	}
+
+	//setup VOL
+	volClient, runtimeConnErr = rpc.DialHTTP("tcp", "127.0.0.1:2002")
+	if runtimeConnErr != nil {
+		log.Fatal("[!] Dialing Volatility Client Failed\n", runtimeConnErr)
+	} else {
+		log.Println("[-] Connection to Volatility established")
+	}
+
+	//setup PCAP
+
+	log.Println("[-] All runtime connections successfully established.")
 }

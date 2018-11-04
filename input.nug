@@ -1,4 +1,4 @@
-files = "/targets/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
+files = "/home/cyclops/Downloads/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
 print files
 hashes = files | sha1
 print hashes
@@ -16,5 +16,5 @@ print filteredfiles, filteredfiles.Filesize
 
 memdump = "/targets/jo-2009-12-11.mddramimage" | extract as memory
 pslist = memdump | pslist
-print pslist
+print pslist`
 print pslist.Processes

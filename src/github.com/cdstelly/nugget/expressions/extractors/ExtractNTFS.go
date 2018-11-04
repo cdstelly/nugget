@@ -1,27 +1,29 @@
 package extractors
 
 import (
-	"strings"
-	"strconv"
-	"time"
-	"github.com/cdstelly/nugget/NTypes"
 	"fmt"
+	"github.com/cdstelly/nugget/NTypes"
+	"strconv"
+	"strings"
+	"time"
 
-	"net/rpc"
-	"log"
 	"github.com/cdstelly/nugget/expressions/transforms"
+	"log"
+	"net/rpc"
 )
 
 type ExtractNTFS struct {
 	executed  bool
 	dependsOn expressions.BaseAction
-	filters []NTypes.Filter
+	filters   []NTypes.Filter
 
 	NTFSImageMetadataLocation string
-	Location string
+	Location                  string
 
-	NTFSFiles []NTypes.FileInfo
+	NTFSFiles    []NTypes.FileInfo
 	NTFSDataRuns []NTypes.RealOffsetRun
+
+	TskClient *rpc.Client
 
 	beenUploaded bool
 }
@@ -63,20 +65,20 @@ func (na *ExtractNTFS) ExtractMetadataFromNTFSwithTSK() []NTypes.FileInfo {
 }
 
 func (na *ExtractNTFS) convertBodyFileStringToFileInfo(input string) NTypes.FileInfo {
-/*
-MD5
-name
-inode
-mode_as_string
-UID
-GID
-size
-atime
-mtime
-ctime
-crtime
- */
-	theSplitLine := strings.Split(input,"|")
+	/*
+	   MD5
+	   name
+	   inode
+	   mode_as_string
+	   UID
+	   GID
+	   size
+	   atime
+	   mtime
+	   ctime
+	   crtime
+	*/
+	theSplitLine := strings.Split(input, "|")
 	var myFile NTypes.FileInfo
 	myFile.Filenames = append(myFile.Filenames, theSplitLine[1])
 	myFile.Id = theSplitLine[2]
@@ -85,14 +87,14 @@ crtime
 
 	mytmptwo, err := strconv.Atoi(theSplitLine[6])
 	myFile.Filesize = uint64(mytmptwo)
-	tmpTime,err := strconv.Atoi(theSplitLine[7])
-	myFile.Accesstime = time.Unix(int64(tmpTime),0)
-	tmpTime,err = strconv.Atoi(theSplitLine[8])
-	myFile.Modifytime = time.Unix(int64(tmpTime),0)
-	tmpTime,err = strconv.Atoi(theSplitLine[9])
-	myFile.Createtime = time.Unix(int64(tmpTime),0)
-	tmpTime,err = strconv.Atoi(theSplitLine[10])
-	myFile.Emodifytime = time.Unix(int64(tmpTime),0)
+	tmpTime, err := strconv.Atoi(theSplitLine[7])
+	myFile.Accesstime = time.Unix(int64(tmpTime), 0)
+	tmpTime, err = strconv.Atoi(theSplitLine[8])
+	myFile.Modifytime = time.Unix(int64(tmpTime), 0)
+	tmpTime, err = strconv.Atoi(theSplitLine[9])
+	myFile.Createtime = time.Unix(int64(tmpTime), 0)
+	tmpTime, err = strconv.Atoi(theSplitLine[10])
+	myFile.Emodifytime = time.Unix(int64(tmpTime), 0)
 
 	if err != nil {
 		panic(err)
@@ -103,15 +105,11 @@ crtime
 }
 
 func (na *ExtractNTFS) UploadData() {
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
-	if err != nil {
-		log.Fatal("dialing:", err)
-	}
 	//load some data into tsk memory
 
-	args := &NTypes.NugArg{[]byte(na.Location),""}
+	args := &NTypes.NugArg{[]byte(na.Location), ""}
 	var reply string
-	err = client.Call("NugTSK.LoadData", args, &reply)
+	err := na.TskClient.Call("NugTSK.LoadData", args, &reply)
 	if err != nil {
 		log.Fatal("tsk load error:", err)
 	}
@@ -126,7 +124,7 @@ func getBodyFileFromTSK(fileLocation string) string {
 	}
 
 	//load some data into tsk memory
-	args := &NTypes.NugArg{[]byte(fileLocation),""}
+	args := &NTypes.NugArg{[]byte(fileLocation), ""}
 	var reply string
 	err = client.Call("NugTSK.GetBodyFile", args, &reply)
 	if err != nil {
@@ -136,14 +134,12 @@ func getBodyFileFromTSK(fileLocation string) string {
 	return reply
 }
 
-
-func (na *ExtractNTFS) GetResults() interface{}{
+func (na *ExtractNTFS) GetResults() interface{} {
 	if na.executed == false {
 		na.Execute()
 	}
 	return na.NTFSFiles
 }
-
 
 func checkError(err error) {
 	if err != nil {
