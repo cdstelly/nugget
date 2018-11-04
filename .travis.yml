@@ -15,4 +15,4 @@ notifications:
   email: true
 
 script:
-  - go test -v -race src/github.com/cdstelly/nugget
+  - GOPATH=$GOPATH/src/github.com/cdstelly/nugget && env && go test -v -race github.com/cdstelly/nugget
