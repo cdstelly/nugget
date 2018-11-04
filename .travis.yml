@@ -1,10 +1,11 @@
 language: go
+go_import_path: "github.com/cdstelly/nugget"
 
 go:
     - "1.9"
 
 before_install:
-  go get -t ./...
+  - go get -t ./...
 
 git:
   depth: 1
