@@ -1,0 +1,16 @@
+language: go
+
+go:
+    - "1.9"
+
+before_install:
+  go get -t ./...
+
+git:
+  depth: 1
+
+notifications:
+  email: true
+
+script:
+  - go test -v -race src/github.com/cdstelly/nugget
