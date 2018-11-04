@@ -6,7 +6,6 @@ go:
     - "1.9"
 
 before_install:
-  - go get github.com/cdstelly/nugget/NTypes
 
 git:
   depth: 1
