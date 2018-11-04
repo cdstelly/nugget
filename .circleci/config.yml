@@ -20,8 +20,6 @@ jobs:
     ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/cdstelly/nugget
     steps:
-    - add_ssh_keys:
-      fingerprints: "1e:21:d5:26:b5:f8:0d:d6:c8:9d:e1:3b:21:fc:fe:18"
         
     - checkout
 
