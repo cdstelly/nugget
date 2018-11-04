@@ -18,13 +18,10 @@ jobs:
     #### expecting it in the form of
     ####   /go/src/github.com/circleci/go-tool
     ####   /go/src/bitbucket.org/circleci/go-tool
-    working_directory: /go/
+    working_directory: /go/nugget/
     steps:
     - run: sudo apt update && sudo apt install libpcap-dev
     - run: git clone https://github.com/cdstelly/nugget && cd nugget && pwd && env && export GOPATH=`pwd` && echo $GOPATH
     - run: go get ./...
-
-    # specify any bash command here prefixed with `run: `
-    - run: go get -v github.com/antlr/antlr4/runtime/Go/antlr
-    - run: go get -v github.com/google/gopacket
+    - run: go build github.com/cdstelly/nugget
     - run: go test -v ./...
