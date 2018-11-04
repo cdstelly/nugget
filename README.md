@@ -1,4 +1,4 @@
-Nugget
+Nugget [![Build Status](https://travis-ci.com/cdstelly/nugget.svg?branch=master)](https://travis-ci.com/cdstelly/nugget)
 ===================
 
 _Nugget_ is a domain specific language ([DSL](https://en.wikipedia.org/wiki/Domain-specific_language)) for Digital Forensics. This is **alpha** software - expect bugs.
