@@ -21,7 +21,7 @@ jobs:
     working_directory: /go/
     steps:
     - run: sudo apt update && sudo apt install libpcap-dev
-    - run: git clone https://github.com/cdstelly/nugget && cd nugget
+    - run: git clone https://github.com/cdstelly/nugget && cd nugget && export GOPATH=`pwd`
     - run: go get ./...
 
     # specify any bash command here prefixed with `run: `
