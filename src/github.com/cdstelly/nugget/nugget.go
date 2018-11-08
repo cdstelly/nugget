@@ -696,7 +696,7 @@ func SetupRuntimeConnections() {
 	}
 
 	//setup VOL
-	volClient, runtimeConnErr = rpc.DialHTTP("tcp", "127.0.0.1:2002")
+	volClient, runtimeConnErr = rpc.DialHTTP("tcp", "127.0.0.1:2001")
 	if runtimeConnErr != nil {
 		log.Fatal("[!] Dialing Volatility Client Failed\n", runtimeConnErr)
 	} else {

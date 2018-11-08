@@ -16,7 +16,7 @@ $ ./nugget -input input.nug
 Building
 ----------
 
-The current alpha build depends upon libpcap for network forensics,  have them installed. 
+The current alpha build depends upon libpcap for network forensics; have them installed.
 
 To build from source: 
 ```

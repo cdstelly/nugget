@@ -14,5 +14,4 @@ jobs:
     - run: sudo apt update && sudo apt install libpcap-dev
     - run: git clone https://github.com/cdstelly/nugget && cd nugget && pwd && env && export GOPATH=/go/nugget && echo $GOPATH
     - run: GOPATH=/go/nugget go get ./...
-    # - run: GOPATH=/go/nugget go build github.com/cdstelly/nugget
     - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
