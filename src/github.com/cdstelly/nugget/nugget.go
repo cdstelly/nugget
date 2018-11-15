@@ -704,6 +704,5 @@ func SetupRuntimeConnections() {
 	}
 
 	//setup PCAP
-
 	log.Println("[-] All runtime connections successfully established.")
 }
