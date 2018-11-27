@@ -1,4 +1,4 @@
-namespace NType; 
+namespace NTypes;
 
 table FileInfo {
 	Id:string; 
