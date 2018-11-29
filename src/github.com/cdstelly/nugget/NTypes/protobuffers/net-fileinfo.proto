@@ -15,6 +15,10 @@ message net_FileInfo {
     bool beenreconstructed = 11;
 }
 
+message net_Query {
+    string id = 1;
+}
+
 service Service_net_FileInfo {
-    rpc Get_net_FileInfo (string) returns (net_FileInfo);
+    rpc Get_net_FileInfo (net_Query) returns (net_FileInfo);
 }
