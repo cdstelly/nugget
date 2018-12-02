@@ -732,7 +732,23 @@ func SetupIPCServer() {
 
 type queryServer struct{}
 
-func (s *queryServer) GetNet_FileInfo(ctx context.Context, in *NTypes.Net_Query) (*NTypes.Net_FileInfo, error) {
+func (s *queryServer) Get_FileInfo(ctx context.Context, in *NTypes.Net_Query) (*NTypes.Net_FileInfo, error) {
 
-	return &NTypes.Net_FileInfo{Id: "test"}, nil
+	return &NTypes.Net_FileInfo{Id: "test", Filenames:[]string{"test1.txt"}}, nil
+}
+
+func (s *queryServer) Stream_FileInfo(query *NTypes.Net_Query, stream NTypes.ServiceNet_FileInfo_Stream_FileInfoServer) error {
+
+	var fiList []NTypes.Net_FileInfo
+	fi1 := NTypes.Net_FileInfo{Id:"test1", Filenames:[]string{"test1.txt"}}
+	fi2 := NTypes.Net_FileInfo{Id:"test2", Filenames:[]string{"test2.txt"}}
+	fiList = append(fiList, fi1)
+	fiList = append(fiList, fi2)
+	for _, fi := range fiList {
+		if err := stream.Send(&fi); err != nil {
+			return err
+		}
+	}
+	return nil
+
 }

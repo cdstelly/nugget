@@ -16,9 +16,10 @@ message net_FileInfo {
 }
 
 message net_Query {
-    string id = 1;
+    string querystring = 1;
 }
 
 service Service_net_FileInfo {
-    rpc Get_net_FileInfo (net_Query) returns (net_FileInfo);
+    rpc Get_FileInfo (net_Query) returns (net_FileInfo);
+    rpc Stream_FileInfo (net_Query) returns (stream net_FileInfo);
 }
