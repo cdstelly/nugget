@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -10,7 +11,10 @@ import (
 	"github.com/cdstelly/nugget/expressions/extractors"
 	"github.com/cdstelly/nugget/expressions/transforms"
 	"github.com/cdstelly/nugget/parser"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
+	"net"
 	"net/rpc"
 	"os"
 	"os/signal"
@@ -620,6 +624,8 @@ func main() {
 
 	if interactiveMode {
 
+		SetupIPCServer()
+
 		for {
 			reader := bufio.NewReader(os.Stdin)
 
@@ -706,4 +712,43 @@ func SetupRuntimeConnections() {
 	//setup PCAP
 
 	log.Println("[-] All runtime connections successfully established.")
+}
+
+func SetupIPCServer() {
+	lis, err := net.Listen("tcp", ":2000")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	server := grpc.NewServer()
+	NTypes.RegisterServiceNet_FileInfoServer(server, &queryServer{})
+	// Register reflection service on gRPC server.
+	reflection.Register(server)
+	go func() {
+		if err := server.Serve(lis); err != nil {
+			log.Fatalf("[!] Failed to serve: %v", err)
+		}
+	}()
+}
+
+type queryServer struct{}
+
+func (s *queryServer) Get_FileInfo(ctx context.Context, in *NTypes.Net_Query) (*NTypes.Net_FileInfo, error) {
+
+	return &NTypes.Net_FileInfo{Id: "test", Filenames:[]string{"test1.txt"}}, nil
+}
+
+func (s *queryServer) Stream_FileInfo(query *NTypes.Net_Query, stream NTypes.ServiceNet_FileInfo_Stream_FileInfoServer) error {
+
+	var fiList []NTypes.Net_FileInfo
+	fi1 := NTypes.Net_FileInfo{Id:"test1", Filenames:[]string{"test1.txt"}}
+	fi2 := NTypes.Net_FileInfo{Id:"test2", Filenames:[]string{"test2.txt"}}
+	fiList = append(fiList, fi1)
+	fiList = append(fiList, fi2)
+	for _, fi := range fiList {
+		if err := stream.Send(&fi); err != nil {
+			return err
+		}
+	}
+	return nil
+
 }

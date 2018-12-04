@@ -1,0 +1,25 @@
+syntax = "proto3";
+package NTypes;
+
+message net_FileInfo {
+    string id = 1;
+    repeated string filenames = 2;
+    int64 createtime = 3;
+    int64 modifytime = 4;
+    int64 accesstime = 5;
+    int64 emodifytime = 6;
+    string fflags = 7;
+    string flags = 8;
+    uint64 filesize = 9;
+    repeated bytes reconstructeddata = 10;
+    bool beenreconstructed = 11;
+}
+
+message net_Query {
+    string querystring = 1;
+}
+
+service Service_net_FileInfo {
+    rpc Get_FileInfo (net_Query) returns (net_FileInfo);
+    rpc Stream_FileInfo (net_Query) returns (stream net_FileInfo);
+}
