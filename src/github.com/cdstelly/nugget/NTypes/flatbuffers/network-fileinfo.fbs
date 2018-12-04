@@ -1,0 +1,24 @@
+namespace NTypes;
+
+table FileInfo {
+	Id:string; 
+	Filenames:[string];
+	Createtime:long; 
+	Modifytime:long;
+	Accesstime:long;
+	Emodifytime:long;
+	Fflags:string;
+	Flags:string;
+	Filesize:ulong;
+	Dataruns:[DataRun];
+	reconstructedData:[byte];
+	beenReconstructed:bool;
+}
+
+table DataRun {
+	Runid:int;
+	Clusteroffset:ulong;
+	Numclusters:ulong;
+}
+
+root_type FileInfo;	
