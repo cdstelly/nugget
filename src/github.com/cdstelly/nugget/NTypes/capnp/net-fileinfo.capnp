@@ -1,20 +1,24 @@
-@0xc42f21aa6a1470d6
+using Go = import "/go.capnp";
+$Go.package("NTypes");
+$Go.import("github.com/cdstelly/nugget/NTypes");
+
+@0xc42f21aa6a1470d6;
 
 struct NetFileinfo { 
 	id @0 :Text; 
-	filenames @0 :List(Text);
-	createtime @0 :Int64;
-	modifytime @0 :Int64; 
-	accesstime @0 :Int64;
-	emodifytime @0 :Int64;
-	fflags @0 :Text;
-	flags @0 :Text;
-	filesize @0 :UInt64;
-	reconstructeddata @0 :Bytes;
-	beenreconstructed @0 :Bool;
+	filenames @1 :List(Text);
+	createtime @2 :Int64;
+	modifytime @3 :Int64; 
+	accesstime @4 :Int64;
+	emodifytime @5 :Int64;
+	fflags @6 :Text;
+	flags @7 :Text;
+	filesize @8 :UInt64;
+	reconstructeddata @9 :Data;
+	beenreconstructed @10 :Bool;
 }
 
 
 interface NetFileinfoService {
-	getFileinfo @0 (query :Text) -> (result :Text);
+	getFileinfo @0 (query :Text) -> (result :NetFileinfo);
 }
