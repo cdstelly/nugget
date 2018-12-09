@@ -6,12 +6,43 @@ version: 2
 jobs:
   build:
     docker:
-    # specify the version
-    - image: circleci/golang:1.9
+      # specify the version
+      - image: circleci/golang:1.9
 
     working_directory: /go/
     steps:
-    - run: sudo apt update && sudo apt install libpcap-dev
-    - run: git clone https://github.com/cdstelly/nugget && cd nugget && pwd && env && export GOPATH=/go/nugget && echo $GOPATH
-    - run: GOPATH=/go/nugget go get ./...
-    - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
+      - run: sudo apt update && sudo apt install libpcap-dev
+      - run: git clone https://github.com/cdstelly/nugget && cd nugget && pwd && env && export GOPATH=/go/nugget && echo $GOPATH
+      - run: GOPATH=/go/nugget go get ./...
+      - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
+  build-and-deploy:
+    docker:
+    # specify the version
+      - image: circleci/golang:1.9
+
+    working_directory: /go/
+    steps:
+      - add_ssh_keys
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: sudo apt update && sudo apt install libpcap-dev
+      - run: git clone https://github.com/cdstelly/nugget && cd nugget && pwd && env && export GOPATH=/go/nugget && echo $GOPATH
+      - run: GOPATH=/go/nugget go get ./...
+      - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
+      - run: wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/nuggetruntime.conf
+      - run: wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/Dockerfile
+      - run: docker build -t cdstelly/nugget:latest .
+      - run: echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+      - run: docker push cdstelly/nugget:latest
+    
+workflows: 
+  version: 2
+  untagged-build:
+    jobs:
+      - build
+  tagged-build:
+    jobs:
+      - build-and-deploy: 
+          filters: 
+            tags: 
+              only: /^deploy.*/
