@@ -42,7 +42,7 @@ workflows:
       -build
   tagged-build:
     jobs:
-    - build-and-deploy: 
-      filters: 
-        tags: 
-          only: /^deploy.*/
+      - build-and-deploy: 
+          filters: 
+            tags: 
+              only: /^deploy.*/
