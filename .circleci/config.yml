@@ -29,11 +29,11 @@ jobs:
       - run:
         name: Build and push Docker image
         command: |
-          wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/nuggetruntime.conf
-          wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/Dockerfile
-          docker build -t cdstelly/nugget:latest .
-          echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-          docker push cdstelly/nugget:latest
+            wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/nuggetruntime.conf
+            wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/Dockerfile
+            docker build -t cdstelly/nugget:latest .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push cdstelly/nugget:latest
     
 workflows: 
   version: 2
