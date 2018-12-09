@@ -39,7 +39,7 @@ workflows:
   version: 2
   untagged-build:
     jobs:
-      -build
+      - build
   tagged-build:
     jobs:
       - build-and-deploy: 
