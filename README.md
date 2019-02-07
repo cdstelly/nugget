@@ -18,6 +18,12 @@ Building
 
 The current alpha build depends upon libpcap for network forensics; have them installed.
 
+Ubuntu
+--------
+```
+sudo apt install libpcap-dev
+```
+
 To build from source: 
 ```
 git clone https://github.com/cdstelly/nugget.git
