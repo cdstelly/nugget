@@ -18,8 +18,8 @@ Building
 
 The current alpha build depends upon libpcap for network forensics; have them installed.
 
-Ubuntu
---------
+*Ubuntu*
+---
 ```
 sudo apt install libpcap-dev
 ```
