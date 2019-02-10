@@ -9,7 +9,7 @@ jobs:
       # specify the version
       - image: circleci/golang:1.9
 
-    working_directory: /go/
+    working_directory: /go/nugget
     steps:
       - run: sudo apt update && sudo apt install libpcap-dev
       - checkout 
