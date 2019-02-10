@@ -44,16 +44,18 @@ func init() {
 	flag.StringVar(&runtimeServer, "runtimeIP", "127.0.0.1", "Network address of runtime server")
 	flag.Parse()
 
+	//Check validity of given command-line flags
 	if !flagCheck() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
+	//Store results of nugget queries in registers
 	registers = make(map[string]interface{})
 
 	//nodemap can be used to share data across constructs, just store it here whenever and retrieve based on ctx
 	nodeMap = make(map[antlr.ParseTree]interface{})
 
-	//hold a string->nugType values
+	//hold a type mapping for reflection-type purposes string->nugType values
 	typeRegistry = make(map[string]reflect.Type)
 	setupTypeRegstry()
 
@@ -61,6 +63,8 @@ func init() {
 	interruptCounter = 0
 }
 
+//We require interactive mode when no execution file is given
+//TODO: investigate combination of a given input file with an interactive mode
 func flagCheck() bool {
 	if pathToInput == "" {
 		if !interactiveMode {
@@ -70,7 +74,7 @@ func flagCheck() bool {
 	return true
 }
 
-//todo: finish typeregistry so we can clean up typing code
+//TODO: finish typeregistry so we can clean up typing code
 func setupTypeRegstry() {
 	typeRegistry["md5"] = reflect.TypeOf(NTypes.MD5{})
 	typeRegistry["sha1"] = reflect.TypeOf(NTypes.SHA1{})
@@ -79,7 +83,7 @@ func setupTypeRegstry() {
 	typeRegistry["file"] = reflect.TypeOf(NTypes.FileInfo{})
 }
 
-//getValue and setValue will take care of passing around results from individual rules
+//getValue and setValue will take care of passing around results from individual ANTLR parsing results
 func setValue(ctx antlr.ParseTree, value interface{}) {
 	nodeMap[ctx] = value
 }
@@ -96,6 +100,7 @@ func NewTreeShapeListener() *TreeShapeListener {
 	return new(TreeShapeListener)
 }
 
+//TODO 2-5-19: Refactor this ANTLR->Execution function, it's difficult to understand
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
 	var myFilters []NTypes.Filter
 	var actionVerb string
@@ -104,22 +109,21 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
 		actionVerb = "filter"
-		//handle extracts
+	//handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		actionVerb = "extract"
-		//fmt.Println("it's an extract")
-		//handle sorts
+	//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		actionVerb = "sort"
-		//handle unions
+	//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		actionVerb = "union"
-		//handle everything else
+	//handle everything else
 	} else {
 		if av, ok := getValue(ctx.Action_word()).(string); ok {
 			actionVerb = av
 		} else {
-			fmt.Println("error - wasn't able to determine action type")
+			fmt.Println("[!] Error - wasn't able to determine action type")
 		}
 	}
 
@@ -159,7 +163,8 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	case "diskinfo":
 		theAction = &expressions.DiskInfoAction{}
 	case "union":
-		//todo: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
+		//TODO: figure out how to pass file info forward as well? -- actually, maybe not needed - we're doing exactly what was told to be done
+		//TODO: In other words, this is a conceptual problem, when they filter for a file's name, should we also pass forward the rest of file metadata?
 		unionType := getValue(ctx.Action_word()).(NTypes.Union)
 		var theListFromVar []string
 		if val, ok := registers[unionType.AgainstVarName].(expressions.BaseAction); ok {
@@ -360,20 +365,20 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		} else {
 			fmt.Println("error on type extraction")
 		}
-		//handle filters
+	//handle filters
 	} else if ctx.Filter() != nil {
 		setValue(ctx, getValue(ctx.Filter()))
-		//handle sorts
+	//handle sorts
 	} else if ctx.ByField() != nil {
 		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
 			//fmt.Println("sort string: ", val)-
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
-		//handle union
+	//handle union
 	} else if ctx.ID() != nil {
 		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
-		//handle grep
+	//handle grep
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
@@ -617,7 +622,7 @@ func GetTreeForInput(input string) (parser.IProgContext, error) {
 }
 
 func main() {
-	fmt.Println("Welcome to nugget version 0.1a")
+	fmt.Println("[-] Welcome to nugget version 0.1.3")
 	flagCheck()
 
 	SetupRuntimeConnections()
@@ -690,6 +695,8 @@ func resetInterruptCounter() {
 	interruptCounter = 0
 }
 
+
+//To facilitate connections between TSK and VOL,establish connections which live for lifetime of Nugget process
 func SetupRuntimeConnections() {
 	log.Println("[-] Setting up runtime connections .. ")
 	//setup TSK
@@ -713,6 +720,7 @@ func SetupRuntimeConnections() {
 	log.Println("[-] All runtime connections successfully established.")
 }
 
+//To facilitate interprocess dataflows, setup RPC server listening for serialized (now ProtoBuf) data queries 
 func SetupIPCServer() {
 	lis, err := net.Listen("tcp", ":2000")
 	if err != nil {
@@ -737,7 +745,6 @@ func (s *queryServer) Get_FileInfo(ctx context.Context, in *NTypes.Net_Query) (*
 }
 
 func (s *queryServer) Stream_FileInfo(query *NTypes.Net_Query, stream NTypes.ServiceNet_FileInfo_Stream_FileInfoServer) error {
-
 	var fiList []NTypes.Net_FileInfo
 	fi1 := NTypes.Net_FileInfo{Id:"test1", Filenames:[]string{"test1.txt"}}
 	fi2 := NTypes.Net_FileInfo{Id:"test2", Filenames:[]string{"test2.txt"}}
