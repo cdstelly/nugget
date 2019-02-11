@@ -13,7 +13,7 @@ jobs:
     steps:
       - run: sudo apt update && sudo apt install libpcap-dev
       - checkout 
-      - run: cd nugget && pwd && env && export GOPATH=/go/nugget && echo $GOPATH
+      - run: ls && cd /go/nugget && export GOPATH=/go/nugget && echo $GOPATH
       - run: GOPATH=/go/nugget go get ./...
       - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
   build-and-deploy:
@@ -21,14 +21,14 @@ jobs:
     # specify the version
       - image: circleci/golang:1.9
 
-    working_directory: /go/
+    working_directory: /go/nugget
     steps:
       - add_ssh_keys
       - setup_remote_docker:
           docker_layer_caching: true
       - run: sudo apt update && sudo apt install libpcap-dev
       - checkout 
-      - run: cd nugget && pwd && env && export GOPATH=/go/nugget && echo $GOPATH
+      - run: cd /go/nugget && export GOPATH=/go/nugget && echo $GOPATH
       - run: GOPATH=/go/nugget go get ./...
       - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
       - run: wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/nuggetruntime.conf
