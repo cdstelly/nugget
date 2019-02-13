@@ -34,6 +34,8 @@ var (
 	typeRegistry     map[string]reflect.Type
 	interruptCounter int
 
+	JSONMode bool
+
 	tskClient *rpc.Client
 	volClient *rpc.Client
 )
@@ -42,6 +44,7 @@ func init() {
 	flag.StringVar(&pathToInput, "input", "", "Path to input")
 	flag.BoolVar(&interactiveMode, "interactive", false, "Interactive mode")
 	flag.StringVar(&runtimeServer, "runtimeIP", "127.0.0.1", "Network address of runtime server")
+	flag.BoolVar(&JSONMode, "JSON output", false, "JSON output mode")
 	flag.Parse()
 
 	//Check validity of given command-line flags
@@ -109,16 +112,16 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	if listOFilters, ok := getValue(ctx.Action_word()).([]NTypes.Filter); ok {
 		myFilters = listOFilters
 		actionVerb = "filter"
-	//handle extracts
+		//handle extracts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Extract); ok {
 		actionVerb = "extract"
-	//handle sorts
+		//handle sorts
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Sort); ok {
 		actionVerb = "sort"
-	//handle unions
+		//handle unions
 	} else if _, ok := getValue(ctx.Action_word()).(NTypes.Union); ok {
 		actionVerb = "union"
-	//handle everything else
+		//handle everything else
 	} else {
 		if av, ok := getValue(ctx.Action_word()).(string); ok {
 			actionVerb = av
@@ -365,20 +368,20 @@ func (s *TreeShapeListener) ExitAction_word(ctx *parser.Action_wordContext) {
 		} else {
 			fmt.Println("error on type extraction")
 		}
-	//handle filters
+		//handle filters
 	} else if ctx.Filter() != nil {
 		setValue(ctx, getValue(ctx.Filter()))
-	//handle sorts
+		//handle sorts
 	} else if ctx.ByField() != nil {
 		//fmt.Println("sort by: ", getValue(ctx.ByField()))
 		if val, ok := getValue(ctx.ByField()).(string); ok {
 			//fmt.Println("sort string: ", val)-
 			setValue(ctx, NTypes.Sort{Field: val})
 		}
-	//handle union
+		//handle union
 	} else if ctx.ID() != nil {
 		setValue(ctx, NTypes.Union{Results: []string{""}, AgainstVarName: ctx.ID().GetText()})
-	//handle grep
+		//handle grep
 	} else {
 		setValue(ctx, ctx.GetText())
 	}
@@ -537,7 +540,7 @@ func GetResultsForActionWithSpecificFields(Action expressions.BaseAction, fields
 
 //for each term,add to a list
 //print each entry with each field...
-//todo: graceful error handling when getresults returns a connection failed
+//TODO: graceful error handling when getresults returns a connection failed
 func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_singletonContext) {
 	var fieldsToPrint []string
 	var operation string
@@ -636,7 +639,7 @@ func main() {
 
 			fmt.Print("nugget> ")
 
-			//todo: figure out the best way to implement the tab complete
+			//TODO: figure out tab complete
 			text, err := reader.ReadString('\n')
 
 			if text == "exit" {
@@ -695,7 +698,6 @@ func resetInterruptCounter() {
 	interruptCounter = 0
 }
 
-
 //To facilitate connections between TSK and VOL,establish connections which live for lifetime of Nugget process
 func SetupRuntimeConnections() {
 	log.Println("[-] Setting up runtime connections .. ")
@@ -703,7 +705,7 @@ func SetupRuntimeConnections() {
 	var runtimeConnErr error
 	tskClient, runtimeConnErr = rpc.DialHTTP("tcp", runtimeServer+":2001")
 	if runtimeConnErr != nil {
-		log.Fatal("dialing:", runtimeConnErr)
+		log.Fatal("[!] Connection to TSK runtime failed:", runtimeConnErr)
 	} else {
 		log.Println("[-] Connection to TSK established")
 	}
@@ -711,7 +713,7 @@ func SetupRuntimeConnections() {
 	//setup VOL
 	volClient, runtimeConnErr = rpc.DialHTTP("tcp", "127.0.0.1:2001")
 	if runtimeConnErr != nil {
-		log.Fatal("[!] Dialing Volatility Client Failed\n", runtimeConnErr)
+		log.Fatal("[!] Connection to Volatility runtime failed\n", runtimeConnErr)
 	} else {
 		log.Println("[-] Connection to Volatility established")
 	}
@@ -720,7 +722,7 @@ func SetupRuntimeConnections() {
 	log.Println("[-] All runtime connections successfully established.")
 }
 
-//To facilitate interprocess dataflows, setup RPC server listening for serialized (now ProtoBuf) data queries 
+//To facilitate interprocess dataflows, setup RPC server listening for serialized (now ProtoBuf) data queries
 func SetupIPCServer() {
 	lis, err := net.Listen("tcp", ":2000")
 	if err != nil {
@@ -741,13 +743,13 @@ type queryServer struct{}
 
 func (s *queryServer) Get_FileInfo(ctx context.Context, in *NTypes.Net_Query) (*NTypes.Net_FileInfo, error) {
 
-	return &NTypes.Net_FileInfo{Id: "test", Filenames:[]string{"test1.txt"}}, nil
+	return &NTypes.Net_FileInfo{Id: "test", Filenames: []string{"test1.txt"}}, nil
 }
 
 func (s *queryServer) Stream_FileInfo(query *NTypes.Net_Query, stream NTypes.ServiceNet_FileInfo_Stream_FileInfoServer) error {
 	var fiList []NTypes.Net_FileInfo
-	fi1 := NTypes.Net_FileInfo{Id:"test1", Filenames:[]string{"test1.txt"}}
-	fi2 := NTypes.Net_FileInfo{Id:"test2", Filenames:[]string{"test2.txt"}}
+	fi1 := NTypes.Net_FileInfo{Id: "test1", Filenames: []string{"test1.txt"}}
+	fi2 := NTypes.Net_FileInfo{Id: "test2", Filenames: []string{"test2.txt"}}
 	fiList = append(fiList, fi1)
 	fiList = append(fiList, fi2)
 	for _, fi := range fiList {
