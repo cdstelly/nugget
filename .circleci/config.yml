@@ -33,7 +33,8 @@ jobs:
       - run: GOPATH=/go/nugget go test -v github.com/cdstelly/nugget
       - run: wget https://raw.githubusercontent.com/cdstelly/nugget-builder/master/nuggetruntime.conf
       - run: wget --output-document=Dockerfile https://raw.githubusercontent.com/cdstelly/nugget-builder/master/Dockerfile-autobuild
-      - run: ls && ls src/github.com/cdstelly/nugget/ && pwd && docker build -t cdstelly/nugget:latest .
+      - run: zip -r nugget.zip * 
+      - run: docker build -t cdstelly/nugget:latest .
       - run: echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
       - run: docker push cdstelly/nugget:latest
     
