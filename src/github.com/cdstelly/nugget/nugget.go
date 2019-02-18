@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -103,6 +104,11 @@ func NewTreeShapeListener() *TreeShapeListener {
 	return new(TreeShapeListener)
 }
 
+func (s *TreeShapeListener) ExitOutput_as(ctx *parser.Output_asContext) {
+	//fmt.Println("[-] Will output as: ", ctx.Output_type().GetText())
+	JSONMode = true
+}
+
 //TODO 2-5-19: Refactor this ANTLR->Execution function, it's difficult to understand
 func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) {
 	var myFilters []NTypes.Filter
@@ -180,7 +186,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	case "pslist":
 		theAction = &expressions.ProcessListAction{}
 	default:
-		fmt.Println("action was not found")
+		fmt.Println("[!] Given action: ", actionVerb, " was not found")
 	}
 
 	if actionVerb != "filter" {
@@ -569,17 +575,25 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 	case "type":
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
 	case "print":
-		resultSliceOfSlices := GetResultsForActionWithSpecificFields(ActionForEvaluation, fieldsToPrint)
-		//fmt.Println(resultSliceOfSlices)
 
-		maxIndex := len(resultSliceOfSlices[0])
-		for indexCounter := 0; indexCounter < maxIndex; indexCounter++ {
-			row := ""
-			for fieldCounter := 0; fieldCounter < len(resultSliceOfSlices); fieldCounter++ {
-				row = row + resultSliceOfSlices[fieldCounter][indexCounter] + " "
+		if JSONMode == true {
+			jsonRepresentation, err := json.Marshal(ActionForEvaluation.GetResults())
+			if err != nil {
+				fmt.Println("[!] Error generating JSON representations")
+			} else {
+				fmt.Println(string(jsonRepresentation))
 			}
-			row = strings.TrimRight(row, " ")
-			fmt.Println(row)
+		} else {
+			resultSliceOfSlices := GetResultsForActionWithSpecificFields(ActionForEvaluation, fieldsToPrint)
+			maxIndex := len(resultSliceOfSlices[0])
+			for indexCounter := 0; indexCounter < maxIndex; indexCounter++ {
+				row := ""
+				for fieldCounter := 0; fieldCounter < len(resultSliceOfSlices); fieldCounter++ {
+					row = row + resultSliceOfSlices[fieldCounter][indexCounter] + " "
+				}
+				row = strings.TrimRight(row, " ")
+				fmt.Println(row)
+			}
 		}
 	case "raw":
 		if files, ok := ActionForEvaluation.GetResults().([]NTypes.FileInfo); ok {
@@ -590,7 +604,7 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 			fmt.Println(ActionForEvaluation.GetResults())
 		}
 	default:
-		fmt.Println("operation not recognized..")
+		fmt.Println("[!] Operation ", operation, " not recognized..")
 		return
 	}
 }

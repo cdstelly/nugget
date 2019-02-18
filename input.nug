@@ -1,6 +1,9 @@
 files = "/home/cyclops/Downloads/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
-print files
+print files as json
+
+type files
 hashes = files | sha1
+type hashes
 print hashes
 
 
