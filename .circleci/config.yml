@@ -22,9 +22,3 @@ workflows:
   untagged-build:
     jobs:
       - build
-  tagged-build:
-    jobs:
-      - build-and-deploy: 
-          filters: 
-            tags: 
-              only: /^deploy.*/
