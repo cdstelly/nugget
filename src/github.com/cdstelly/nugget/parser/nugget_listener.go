@@ -1,4 +1,4 @@
-// Generated from C:/Users/drew/GoglandProjects/nugget\Nugget.g4 by ANTLR 4.7.
+// Generated from /home/cyclops/code/nugget/Nugget.g4 by ANTLR 4.7.
 
 package parser // Nugget
 
@@ -25,6 +25,12 @@ type NuggetListener interface {
 
 	// EnterOperation_on_singleton is called when entering the operation_on_singleton production.
 	EnterOperation_on_singleton(c *Operation_on_singletonContext)
+
+	// EnterOutput_as is called when entering the output_as production.
+	EnterOutput_as(c *Output_asContext)
+
+	// EnterOutput_type is called when entering the output_type production.
+	EnterOutput_type(c *Output_typeContext)
 
 	// EnterSingleton_op is called when entering the singleton_op production.
 	EnterSingleton_op(c *Singleton_opContext)
@@ -73,6 +79,12 @@ type NuggetListener interface {
 
 	// ExitOperation_on_singleton is called when exiting the operation_on_singleton production.
 	ExitOperation_on_singleton(c *Operation_on_singletonContext)
+
+	// ExitOutput_as is called when exiting the output_as production.
+	ExitOutput_as(c *Output_asContext)
+
+	// ExitOutput_type is called when exiting the output_type production.
+	ExitOutput_type(c *Output_typeContext)
 
 	// ExitSingleton_op is called when exiting the singleton_op production.
 	ExitSingleton_op(c *Singleton_opContext)

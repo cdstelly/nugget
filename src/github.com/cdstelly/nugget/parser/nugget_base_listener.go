@@ -1,4 +1,4 @@
-// Generated from C:/Users/drew/GoglandProjects/nugget\Nugget.g4 by ANTLR 4.7.
+// Generated from /home/cyclops/code/nugget/Nugget.g4 by ANTLR 4.7.
 
 package parser // Nugget
 
@@ -56,6 +56,18 @@ func (s *BaseNuggetListener) EnterOperation_on_singleton(ctx *Operation_on_singl
 
 // ExitOperation_on_singleton is called when production operation_on_singleton is exited.
 func (s *BaseNuggetListener) ExitOperation_on_singleton(ctx *Operation_on_singletonContext) {}
+
+// EnterOutput_as is called when production output_as is entered.
+func (s *BaseNuggetListener) EnterOutput_as(ctx *Output_asContext) {}
+
+// ExitOutput_as is called when production output_as is exited.
+func (s *BaseNuggetListener) ExitOutput_as(ctx *Output_asContext) {}
+
+// EnterOutput_type is called when production output_type is entered.
+func (s *BaseNuggetListener) EnterOutput_type(ctx *Output_typeContext) {}
+
+// ExitOutput_type is called when production output_type is exited.
+func (s *BaseNuggetListener) ExitOutput_type(ctx *Output_typeContext) {}
 
 // EnterSingleton_op is called when production singleton_op is entered.
 func (s *BaseNuggetListener) EnterSingleton_op(ctx *Singleton_opContext) {}

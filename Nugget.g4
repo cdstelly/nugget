@@ -24,9 +24,12 @@ assign: ID '=' STRING ('|' nugget_action)* |
         ID '=' ID     ('|' nugget_action)*
 ;
 
-operation_on_singleton: singleton_op  ID (',' ID)*;
+operation_on_singleton: singleton_op  ID (',' ID)* output_as?;
 
-singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx' | 'raw');
+output_as: 'as' output_type;
+output_type: 'json';
+
+singleton_op: ('type' | 'print' | 'size' | 'typex' | 'printx' | 'raw') ;
 
 singleton_var: ID;
 
