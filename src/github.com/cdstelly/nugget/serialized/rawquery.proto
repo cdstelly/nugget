@@ -1,0 +1,37 @@
+syntax = "proto3";
+package serialized;
+
+service QueryService {
+    rpc QueryNugget(QuerySet) returns (stream QueryReply);
+}
+
+message QuerySet {
+    repeated Query queries = 1;
+}
+
+message Query {
+    string query = 1;
+}
+
+message QueryReply {
+    string reply = 1;
+}
+
+
+service FileService {
+    rpc Stream_FileInfo (QuerySet) returns (stream FileInfo);
+}
+
+message FileInfo {
+    string id = 1;
+    repeated string filenames = 2;
+    int64 createtime = 3;
+    int64 modifytime = 4;
+    int64 accesstime = 5;
+    int64 emodifytime = 6;
+    string fflags = 7;
+    string flags = 8;
+    uint64 filesize = 9;
+    repeated bytes reconstructeddata = 10;
+    bool beenreconstructed = 11;
+}
