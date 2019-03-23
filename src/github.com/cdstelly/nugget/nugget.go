@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"context"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -12,8 +12,10 @@ import (
 	"github.com/cdstelly/nugget/expressions/extractors"
 	"github.com/cdstelly/nugget/expressions/transforms"
 	"github.com/cdstelly/nugget/parser"
+	"github.com/cdstelly/nugget/serialized"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"io"
 	"log"
 	"net"
 	"net/rpc"
@@ -559,9 +561,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 		givenVar := id.GetText()
 		fieldsToPrint = append(fieldsToPrint, givenVar)
 	}
-
-	//fmt.Println("Going to do:", operation, "on ", fieldsToPrint)
-
 	BaseVariable = strings.Split(ctx.ID(0).GetText(), ".")[0]
 	var ActionForEvaluation expressions.BaseAction
 	if val, ok := registers[BaseVariable].(expressions.BaseAction); ok {
@@ -575,7 +574,6 @@ func (s *TreeShapeListener) ExitOperation_on_singleton(ctx *parser.Operation_on_
 	case "type":
 		fmt.Println(reflect.TypeOf(ActionForEvaluation.GetResults()))
 	case "print":
-
 		if JSONMode == true {
 			jsonRepresentation, err := json.Marshal(ActionForEvaluation.GetResults())
 			if err != nil {
@@ -639,7 +637,7 @@ func GetTreeForInput(input string) (parser.IProgContext, error) {
 }
 
 func main() {
-	fmt.Println("[-] Welcome to nugget version 0.1.3")
+	fmt.Println("[-] Welcome to nugget version 0.1.4")
 	flagCheck()
 
 	SetupRuntimeConnections()
@@ -743,7 +741,10 @@ func SetupIPCServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	server := grpc.NewServer()
-	NTypes.RegisterServiceNet_FileInfoServer(server, &queryServer{})
+
+	serialized.RegisterQueryServiceServer(server, &queryServer{})
+	serialized.RegisterFileServiceServer(server, &queryServer{})
+
 	// Register reflection service on gRPC server.
 	reflection.Register(server)
 	go func() {
@@ -755,22 +756,93 @@ func SetupIPCServer() {
 
 type queryServer struct{}
 
-func (s *queryServer) Get_FileInfo(ctx context.Context, in *NTypes.Net_Query) (*NTypes.Net_FileInfo, error) {
+func (s *queryServer) QueryNugget(querySet *serialized.QuerySet, stream serialized.QueryService_QueryNuggetServer) error {
+	log.Println("[-] Received raw Nugget query via IPC")
+	var queryReply serialized.QueryReply
+	for _, query := range querySet.Queries {
+		log.Println("[-] Given query: " + query.Query)
 
-	return &NTypes.Net_FileInfo{Id: "test", Filenames: []string{"test1.txt"}}, nil
-}
+		tree, nerr := GetTreeForInput(query.Query)
+		if nerr == nil {
+			//TODO Refactor STDOUT capture
+			old := os.Stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
 
-func (s *queryServer) Stream_FileInfo(query *NTypes.Net_Query, stream NTypes.ServiceNet_FileInfo_Stream_FileInfoServer) error {
-	var fiList []NTypes.Net_FileInfo
-	fi1 := NTypes.Net_FileInfo{Id: "test1", Filenames: []string{"test1.txt"}}
-	fi2 := NTypes.Net_FileInfo{Id: "test2", Filenames: []string{"test2.txt"}}
-	fiList = append(fiList, fi1)
-	fiList = append(fiList, fi2)
-	for _, fi := range fiList {
-		if err := stream.Send(&fi); err != nil {
-			return err
+			antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+
+			w.Close()
+			os.Stdout = old
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			queryReply.Reply = buf.String()
+			stream.Send(&queryReply)
+		} else {
+			log.Println("[!] Error processing IPC query: "+query.Query, nerr)
 		}
 	}
 	return nil
+}
 
+func (s *queryServer) Stream_FileInfo(querySet *serialized.QuerySet, stream serialized.FileService_Stream_FileInfoServer) error {
+	log.Println("[-] Received StreamRequest for FileInfo")
+
+	for _, query := range querySet.Queries {
+		log.Println("[-] Given query: " + query.Query)
+
+		tree, nerr := GetTreeForInput(query.Query)
+		if nerr == nil {
+			antlr.ParseTreeWalkerDefault.Walk(NewTreeShapeListener(), tree)
+		} else {
+			log.Println("[!] Error processing IPC query: "+query.Query, nerr)
+		}
+		if strings.Contains(query.String(), "print") {
+			givenVar := strings.Split(query.String(), " ")[1]
+			givenVar = strings.Trim(givenVar, "-\"'")
+			log.Println("[-] Recv print command for variable: "+givenVar, registers[givenVar])
+			log.Println("[-] variable type: ", reflect.TypeOf(registers[givenVar]))
+			if val, ok := registers[givenVar].(expressions.BaseAction); ok {
+				log.Println("[-] results type: ", reflect.TypeOf(val.GetResults()))
+				if files, ok := val.GetResults().([]NTypes.FileInfo); ok {
+					for _, fi := range files {
+						if err := stream.Send(serializeFileInfo(&fi)); err != nil {
+							return err
+						}
+					}
+				} else {
+					log.Println("[!] Desired type is not currently supported over RPC")
+					stream.Send(nil)
+				}
+			} else {
+				log.Println("[!] Desired action is not currently supported over RPC")
+				stream.Send(nil)
+			}
+
+		}
+
+		//check tree for 'print' statement
+		//extract the variable name
+		//get contents from register and translate to serialized.fileinfo
+		//send converted on the wire
+
+	}
+	return nil
+
+	return nil
+
+}
+
+//TODO currently only sending metadata
+func serializeFileInfo(info *NTypes.FileInfo) *serialized.FileInfo {
+	var serializedObject serialized.FileInfo
+	serializedObject.Filenames = info.Filenames
+	serializedObject.Id = info.Id
+	serializedObject.Accesstime = info.Accesstime.Unix()
+	serializedObject.Createtime = info.Createtime.Unix()
+	serializedObject.Modifytime = info.Createtime.Unix()
+	serializedObject.Emodifytime = info.Createtime.Unix()
+	serializedObject.Fflags = info.Fflags
+	serializedObject.Filesize = info.Filesize
+	serializedObject.Flags = info.Flags
+	return &serializedObject
 }

@@ -19,7 +19,11 @@ message net_Query {
     string querystring = 1;
 }
 
+message query_Set {
+    repeated net_Query queries = 1;
+}
+
 service Service_net_FileInfo {
-    rpc Get_FileInfo (net_Query) returns (net_FileInfo);
-    rpc Stream_FileInfo (net_Query) returns (stream net_FileInfo);
+    //rpc Get_FileInfo (net_Query) returns (net_FileInfo);
+    rpc Stream_FileInfo (query_Set) returns (stream net_FileInfo);
 }
