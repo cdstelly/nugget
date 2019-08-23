@@ -1,4 +1,4 @@
-files = "/home/cyclops/Downloads/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
+files = "/targets/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
 print files as json
 
 type files
@@ -8,7 +8,7 @@ print hashes
 
 
 
-files = "/nuggetdocker/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
+files = "/targets/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
 filteredfiles = files | filter filename==".*.JPG",ctime>="2001/12/10"
 filteredhashes = filteredfiles | sha1
 print filteredfiles
