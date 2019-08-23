@@ -6,8 +6,3 @@ procs = memdump | pslist
 print procs
 
 
-
-imagehashes = "file.dd" | extract as ntfs | filter filename==".*gif" | sha1
-
-print imagehashes
-
