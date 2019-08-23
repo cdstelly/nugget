@@ -55,7 +55,7 @@ func (na *ExtractMemory) UploadData() {
 	var reply string
 	volUploadError := na.VolClient.Call("NugVol.LoadData", args, &reply)
 	if volUploadError != nil {
-		log.Fatal("tsk load error:", volUploadError)
+		log.Fatal("volatility load error:", volUploadError)
 	}
 	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
 	na.beenUploaded = true
