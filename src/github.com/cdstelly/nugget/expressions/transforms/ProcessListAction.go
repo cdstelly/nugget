@@ -2,14 +2,14 @@ package expressions
 
 import (
 	"github.com/cdstelly/nugget/NTypes"
-	"net/rpc"
 	"log"
+	"net/rpc"
 )
 
 type ProcessListAction struct {
 	executed  bool
 	dependsOn BaseAction
-	filters []NTypes.Filter
+	filters   []NTypes.Filter
 
 	results NTypes.ProcessList
 
@@ -43,11 +43,11 @@ func (na *ProcessListAction) Execute() {
 
 	//na.uploadImageToVOL()
 	procList := getPSListFromVOL()
-	na.results = NTypes.ProcessList{Processes:procList}
+	na.results = NTypes.ProcessList{Processes: procList}
 	na.executed = true
 }
 
-func (na *ProcessListAction) GetResults() interface{}{
+func (na *ProcessListAction) GetResults() interface{} {
 	if !na.BeenExecuted() {
 		na.Execute()
 	}
@@ -61,18 +61,19 @@ func (na *ProcessListAction) SetFilters(filters []NTypes.Filter) {
 }
 
 func getPSListFromVOL() string {
-	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2002")
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
 
 	//load some data into tsk memory
-	args := &NTypes.NugArg{[]byte(""),""}
+	args := &NTypes.NugArg{[]byte(""), ""}
 	var reply string
 	err = client.Call("NugVol.PSList", args, &reply)
 	if err != nil {
-		log.Fatal("vol load error:", err)
+		log.Fatal("[!] Volatility Error:", reply, err)
 	}
+
 	//fmt.Printf("tsk: %s=%s\n", string(args.TheData), reply)
 	return reply
 }

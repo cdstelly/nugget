@@ -39,8 +39,9 @@ var (
 
 	JSONMode bool
 
-	tskClient *rpc.Client
-	volClient *rpc.Client
+	tskClient  *rpc.Client
+	volClient  *rpc.Client
+	pcapClient *rpc.Client
 )
 
 func init() {
@@ -149,7 +150,7 @@ func (s *TreeShapeListener) ExitNugget_action(ctx *parser.Nugget_actionContext) 
 	case "extract":
 		extractType := getValue(ctx.Action_word()).(NTypes.Extract)
 		if extractType.AsType == "pcap" {
-			theAction = &extractors.ExtractPCAP{}
+			theAction = &extractors.ExtractPCAP{Location: extractType.PathToExtract, PcapClient: pcapClient}
 		} else if extractType.AsType == "ntfs" {
 			theAction = &extractors.ExtractNTFS{Location: extractType.PathToExtract, TskClient: tskClient}
 		} else if extractType.AsType == "md5hashes" {
@@ -294,7 +295,7 @@ func (s *TreeShapeListener) ExitAssign(ctx *parser.AssignContext) {
 		}
 		if extractAction, ok := rawAction.(*extractors.ExtractPCAP); ok {
 			url := ctx.STRING().GetText()
-			extractAction.PCAPLocation = strings.Trim(url, `"`)
+			extractAction.Location = strings.Trim(url, `"`)
 		}
 		if act, ok := rawAction.(expressions.BaseAction); ok {
 			builtActions = append(builtActions, act)
@@ -723,7 +724,7 @@ func SetupRuntimeConnections() {
 	}
 
 	//setup VOL
-	volClient, runtimeConnErr = rpc.DialHTTP("tcp", "127.0.0.1:2002")
+	volClient, runtimeConnErr = rpc.DialHTTP("tcp", runtimeServer+":2001")
 	if runtimeConnErr != nil {
 		log.Fatal("[!] Connection to Volatility runtime failed\n", runtimeConnErr)
 	} else {
@@ -731,7 +732,15 @@ func SetupRuntimeConnections() {
 	}
 
 	//setup PCAP
+	pcapClient, runtimeConnErr = rpc.DialHTTP("tcp", runtimeServer+":2001")
+	if runtimeConnErr != nil {
+		log.Fatal("[!] Connection to Pcap runtime failed\n", runtimeConnErr)
+	} else {
+		log.Println("[-] Connection to Pcap established")
+	}
+
 	log.Println("[-] All runtime connections successfully established.")
+
 }
 
 //To facilitate interprocess dataflows, setup RPC server listening for serialized (now ProtoBuf) data queries

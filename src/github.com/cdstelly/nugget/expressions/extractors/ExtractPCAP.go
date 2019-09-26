@@ -1,23 +1,26 @@
 package extractors
 
 import (
+	"encoding/gob"
 	"github.com/cdstelly/nugget/NTypes"
+	"log"
+	"net/rpc"
 
-	"github.com/google/gopacket/pcap"
-	"github.com/google/gopacket"
-	"fmt"
-	"strings"
 	"github.com/cdstelly/nugget/expressions/transforms"
+	"github.com/google/gopacket/pcap"
 )
 
 type ExtractPCAP struct {
 	executed  bool
 	dependsOn expressions.BaseAction
-	filters []NTypes.Filter
+	filters   []NTypes.Filter
 
-	PCAPLocation string
-	handle *pcap.Handle
-	Packets []NTypes.NPacket
+	PcapClient   *rpc.Client
+	beenUploaded bool
+
+	Location string
+	handle   *pcap.Handle
+	Packets  []NTypes.NPacket
 }
 
 func (na *ExtractPCAP) BeenExecuted() bool {
@@ -37,49 +40,51 @@ func (na *ExtractPCAP) Execute() {
 	na.executed = true
 }
 
-func (na *ExtractPCAP) GetPackets() []NTypes.NPacket{
-	//fmt.Println("getting packets")
-	var err error
+func (na *ExtractPCAP) ExtractPacketsFromPcap() []NTypes.NPacket {
 
-	//get bpfs and apply them
-	var bpf string
-	for _, f := range na.filters {
-		//fmt.Println("Found a filter: ", f)
-		switch f.Field {
-		case "packetfilter":
-			if f.Op == "==" {
-				bpf = f.Value
-				bpf = strings.Trim(bpf, "\"")
-				//fmt.Println("Set the bnf filter value to: " + myBPF)
-			} else {
-				fmt.Println("Error: BPF only supports equality at the moment.")
-			}
-		default:
-			fmt.Println("Error: PCAP Parser was unable to understand filter: ", f.Field)
-		}
+	gob.Register(NTypes.NPacket{})
+
+	if na.beenUploaded == false {
+		na.UploadData()
 	}
-	//fmt.Println("pcap location: " + na.PCAPLocation)
-	na.handle, err = pcap.OpenOffline(na.PCAPLocation)
+
+	client, err := rpc.DialHTTP("tcp", "127.0.0.1:2001")
 	if err != nil {
-		fmt.Println("Error reading pcap file: " , err)
-		//panic(err)
+		log.Fatal("dialing:", err)
 	}
-	err = na.handle.SetBPFFilter(bpf)
+
+	args := &NTypes.NuggetPCAPArgs{nil, "", nil}
+	//var reply []NTypes.NPacket
+	var reply []string
+	err = client.Call("NugPcap.GetPackets", args, &reply)
 	if err != nil {
-		fmt.Println("Error setting BPF: " , err)
-		panic(err)
+		log.Fatal("[!] Pcap RPC error:", err)
+	}
+	log.Println("temp response: ", reply)
+	return nil
+
+}
+
+func (na *ExtractPCAP) GetPackets() []NTypes.NPacket {
+	log.Println("[-] Obtaining Packets..")
+
+	// upload data
+	if na.beenUploaded == false {
+		na.UploadData()
 	}
 
-	packetSource := gopacket.NewPacketSource(na.handle, na.handle.LinkType())
+	// send filters to the RPC processor
+	na.UploadFilters()
 
-	for p := range packetSource.Packets() {
-		na.Packets = append(na.Packets, NTypes.NPacket{p})
-	}
+	// get packets
+	packetizedResponse := na.ExtractPacketsFromPcap()
+	log.Println(packetizedResponse)
+
 	na.executed = true
 	return na.Packets
 }
 
-func (na *ExtractPCAP) GetResults() interface{}{
+func (na *ExtractPCAP) GetResults() interface{} {
 	if na.executed == false {
 		na.Execute()
 	}
@@ -89,4 +94,29 @@ func (na *ExtractPCAP) GetResults() interface{}{
 
 func (na *ExtractPCAP) SetFilters(filters []NTypes.Filter) {
 	na.filters = filters
+}
+
+func (na *ExtractPCAP) UploadData() {
+	log.Println("[-] Uploading pcap information to RPC", na.Location)
+	//load some data into RPC PCAP processor memory
+	args := &NTypes.NuggetPCAPArgs{PcapLocation: na.Location}
+	var reply string
+	err := na.PcapClient.Call("NugPcap.LoadData", args, &reply)
+	if err != nil {
+		log.Fatal("PCAP RPC (local) error - priming data store:", err)
+	}
+	log.Printf("pcap response: %s=%s\n", string(args.TheData), reply)
+	na.beenUploaded = true
+}
+
+func (na *ExtractPCAP) UploadFilters() {
+	//load give filters into RPC PCAP processor memory
+	args := &NTypes.NuggetPCAPArgs{Filters: na.filters}
+	var reply string
+	err := na.PcapClient.Call("NugPcap.LoadFilters", args, &reply)
+	if err != nil {
+		log.Fatal("PCAP RPC (local) error - uploading filter information to pcap processor:", err)
+	}
+
+	na.beenUploaded = true
 }

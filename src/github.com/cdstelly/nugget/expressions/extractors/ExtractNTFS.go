@@ -48,7 +48,6 @@ func (na *ExtractNTFS) Execute() {
 }
 
 func (na *ExtractNTFS) ExtractMetadataFromNTFSwithTSK() []NTypes.FileInfo {
-
 	if na.beenUploaded == false {
 		na.UploadData()
 	}
@@ -106,7 +105,6 @@ func (na *ExtractNTFS) convertBodyFileStringToFileInfo(input string) NTypes.File
 
 func (na *ExtractNTFS) UploadData() {
 	//load some data into tsk memory
-
 	args := &NTypes.NugArg{[]byte(na.Location), ""}
 	var reply string
 	err := na.TskClient.Call("NugTSK.LoadData", args, &reply)

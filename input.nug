@@ -6,8 +6,6 @@ hashes = files | sha1
 type hashes
 print hashes
 
-
-
 files = "/targets/jo-favorites-usb-2009-12-11.E01" | extract as ntfs
 filteredfiles = files | filter filename==".*.JPG",ctime>="2001/12/10"
 filteredhashes = filteredfiles | sha1
@@ -15,9 +13,10 @@ print filteredfiles
 print filteredhashes
 print filteredfiles, filteredfiles.Filesize
 
-
-
 memdump = "/targets/jo-2009-12-11.mddramimage" | extract as memory
 josprocesses = memdump | pslist
 print josprocesses
 print josprocesses.Processes
+
+nt = "/targets/sample.pcap" | extract as pcap
+print nt
